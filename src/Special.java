@@ -1,6 +1,6 @@
 /**
  * PURPOSE OF CLASS
- * @author NAME
+ * @author Shafran
  */
 public class Special extends Tile{
     public void landedOn(Player p){

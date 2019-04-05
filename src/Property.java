@@ -1,6 +1,6 @@
 /**
  * PURPOSE OF CLASS
- * @author NAME
+ * @author Zaionz
  */
 public class Property extends Tile {
     private Player owner;

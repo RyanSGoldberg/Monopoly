@@ -1,6 +1,6 @@
 /**
  * PURPOSE OF CLASS
- * @author NAME
+ * @author Day
  */
 public class Board{
 

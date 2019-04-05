@@ -1,6 +1,6 @@
 /**
  * PURPOSE OF CLASS
- * @author Ryan
+ * @author Goldberg
  */
 
 public class Utilities {

@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 /**
  * PURPOSE OF CLASS
- * @author NAME
+ * @author Goldberg
  */
 
 public class Player {
