@@ -1,3 +1,7 @@
+/**
+ * PURPOSE OF CLASS
+ * @author NAME
+ */
 public class Tile{
     protected Board myBoard;
 

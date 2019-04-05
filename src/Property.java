@@ -1,3 +1,7 @@
+/**
+ * PURPOSE OF CLASS
+ * @author NAME
+ */
 public class Property extends Tile {
     private Player owner;
 

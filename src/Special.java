@@ -1,3 +1,7 @@
+/**
+ * PURPOSE OF CLASS
+ * @author NAME
+ */
 public class Special extends Tile{
     public void landedOn(Player p){
         switch (name){

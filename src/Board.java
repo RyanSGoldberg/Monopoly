@@ -1,3 +1,7 @@
+/**
+ * PURPOSE OF CLASS
+ * @author NAME
+ */
 public class Board{
 
     //Number of players (2-6)

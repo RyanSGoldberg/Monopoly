@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * PURPOSE OF CLASS
+ * @author NAME
+ */
+
 public class Player {
     private String name;
     private int wallet;
