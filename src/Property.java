@@ -21,15 +21,9 @@ public class Property extends Tile {
     }
 
     public void landedOn(Player p){
-        if(owner == null){
-            //buy option
-            //TODO
-        }else {
-            //pay rent to owner
+        if(owner != null){//If there is an owner pay rent
             //TODO
         }
-
-
     }
 
 }

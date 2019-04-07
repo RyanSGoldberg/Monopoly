@@ -14,10 +14,7 @@ public class Special extends Tile{
             case "goToJail":
                 //TODO
                 break;
-            case "getChance":
-                //TODO
-                break;
-            case "getChest":
+            case "getCard":
                 //TODO
                 break;
             case "freeParking":

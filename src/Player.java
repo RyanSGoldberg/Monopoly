@@ -8,13 +8,13 @@ public class Player {
     private String name;
     private int wallet;
 
-    private int position;
+    public int position;
 
-    private int numberOfJailCards;
     private boolean inJail;
     private int turnsLeftInJail;
 
     private ArrayList<Property> inventory;
+    private int numberOfJailCards;
 
     public Player(String name) {
         this.name = name;
@@ -24,23 +24,6 @@ public class Player {
         this.inJail = false;
         this.turnsLeftInJail = 0;
         this.inventory = new ArrayList<>();
-    }
-
-    public void move(int numberOfSpaces){
-        position += numberOfSpaces;
-        if(position > 39){
-            position = position%40;
-            passGo();
-        }
-    }
-
-    public void moveTo(int newPos){
-        if(newPos < position){
-            move((39-position)+newPos);
-            passGo();
-        }else {
-            move(newPos-position);
-        }
     }
 
     public void removeMoney(int amount){
@@ -57,33 +40,27 @@ public class Player {
         wallet+=amount;
     }
 
-    public void passGo(){
-        wallet+=200;
-    }
-
-    public void sendToJail(){
+    public void setJail(){
         turnsLeftInJail = 3;
         inJail = true;
-        moveTo(10);
     }
 
-    public void drawCard(){
-        int random = Utilities.generateNumber(1,101);
+    public boolean isInJail() {
+        return inJail;
+    }
 
-        if(random < 20){//Get money
-            random = Utilities.generateNumber(1,10);
-            addMoney(20*random);
-        }else if(random < 50){//Give money
-            random = Utilities.generateNumber(1,10);
-            removeMoney(15*random);
-        }else if(random < 99){//Move spaces
-            while (random != 0){
-                random = Utilities.generateNumber(-3,3);
-            }
-            move(random);
-        }else {//Get out of jail card
-            numberOfJailCards++;
+    public void decreaseJail(boolean release){
+        if(release){
+            turnsLeftInJail = 0;
+        }else {
+            turnsLeftInJail--;
         }
+
+        if(turnsLeftInJail == 0){
+            inJail = false;
+        }
+
+
     }
 
     public void mortgageMode(int debt){
