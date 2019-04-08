@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * PURPOSE OF CLASS
@@ -16,8 +17,7 @@ public class Board{
     Tile[] tiles = new Tile[40];
     ArrayList<Card> deck;
 
-    public Board(int numberOfPlayers, boolean newGame) {
-        this.numPlayers = numberOfPlayers;
+    public Board(boolean newGame) {
         loadTiles();
 
         if(newGame){
@@ -36,14 +36,22 @@ public class Board{
     }
 
     public void play(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("How many players are there?");
+        numPlayers = sc.nextInt(); //Place restrictions later
+
+        for (int i = 0; i < numPlayers; i++) {
+            sc = new Scanner(System.in);
+            System.out.println("What is player "+(i+1)+"'s name");
+            String name = sc.next();
+            players.add(new Player(name));
+        }
+
+
         currentPlayer = 0;
         while (players.size() != 1){
             handleTurn(players.get(currentPlayer));
-            if(currentPlayer++ == numPlayers){
-                currentPlayer = 0;
-            }else{
-                currentPlayer++;
-            }
+            currentPlayer = (currentPlayer++)%numPlayers;
         }
 
     }
@@ -68,11 +76,26 @@ public class Board{
         }else{
             move(p,die1+die2);
         }
-        tiles[p.position].landedOn(p);
 
+        //The tile the player is currently on
+        Tile tile = tiles[p.position];
 
-        //TODO
-        //Stuff player can do
+        //Calls the tile's basic function
+        tile.landedOn(p);
+
+        Scanner sc = new Scanner(System.in);
+        sc.next();
+        if(tile.type == Utilities.Type.PROPERTY){
+            Property x = (Property)tile;
+
+            if(!x.hasOwner()){
+                //TODO Buy option
+            }else if(x.getOwner().equals(p)){
+                //TODO Build house option
+            }
+        }else{
+
+        }
     }
 
     public void handleRoll(int a, int b){

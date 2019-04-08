@@ -4,6 +4,7 @@
  */
 public class Tile{
     protected Board myBoard;
+    protected Utilities.Type type;
 
     protected String name;
     protected byte location;
