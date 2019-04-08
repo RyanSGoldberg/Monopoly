@@ -33,6 +33,9 @@ public class Board{
     public void loadTiles(){
         //Read in 40 lines files
         //TODO
+
+        System.out.println("Test");
+
     }
 
     public void play(){
