@@ -3,6 +3,10 @@
  * @author Shafran
  */
 public class Special extends Tile{
+    public Special() {
+        type = Utilities.Type.SPECIAL;
+    }
+
     public void landedOn(Player p){
         switch (name){
             case "go":

@@ -12,6 +12,10 @@ public class Property extends Tile {
     private int[] houseCosts;
     private boolean canBuild;
 
+    public Property() {
+        type = Utilities.Type.PROPERTY;
+
+    }
 
     @Override
     public String toString() {
@@ -24,6 +28,15 @@ public class Property extends Tile {
         if(owner != null){//If there is an owner pay rent
             //TODO
         }
+    }
+
+    public boolean hasOwner(){
+        //TODO (Note doesnt always return false, just so i could run without errors msgs)
+        return false;
+    }
+
+    public Player getOwner(){
+        return owner;
     }
 
 }

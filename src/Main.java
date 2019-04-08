@@ -1,9 +1,10 @@
+/**
+ * PURPOSE OF CLASS
+ */
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("https://en.wikibooks.org/wiki/Monopoly/Official_Rules");
-
-
-        //This is a test update
-        //ben's change
+        Board game = new Board(true);
+        game.play();
     }
 }
