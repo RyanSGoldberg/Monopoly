@@ -17,7 +17,7 @@ public class Board{
     public static void startTurn(){
         Player current;
 
-
+        System.out.println("Test");
 
     }
 
