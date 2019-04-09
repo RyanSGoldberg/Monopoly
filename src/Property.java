@@ -35,6 +35,14 @@ public class Property extends Tile {
         return false;
     }
 
+    public void buy(Player p){
+        p.addProperty(this);
+        owner = p;
+        p.removeMoney(cost);
+
+
+    }
+
     public Player getOwner(){
         return owner;
     }
