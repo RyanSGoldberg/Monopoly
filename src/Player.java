@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 /**
+ * PURPOSE OF CLASS
  * @author Goldberg
  */
 
@@ -8,76 +9,42 @@ public class Player {
     private String name;
     private int wallet;
 
-    public int position;
+    private int position;
 
+    private int numberOfJailCards;
     private boolean inJail;
     private int turnsLeftInJail;
 
     private ArrayList<Property> inventory;
-    private int numberOfJailCards;
-
-    public Player(String name) {
-        this.name = name;
-        this.wallet = 1500;
-        this.position = 0;
-        this.numberOfJailCards = 0;
-        this.inJail = false;
-        this.turnsLeftInJail = 0;
-        this.inventory = new ArrayList<>();
-    }
-
-    public void removeMoney(int amount){
-        if(wallet - amount > 0){
-            wallet -= amount;
-        }else {
-            int extra = amount - wallet;
-            wallet = 0;
-            mortgageMode(extra);
-        }
-    }
-
-    public void addMoney(int amount){
-        wallet+=amount;
-    }
-
-    public void setJail(){
-        turnsLeftInJail = 3;
-        inJail = true;
-    }
-
-    public boolean isInJail() {
-        return inJail;
-    }
-
-    public void decreaseJail(boolean release){
-        if(release){
-            turnsLeftInJail = 0;
-        }else {
-            turnsLeftInJail--;
-        }
-
-        if(turnsLeftInJail == 0){
-            inJail = false;
-        }
 
 
-    }
-
-    public void mortgageMode(int debt){
+    public static void move(){d
         //TODO
-        //Player cannot leave this mode until debt is paid, if they have no more properties then game is over for player
     }
 
-    @Override
-    public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
-                ", wallet=" + wallet +
-                ", position=" + position +
-                ", numberOfJailCards=" + numberOfJailCards +
-                ", inJail=" + inJail +
-                ", turnsLeftInJail=" + turnsLeftInJail +
-                ", inventory=" + inventory +
-                '}';
+    public int removeMoney(int amount){
+        //TODO
+        //What to do if wallet is empty/ more money is needed than is held in wallet
+        return 0;
     }
+
+    public int addMoney(int amount){
+        //TODO
+        return 0;
+    }
+
+    public void passGo(){
+        //TODO
+    }
+
+    public void sendToJail(){
+        //TODO
+    }
+
+    public static void drawCard(){
+        //1,2,3,4
+    }
+
+
+
 }
