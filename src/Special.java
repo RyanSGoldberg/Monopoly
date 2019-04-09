@@ -16,7 +16,7 @@ public class Special extends Tile{
                 myBoard.sendToJail(p);
                 break;
             case "getCard":
-                //TODO
+                myBoard.drawCard(p);
                 break;
             case "freeParking":
                 //TODO
