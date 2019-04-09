@@ -5,6 +5,7 @@
 public class Card {
     public String name;
     public String description;
+    public Board myBoard;
 
     public void function(Player p){
         switch (name){
