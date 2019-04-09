@@ -15,7 +15,6 @@ public class Board{
     private int moneyPot;
 
     Tile[] tiles = new Tile[40];
-    ArrayList<Card> deck;
 
     public Board(boolean newGame) {
         loadTiles();
@@ -131,15 +130,10 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void shuffleNewDeck(){
-        //TODO
-        //Load in all the possible cards and then
-        //If possible make a shuffle arraylist algorithm in utilities, so we can use it elsehwere
-    }
-
     public void drawCard(){
         //TODO
         //Run the fxn of the drawn card(pop the card and run its fxn)
+
     }
 
     public void saveBoard(){
