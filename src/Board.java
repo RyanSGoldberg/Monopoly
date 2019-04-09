@@ -130,10 +130,23 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void drawCard(){
+    public void drawCard(Player p){
         //TODO
         //Run the fxn of the drawn card(pop the card and run its fxn)
+        number=Utilities.generateNumber(0,5);
+        switch(number) {
+            case 1:
 
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+        }//make different likelyhoods
     }
 
     public void saveBoard(){
