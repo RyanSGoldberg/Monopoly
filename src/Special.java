@@ -10,13 +10,10 @@ public class Special extends Tile{
     public void landedOn(Player p){
         switch (name){
             case "go":
-                //TODO
-                break;
-            case "jail":
-                //TODO
+                myBoard.passGo(p);
                 break;
             case "goToJail":
-                //TODO
+                myBoard.sendToJail(p);
                 break;
             case "getCard":
                 //TODO
