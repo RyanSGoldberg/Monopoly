@@ -137,7 +137,7 @@ public class Board{
         //If possible make a shuffle arraylist algorithm in utilities, so we can use it elsehwere
     }
 
-    public void drawCard(){
+    public void drawCard(Player p){
         //TODO
         //Run the fxn of the drawn card(pop the card and run its fxn)
     }
