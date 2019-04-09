@@ -40,6 +40,14 @@ public class Player {
         wallet+=amount;
     }
 
+    public int getBalance() {
+        return wallet;
+    }
+
+    public void addProperty(Property prop){
+        inventory.add(prop);
+    }
+
     public void setJail(){
         turnsLeftInJail = 3;
         inJail = true;
