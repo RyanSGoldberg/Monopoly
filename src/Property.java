@@ -117,7 +117,9 @@ public class Property extends Tile {
 
     private boolean playerHasMonopoly(){
         //TODO if the player owns the whole group
-        return false;
+        //return false;
+
+        if(owner.)
     }
 
 

@@ -55,6 +55,10 @@ public class Player {
         inJail = true;
     }
 
+    public ArrayList<Property> getInventory() {
+        return inventory;
+    }
+
     public boolean isInJail() {
         return inJail;
     }
