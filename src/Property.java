@@ -22,18 +22,27 @@ public class Property extends Tile {
     }
 
     @Override
-    public String toString() {
-        //Information about property
-        //TODO
-        return "";
+    public String toString() { // returns information about property
+
+        if(numberHouses < 5 && owner != null) {
+            return name + "'s ent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
+        }
+        else if(numberHouses == 5 && owner != null){
+            return name + "'s ent costs: " + rent[numberHouses] + " with 1 hotel";
+        }
+        else if(owner == null){
+
+            return name+" is an available property";
+
+        }
     }
 
-    public void landedOn(Player p){
+    public void landedOn(Player p){ // charges money for somebody that lands on a proeprty they do not own
         if(owner != null){//If there is an owner pay rent
             if(playerHasMonopoly()){
-                owner.removeMoney(rent[numberHouses]*2);
+                p.removeMoney(rent[numberHouses]*2);
             }else {
-                owner.removeMoney(rent[numberHouses]);
+                p.removeMoney(rent[numberHouses]);
             }
         }
     }
@@ -44,11 +53,39 @@ public class Property extends Tile {
 
     public void buildHouse(){
         //TODO
+        if(owner.getBalance() >= getCost() && numberHouses < 5 && canBuild){
+
+            owner.removeMoney(getCost());
+
+            numberHouses++;
+
+        }
+        else{
+
+            if(owner.getBalance() < getCost()){
+
+                System.out.println("You do not have enough money to buy this property");
+
+            } if(canBuild == false){
+
+                System.out.println("Sorry you cannot build here");
+
+            } if(numberHouses == 5){
+
+                System.out.println("You already have a hotel (5 houses) here and cannot build more");
+
+            }
+
+        }
     }
 
     public boolean hasOwner(){
-        //TODO (Note doesnt always return false, just so i could run without errors msgs)
-        return false;
+        if(owner != null){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void buy (Player p){
@@ -61,7 +98,7 @@ public class Property extends Tile {
         return owner;
     }
 
-    public int getCost(){
+    public int getCost(){ // when number of houses == 0 it returns the cost to buy the property otherwise it returns the cost to buy a house
         return costs[numberHouses];
     }
 
@@ -82,5 +119,7 @@ public class Property extends Tile {
         //TODO if the player owns the whole group
         return false;
     }
+
+
 
 }
