@@ -62,10 +62,10 @@ public class Board{
 
                 boolean canBuild = Boolean.parseBoolean(parsed[8]);
 
-                int[] cost = new int[5];
+                int[] cost = new int[2];
 
                 if(canBuild){
-                    for (int j = 9; j < 14; j++) {
+                    for (int j = 9; j < 11; j++) {
                         cost[j-9] = Integer.parseInt(parsed[j]);
                     }
                 }else{
