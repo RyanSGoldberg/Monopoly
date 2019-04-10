@@ -203,7 +203,7 @@ public class Board{
     }
 
     public void drawCard(Player p) {
-        number = Utilities.generateNumber(0, 5);
+        int number = Utilities.generateNumber(0, 5);
         String cardName = null;
         int randomAmount = Utilities.generateNumber(10, 250);
         int randomLocation = Utilities.generateNumber(1, 7);
@@ -221,9 +221,10 @@ public class Board{
                 cardName = "Move Token";
                 move(p, randomLocation);
                 break;
-
-            System.out.println("You picked up the following card:" + +"");
         }
+
+        System.out.println("You picked up the following card:" + cardName +"");
+
     }
 
     public void saveBoard(){
