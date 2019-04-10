@@ -1,13 +1,13 @@
 SPECIAL,go
-PROPERTY,mediterraneanAvenue,001,
+PROPERTY,mediterraneanAvenue,001,2,10,30,90,160,250,true,60,50
 SPECIAL,getCard
-PROPERTY,balticAvenue
-SPECIAL,
-SPECIAL,
-PROPERTY,
-SPECIAL,
-PROPERTY,
-PROPERTY,
+PROPERTY,balticAvenue,001,4,20,60,180,320,450,true,80,50
+SPECIAL,tax
+PROPERTY,readingRailroad,002,25,50,100,200,false,200,50
+PROPERTY,orientalAvenue,003,6,30,90,270,400,550,true,100,50
+SPECIAL,getCard
+PROPERTY,vermontAvenue,003,6,30,90,270,400,550,true,100,50
+PROPERTY,connecticutAvenue,003,8,40,100,300,450,600,true,120,50
 SPECIAL,
 PROPERTY,
 SPECIAL,
@@ -40,7 +40,7 @@ SPECIAL,
 PROPERTY,
 
 --------------------------------------------------
-PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
+PROPERTY,name,group(001,002,003...),rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
 
 SPECIAL, name
 --------------------------------------------------
