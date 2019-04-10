@@ -5,11 +5,10 @@
 public class Property extends Tile {
     private Player owner;
 
-    private int cost;
     private int[] rent;
     private int numberHouses;
 
-    private int[] houseCosts;
+    private int[] costs;
     private boolean canBuild;
 
     public Property() {
@@ -30,21 +29,44 @@ public class Property extends Tile {
         }
     }
 
+    public boolean canBuild() {
+        return canBuild;
+    }
+
+    public void buildHouse(){
+        //TODO
+    }
+
     public boolean hasOwner(){
         //TODO (Note doesnt always return false, just so i could run without errors msgs)
         return false;
     }
 
-    public void buy(Player p){
+    public void buy (Player p){
         p.addProperty(this);
         owner = p;
-        p.removeMoney(cost);
-
-
+        p.removeMoney(costs[0]);
     }
 
     public Player getOwner(){
         return owner;
+    }
+
+    public int getCost(){
+        return costs[numberHouses];
+    }
+
+    public void sellProperty(){
+        owner.addMoney(costs[0]/2);
+        owner.removeProperty(this);
+        owner = null;
+    }
+
+    public void sellHouse(){
+        if(numberHouses != 0){
+            owner.addMoney(costs[numberHouses]/2);
+            numberHouses--;
+        }
     }
 
 }

@@ -19,10 +19,10 @@ public class Special extends Tile{
                 myBoard.drawCard(p);
                 break;
             case "freeParking":
-                //TODO
+                //TODO return money pot
                 break;
             case "tax":
-                //TODO
+                //TODO take money from player (either 150 or 10% of their wallet) --> Prompt the user asking which they want
                 break;
         }
     }

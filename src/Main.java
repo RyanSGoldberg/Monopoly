@@ -8,3 +8,7 @@ public class Main {
         game.play();
     }
 }
+
+/*
+https://online.visual-paradigm.com/diagrams.jsp#diagram:proj=0&type=ClassDiagram
+ */

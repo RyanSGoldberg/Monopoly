@@ -12,10 +12,11 @@ public class Board{
     private ArrayList<Player> players;
     private int currentPlayer;
 
-    private int moneyPot;
+    private int cashPot;
+
+    private int numDoubleRollsOnTurn;
 
     Tile[] tiles = new Tile[40];
-    ArrayList<Card> deck;
 
     public Board(boolean newGame) {
         loadTiles();
@@ -33,9 +34,6 @@ public class Board{
     public void loadTiles(){
         //Read in 40 lines files
         //TODO
-
-        System.out.println("Test");
-
     }
 
     public void play(){
@@ -50,59 +48,67 @@ public class Board{
             players.add(new Player(name));
         }
 
-
         currentPlayer = 0;
         while (players.size() != 1){
             handleTurn(players.get(currentPlayer));
             currentPlayer = (currentPlayer++)%numPlayers;
         }
-
     }
 
     public void handleTurn(Player p){
-        int die1 = Utilities.roll();
-        int die2 = Utilities.roll();
+        boolean doubleRoll;
+        do {
+            int die1 = Utilities.roll();
+            int die2 = Utilities.roll();
 
-        boolean doubleRoll = false;
-        if(die1 == die2){
-            doubleRoll = true;
-        }
-
-        handleRoll(die1,die2);
-
-        if(p.isInJail()){
-            if(doubleRoll){
-                p.decreaseJail(true);
-            }else{
-                p.decreaseJail(false);
+            doubleRoll = false;
+            if (die1 == die2) {
+                doubleRoll = true;
+                numDoubleRollsOnTurn++;
             }
-        }else{
-            move(p,die1+die2);
-        }
 
-        //The tile the player is currently on
-        Tile tile = tiles[p.position];
+            if(numDoubleRollsOnTurn == 3){
+                sendToJail(p);
+            }else {
+                if (p.isInJail()) {
+                    if (doubleRoll) {
+                        p.decreaseJail(true);
+                    } else {
+                        p.decreaseJail(false);
+                    }
+                } else {
+                    move(p, die1 + die2);
+                }
 
-        //Calls the tile's basic function
-        tile.landedOn(p);
+                //The tile the player is currently on
+                Tile tile = tiles[p.position];
 
-        Scanner sc = new Scanner(System.in);
-        sc.next();
-        if(tile.type == Utilities.Type.PROPERTY){
-            Property x = (Property)tile;
+                //Calls the tile's basic function
+                tile.landedOn(p);
 
-            if(!x.hasOwner()){
-                //TODO Buy option
-            }else if(x.getOwner().equals(p)){
-                //TODO Build house option
+                Scanner sc = new Scanner(System.in);
+                sc.next();
+                if (tile.type == Utilities.Type.PROPERTY) {
+                    Property x = (Property) tile;
+
+                    if (!x.hasOwner()) {
+                        if (p.getBalance() <= x.getCost()) {
+                            x.buy(p);
+                        } else {
+                            System.out.println("You can't afford that");
+                        }
+                    } else if (x.getOwner().equals(p)) {
+                        if (p.getBalance() <= x.getCost()) {
+                            x.buildHouse();
+                        } else {
+                            System.out.println("You can't afford that");
+                        }
+                    }
+                }
+                System.out.println("Next player's turn");
+                System.out.println();
             }
-        }else{
-
-        }
-    }
-
-    public void handleRoll(int a, int b){
-        //TODO
+        }while (doubleRoll);
     }
 
     public void move(Player p, int numberOfSpaces){
@@ -131,12 +137,6 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void shuffleNewDeck(){
-        //TODO
-        //Load in all the possible cards and then
-        //If possible make a shuffle arraylist algorithm in utilities, so we can use it elsehwere
-    }
-
     public void drawCard(Player p){
         //TODO
         //Run the fxn of the drawn card(pop the card and run its fxn)
@@ -145,6 +145,16 @@ public class Board{
     public void saveBoard(){
         //TODO
         //Save a board as a text file, and all of the other info
+    }
+
+    public void addToCashPot(int amount){
+        cashPot+=amount;
+    }
+
+    public int emptyCashPot(){
+        int c = cashPot;
+        cashPot = 0;
+        return c;
     }
 
     public void loadBoard(){

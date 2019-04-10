@@ -48,6 +48,8 @@ public class Player {
         inventory.add(prop);
     }
 
+    public void removeProperty(Property prop){inventory.remove(prop);}
+
     public void setJail(){
         turnsLeftInJail = 3;
         inJail = true;
