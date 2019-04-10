@@ -199,23 +199,28 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void drawCard(Player p){
-        //TODO
-        //Run the fxn of the drawn card(pop the card and run its fxn)
-        number=Utilities.generateNumber(0,5);
-        switch(number) {
-            case 1:
+    public void drawCard(Player p) {
+        number = Utilities.generateNumber(0, 5);
+        String cardName = null;
+        int randomAmount = Utilities.generateNumber(10, 250);
+        int randomLocation = Utilities.generateNumber(1, 7);
 
+        switch (number) {
+            case 1:
+                cardName = "Collect Cash!";
+                p.addMoney(randomAmount);
                 break;
             case 2:
+                cardName = "Pay Tax";
+                p.removeMoney(randomAmount);
                 break;
             case 3:
+                cardName = "Move Token";
+                move(p, randomLocation);
                 break;
-            case 4:
-                break;
-            case 5:
-                break;
-        }//make different likelyhoods
+
+            System.out.println("You picked up the following card:" + +"");
+        }
     }
 
     public void saveBoard(){
