@@ -11,9 +11,14 @@ public class Property extends Tile {
     private int[] costs;
     private boolean canBuild;
 
-    public Property() {
+    public Property(int location, String name, int group, int[] rent, boolean canBuild, int[] costs) {
         type = Utilities.Type.PROPERTY;
-
+        this.location = location;
+        this.name = name;
+        this.groupName = group;
+        this.rent = rent;
+        this.canBuild = canBuild;
+        this.costs = costs;
     }
 
     @Override

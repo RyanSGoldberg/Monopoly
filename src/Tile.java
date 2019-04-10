@@ -7,12 +7,10 @@ public class Tile{
     protected Utilities.Type type;
 
     protected String name;
-    protected byte location;
-    protected byte groupName;
+    protected int location;
+    protected int groupName;
 
     public Tile() {
-        //TODO
-
     }
 
     public void landedOn(Player p){
@@ -34,7 +32,7 @@ public class Tile{
         this.name = name;
     }
 
-    public byte getLocation() {
+    public int getLocation() {
         return location;
     }
 
@@ -42,7 +40,7 @@ public class Tile{
         this.location = location;
     }
 
-    public byte getGroupName() {
+    public int getGroupName() {
         return groupName;
     }
 

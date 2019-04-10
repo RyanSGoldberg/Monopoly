@@ -3,8 +3,10 @@
  * @author Shafran
  */
 public class Special extends Tile{
-    public Special() {
+    public Special(int location, String name) {
         type = Utilities.Type.SPECIAL;
+        this.name = name;
+        this.location = location;
     }
 
     public void landedOn(Player p){

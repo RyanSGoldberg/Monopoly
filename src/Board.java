@@ -1,4 +1,9 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -31,8 +36,46 @@ public class Board{
     }
 
     public void loadTiles(){
-        //Read in 40 lines files
-        //TODO
+         /*
+        PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(5 numbers seperated by commas)
+        SPECIAL, name
+         */
+
+         List<String> lines = null;
+         Path tileData = Paths.get("Data/tiles.csv");
+        try {
+            lines = Files.readAllLines(tileData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < lines.size(); i++) {
+            String[] parsed =lines.get(i).split(",");
+
+            String name = parsed[1];
+            if(parsed[0].equals("PROPERTY")){
+                int group = Integer.parseInt(parsed[2]);
+                int[] rent = new int[5];
+                for (int j = 3; j < 8; j++) {
+                    rent[j-3] = Integer.parseInt(parsed[j]);
+                }
+
+                boolean canBuild = Boolean.parseBoolean(parsed[8]);
+
+                int[] cost = new int[5];
+
+                if(canBuild){
+                    for (int j = 9; j < 14; j++) {
+                        cost[j-9] = Integer.parseInt(parsed[j]);
+                    }
+                }else{
+                    cost = null;
+                }
+                tiles[i] = new Property(i,name,group,rent,canBuild,cost);
+            }else{
+                tiles[i] = new Special(i,name);
+            }
+        }
     }
 
     public void play(){
