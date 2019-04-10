@@ -30,7 +30,7 @@ public class Property extends Tile {
         else if(numberHouses == 5 && owner != null){
             return name + "'s ent costs: " + rent[numberHouses] + " with 1 hotel";
         }
-        else if(owner == null){
+        else{
 
             return name+" is an available property";
 
