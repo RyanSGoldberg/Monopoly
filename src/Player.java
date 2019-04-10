@@ -90,4 +90,14 @@ public class Player {
                 ", inventory=" + inventory +
                 '}';
     }
+
+    public boolean hasJailCard(){
+        if(numberOfJailCards > 0){
+            return true;
+        }
+        return false;
+    }
+    public void useJailCard(){
+        numberOfJailCards--;
+    }
 }

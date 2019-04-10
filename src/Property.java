@@ -25,7 +25,11 @@ public class Property extends Tile {
 
     public void landedOn(Player p){
         if(owner != null){//If there is an owner pay rent
-            //TODO
+            if(playerHasMonopoly()){
+                owner.removeMoney(rent[numberHouses]*2);
+            }else {
+                owner.removeMoney(rent[numberHouses]);
+            }
         }
     }
 
@@ -67,6 +71,11 @@ public class Property extends Tile {
             owner.addMoney(costs[numberHouses]/2);
             numberHouses--;
         }
+    }
+
+    private boolean playerHasMonopoly(){
+        //TODO if the player owns the whole group
+        return false;
     }
 
 }

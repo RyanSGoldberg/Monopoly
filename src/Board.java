@@ -28,7 +28,6 @@ public class Board{
         }else{
             loadBoard();
         }
-
     }
 
     public void loadTiles(){
@@ -67,14 +66,36 @@ public class Board{
                 numDoubleRollsOnTurn++;
             }
 
+            Scanner sc = new Scanner(System.in);
             if(numDoubleRollsOnTurn == 3){
                 sendToJail(p);
+                doubleRoll = false;
             }else {
                 if (p.isInJail()) {
                     if (doubleRoll) {
                         p.decreaseJail(true);
-                    } else {
-                        p.decreaseJail(false);
+                    }else {
+                        if(p.hasJailCard()){
+                            if(p.hasJailCard()){
+                                System.out.println("Do you want to use a get out of jail free card?");
+                                boolean use = sc.nextBoolean();
+                                if(use){
+                                    p.useJailCard();
+                                    p.decreaseJail(true);
+                                }
+                            }
+                            if(p.getBalance() > 50){
+                                System.out.println("Do you want PAY $50 to buy your way out?");
+                                boolean pay = sc.nextBoolean();
+                                if(pay){
+                                    p.removeMoney(50);
+                                    p.decreaseJail(true);
+                                }
+                                p.decreaseJail(true);
+                            }else{
+                                p.decreaseJail(false);
+                            }
+                        }
                     }
                 } else {
                     move(p, die1 + die2);
@@ -86,11 +107,9 @@ public class Board{
                 //Calls the tile's basic function
                 tile.landedOn(p);
 
-                Scanner sc = new Scanner(System.in);
                 sc.next();
                 if (tile.type == Utilities.Type.PROPERTY) {
                     Property x = (Property) tile;
-
                     if (!x.hasOwner()) {
                         if (p.getBalance() <= x.getCost()) {
                             x.buy(p);
