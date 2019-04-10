@@ -62,10 +62,10 @@ public class Board{
 
                 boolean canBuild = Boolean.parseBoolean(parsed[8]);
 
-                int[] cost = new int[5];
+                int[] cost = new int[2];
 
                 if(canBuild){
-                    for (int j = 9; j < 14; j++) {
+                    for (int j = 9; j < 11; j++) {
                         cost[j-9] = Integer.parseInt(parsed[j]);
                     }
                 }else{
@@ -75,6 +75,9 @@ public class Board{
             }else{
                 tiles[i] = new Special(i,name);
             }
+
+            //TODO test files
+            tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
         }
     }
 
@@ -199,9 +202,29 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void drawCard(Player p){
-        //TODO
-        //Run the fxn of the drawn card(pop the card and run its fxn)
+    public void drawCard(Player p) {
+        int number = Utilities.generateNumber(0, 5);
+        String cardName = null;
+        int randomAmount = Utilities.generateNumber(10, 250);
+        int randomLocation = Utilities.generateNumber(1, 7);
+
+        switch (number) {
+            case 1:
+                cardName = "Collect Cash!";
+                p.addMoney(randomAmount);
+                break;
+            case 2:
+                cardName = "Pay Tax";
+                p.removeMoney(randomAmount);
+                break;
+            case 3:
+                cardName = "Move Token";
+                move(p, randomLocation);
+                break;
+        }
+
+        System.out.println("You picked up the following card:" + cardName +"");
+
     }
 
     public void saveBoard(){
