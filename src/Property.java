@@ -5,16 +5,20 @@
 public class Property extends Tile {
     private Player owner;
 
-    private int cost;
     private int[] rent;
     private int numberHouses;
 
-    private int[] houseCosts;
+    private int[] costs;
     private boolean canBuild;
 
-    public Property() {
+    public Property(int location, String name, int group, int[] rent, boolean canBuild, int[] costs) {
         type = Utilities.Type.PROPERTY;
-
+        this.location = location;
+        this.name = name;
+        this.groupName = group;
+        this.rent = rent;
+        this.canBuild = canBuild;
+        this.costs = costs;
     }
 
     @Override
@@ -26,8 +30,20 @@ public class Property extends Tile {
 
     public void landedOn(Player p){
         if(owner != null){//If there is an owner pay rent
-            //TODO
+            if(playerHasMonopoly()){
+                owner.removeMoney(rent[numberHouses]*2);
+            }else {
+                owner.removeMoney(rent[numberHouses]);
+            }
         }
+    }
+
+    public boolean canBuild() {
+        return canBuild;
+    }
+
+    public void buildHouse(){
+        //TODO
     }
 
     public boolean hasOwner(){
@@ -35,16 +51,36 @@ public class Property extends Tile {
         return false;
     }
 
-    public void buy(Player p){
+    public void buy (Player p){
         p.addProperty(this);
         owner = p;
-        p.removeMoney(cost);
-
-
+        p.removeMoney(costs[0]);
     }
 
     public Player getOwner(){
         return owner;
+    }
+
+    public int getCost(){
+        return costs[numberHouses];
+    }
+
+    public void sellProperty(){
+        owner.addMoney(costs[0]/2);
+        owner.removeProperty(this);
+        owner = null;
+    }
+
+    public void sellHouse(){
+        if(numberHouses != 0){
+            owner.addMoney(costs[numberHouses]/2);
+            numberHouses--;
+        }
+    }
+
+    private boolean playerHasMonopoly(){
+        //TODO if the player owns the whole group
+        return false;
     }
 
 }

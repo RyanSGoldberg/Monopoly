@@ -3,29 +3,28 @@
  * @author Shafran
  */
 public class Special extends Tile{
-    public Special() {
+    public Special(int location, String name) {
         type = Utilities.Type.SPECIAL;
+        this.name = name;
+        this.location = location;
     }
 
     public void landedOn(Player p){
         switch (name){
             case "go":
-                //TODO
-                break;
-            case "jail":
-                //TODO
+                myBoard.passGo(p);
                 break;
             case "goToJail":
-                //TODO
+                myBoard.sendToJail(p);
                 break;
             case "getCard":
-                //TODO
+                myBoard.drawCard(p);
                 break;
             case "freeParking":
-                //TODO
+                //TODO return money pot
                 break;
             case "tax":
-                //TODO
+                //TODO take money from player (either 150 or 10% of their wallet) --> Prompt the user asking which they want
                 break;
         }
     }
