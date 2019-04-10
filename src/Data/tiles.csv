@@ -1,7 +1,7 @@
 SPECIAL,go
-PROPERTY,
-SPECIAL,
-PROPERTY,
+PROPERTY,mediterraneanAvenue,001,
+SPECIAL,getCard
+PROPERTY,balticAvenue
 SPECIAL,
 SPECIAL,
 PROPERTY,
@@ -40,7 +40,7 @@ SPECIAL,
 PROPERTY,
 
 --------------------------------------------------
-PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(5 numbers seperated by commas)
+PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
 
 SPECIAL, name
 --------------------------------------------------
