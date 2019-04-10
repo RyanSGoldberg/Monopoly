@@ -75,6 +75,9 @@ public class Board{
             }else{
                 tiles[i] = new Special(i,name);
             }
+
+            //TODO test files
+            tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
         }
     }
 
