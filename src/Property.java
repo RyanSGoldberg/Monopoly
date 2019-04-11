@@ -33,7 +33,7 @@ public class Property extends Tile {
         }
         else{
 
-            return name+" is an available property";
+            return name+" is an available property, it costs "+this.getCost()+" to buy and rent costs "+rent[0];
 
         }
     }
