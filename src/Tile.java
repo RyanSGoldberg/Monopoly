@@ -15,4 +15,9 @@ public class Tile{
 
     public void landedOn(Player p){
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

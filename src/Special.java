@@ -40,4 +40,10 @@ public class Special extends Tile{
                 break;
         }
     }
+
+    @Override
+    public String toString() {
+        return "";
+        //TODO
+    }
 }

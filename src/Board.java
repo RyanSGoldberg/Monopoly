@@ -37,44 +37,56 @@ public class Board{
 
     public void loadTiles(){
          /*
-        PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(5 numbers seperated by commas)
+        PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
         SPECIAL, name
          */
 
-         List<String> lines = null;
+         //The path to the file containing the tile data
          Path tileData = Paths.get("src/Data/tiles.csv");
+
+         //Checks to make sure the file exists
+         if(!Files.exists(tileData)){
+             System.err.println("The file cannot be found");
+             System.exit(1);
+         }
+
+        //Loading the files lines into a List
+        List<String> lines = null;
         try {
             lines = Files.readAllLines(tileData);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        //Parses the file, and saves each line as a tile
         for (int i = 0; i < 40; i++) {
-//            String[] parsed =lines.get(i).split(",");
-//
-//            String name = parsed[1];
-//            if(parsed[0].equals("PROPERTY")){
-//                int group = Integer.parseInt(parsed[2]);
-//                int[] rent = new int[5];
-//                for (int j = 3; j < 8; j++) {
-//                    rent[j-3] = Integer.parseInt(parsed[j]);
-//                }
-//
-//                boolean canBuild = Boolean.parseBoolean(parsed[8]);
-//
-//                int[] cost = new int[2];
-//
-//                if(canBuild){
-//                    for (int j = 9; j < 11; j++) {
-//                        cost[j-9] = Integer.parseInt(parsed[j]);
-//                    }
-//                }else{
-//                    cost = null;
-//                }
-//                tiles[i] = new Property(i,name,group,rent,canBuild,cost);
-//            }else{
-//                tiles[i] = new Special(i,name);
-//            }
+            /*
+            String[] parsed =lines.get(i).split(",");
+
+            String name = parsed[1];
+            if(parsed[0].equals("PROPERTY")){
+                int group = Integer.parseInt(parsed[2]);
+                int[] rent = new int[5];
+                for (int j = 3; j < 8; j++) {
+                    rent[j-3] = Integer.parseInt(parsed[j]);
+                }
+
+                boolean canBuild = Boolean.parseBoolean(parsed[8]);
+
+                int[] cost;
+                if(canBuild){
+                    cost = new int[2];
+                    for (int j = 9; j < 11; j++) {
+                        cost[j-9] = Integer.parseInt(parsed[j]);
+                    }
+                }else{
+                    cost = null;
+                }
+                tiles[i] = new Property(i,name,group,rent,canBuild,cost);
+            }else{
+                tiles[i] = new Special(i,name);
+            }
+            */
 
             //TODO test files
             tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
@@ -90,18 +102,21 @@ public class Board{
             sc = new Scanner(System.in);
             System.out.println("What is player "+(i+1)+"'s name");
             String name = sc.next();
-            players.add(new Player(name));
+            players.add(new Player(name,this));
         }
 
         currentPlayer = 0;
-        while (players.size() != 1){
+        while (players.size() > 1){
             handleTurn(players.get(currentPlayer));
             currentPlayer++;
             if(currentPlayer == numPlayers){
                 currentPlayer = 0;
             }
-            System.out.println(currentPlayer);
         }
+
+        System.out.println("WINNER!");
+        System.out.println("WOW "+players.get(0)+" you won the game");
+
     }
 
     public void handleTurn(Player p) {
@@ -182,13 +197,15 @@ public class Board{
             Tile tile = tiles[p.position];
 
             System.out.println("You are now located on " + tile.name);
-            //TODO Display toString of property
+            System.out.println(tile.toString());
+            System.out.println();
 
             //Calls the tile's basic function
             tile.landedOn(p);//TODO inside landed on have a print out of whats going on
 
-            //If the player landed on a property, they are given option of what to do with it
+            System.out.println("Your current balance is $"+p.getBalance());
 
+            //If the player landed on a property, they are given option of what to do with it
             if (tile.type == Utilities.Type.PROPERTY) {
                 Property prop = (Property) tile;
                 System.out.println("Ok friend, here are your choice...");
@@ -306,9 +323,21 @@ public class Board{
         return c;
     }
 
+    public void mortgageMode(Player p, int debt){
+        if(p.netWorth() < debt){
+            System.out.println("Sorry pal, looks like your gambling days are over: You're OUT");
+            players.remove(p);
+        }
+
+        while (debt != 0){
+            //TODO Force sell of stuff
+        }
+    }
+
     @Override
     public String toString() {
         return "";
+        //TODO
     }
 
     public void saveBoard(){
