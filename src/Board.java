@@ -120,6 +120,7 @@ public class Board{
     }
 
     public void handleTurn(Player p) {
+        System.out.println("________________________________________________");
         System.out.println("It is " + p.getName() + "'s turn");
 
         boolean doubleRoll;

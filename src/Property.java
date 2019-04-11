@@ -24,12 +24,11 @@ public class Property extends Tile {
 
     @Override
     public String toString() { // returns information about property
-
         if(numberHouses < 5 && owner != null) {
-            return name + "'s ent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
+            return name + "'s rent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
         }
         else if(numberHouses == 5 && owner != null){
-            return name + "'s ent costs: " + rent[numberHouses] + " with 1 hotel";
+            return name + "'s rent costs: " + rent[numberHouses] + " with 1 hotel";
         }
         else{
 
@@ -44,8 +43,10 @@ public class Property extends Tile {
         if(owner != null){//If there is an owner pay rent
             if(playerHasMonopoly()){
                 p.removeMoney(rent[numberHouses]*2);
+                System.out.println(p.getName()+" just paid "+rent[numberHouses]*2+" to "+owner.getName());
             }else {
                 p.removeMoney(rent[numberHouses]);
+                System.out.println(p.getName()+" just paid "+rent[numberHouses]+" to "+owner.getName());
             }
         }
     }
