@@ -55,20 +55,20 @@ public class Property extends Tile {
 
     public void buildHouse(){
         //TODO
-        if(owner.getBalance() >= getCost() && numberHouses < 5 && canBuild){
+        if(/*owner.getBalance() >= this.getCost() && */numberHouses < 5 && canBuild){
 
-            owner.removeMoney(getCost());
+            owner.removeMoney(this.getCost());
 
             numberHouses++;
 
         }
         else{
 
-            if(owner.getBalance() < getCost()){
+            /*if(owner.getBalance() < this.getCost()){
 
                 System.out.println("You do not have enough money to buy this property");
 
-            } if(canBuild == false){
+            }*/ if(canBuild == false){
 
                 System.out.println("Sorry you cannot build here");
 
@@ -119,7 +119,7 @@ public class Property extends Tile {
     }
 
     public int houseSalePrice(){
-        return 1;
+        return (costs[numberHouses-1]/2);
         //TODO
     }
 
