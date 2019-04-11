@@ -19,6 +19,7 @@ public class Property extends Tile {
         this.rent = rent;
         this.canBuild = canBuild;
         this.costs = costs;
+        owner = null;
     }
 
     @Override
@@ -36,6 +37,7 @@ public class Property extends Tile {
 
         }
     }
+
 
     public void landedOn(Player p){ // charges money for somebody that lands on a proeprty they do not own
         if(owner != null){//If there is an owner pay rent
@@ -102,10 +104,23 @@ public class Property extends Tile {
         return costs[numberHouses];
     }
 
+    public int getSalePrice(){
+        return costs[0]/2;
+    }
+
     public void sellProperty(){
         owner.addMoney(costs[0]/2);
         owner.removeProperty(this);
         owner = null;
+    }
+
+    public int getNumberHouses() {
+        return numberHouses;
+    }
+
+    public int houseSalePrice(){
+        return 1;
+        //TODO
     }
 
     public void sellHouse(){

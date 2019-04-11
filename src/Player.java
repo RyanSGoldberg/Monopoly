@@ -97,7 +97,12 @@ public class Player {
         }
         return false;
     }
+
     public void useJailCard(){
         numberOfJailCards--;
+    }
+
+    public String getName() {
+        return name;
     }
 }
