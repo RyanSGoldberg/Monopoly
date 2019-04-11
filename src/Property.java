@@ -133,6 +133,10 @@ public class Property extends Tile {
     private boolean playerHasMonopoly(){
         //TODO if the player owns the whole group
         return false;
+
+       /* if(owner.getInventory().contains()){
+
+        }*/
     }
 
 
