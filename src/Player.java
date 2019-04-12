@@ -98,7 +98,7 @@ public class Player {
     public int netWorth(){
         int net = wallet;
         for (Property p:inventory) {
-            net+= (p.getNumberHouses()*p.houseSalePrice())+p.getSalePrice();
+            net+= (p.getNumberHouses()*p.houseSalePrice())+p.propertySalePrice();
         }
         return net;
     }

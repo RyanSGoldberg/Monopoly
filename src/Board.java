@@ -12,23 +12,21 @@ import java.util.Scanner;
  * @author Goldberg
  */
 public class Board{
-    //Number of players (2-6)
-    int numPlayers;
+    Tile[] tiles;
     private ArrayList<Player> players;
     private int currentPlayer;
 
     private int cashPot;
 
     private int numDoubleRollsOnTurn;
-
-    Tile[] tiles = new Tile[40];
+    //Number of players (2-6)
+    private int numPlayers;
 
     public Board(boolean newGame) {
+        tiles = new Tile[40];
         loadTiles();
-
         if(newGame){
             //TODO
-            //Make a new game
             players = new ArrayList<>();
         }else{
             loadBoard();
@@ -39,7 +37,7 @@ public class Board{
          /*
         PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
         SPECIAL, name
-         */
+        */
 
          //The path to the file containing the tile data
          Path tileData = Paths.get("src/Data/tiles.csv");
@@ -66,18 +64,21 @@ public class Board{
             String name = parsed[1];
             if(parsed[0].equals("PROPERTY")){
                 int group = Integer.parseInt(parsed[2]);
+
+                //002 - rail, 005 - electric
+
                 int[] rent = new int[5];
-                for (int j = 3; j < 8; j++) {
+                for (int j = 3; j < 9; j++) {
                     rent[j-3] = Integer.parseInt(parsed[j]);
                 }
 
-                boolean canBuild = Boolean.parseBoolean(parsed[8]);
+                boolean canBuild = Boolean.parseBoolean(parsed[9]);
 
                 int[] cost;
                 if(canBuild){
                     cost = new int[2];
-                    for (int j = 9; j < 11; j++) {
-                        cost[j-9] = Integer.parseInt(parsed[j]);
+                    for (int j = 10; j < 12; j++) {
+                        cost[j-10] = Integer.parseInt(parsed[j]);
                     }
                 }else{
                     cost = null;
@@ -86,7 +87,7 @@ public class Board{
             }else{
                 tiles[i] = new Special(i,name);
             }
-            */
+              */
 
             //TODO test files
             tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
@@ -223,7 +224,7 @@ public class Board{
                     }
 
                     if (prop.getOwner().equals(p)) {
-                        System.out.println("4: You can sell this property for " + prop.getSalePrice());
+                        System.out.println("4: You can sell this property for " + prop.propertySalePrice());
                     }
 
                     if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
