@@ -23,11 +23,10 @@ public class Board{
     private int numPlayers;
 
     public Board(boolean newGame) {
+        tiles = new Tile[40];
         loadTiles();
-
         if(newGame){
             //TODO
-            tiles = new Tile[40];
             players = new ArrayList<>();
         }else{
             loadBoard();
