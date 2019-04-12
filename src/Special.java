@@ -14,7 +14,7 @@ public class Special extends Tile{
         //TODO In each option with a TODO let the user know what is happening
         String userChoice;
         switch (name){
-            case "GO":
+            case "Go":
                 myBoard.passGo(p);
                 break;
             case "Go To Jail":

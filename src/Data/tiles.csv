@@ -1,4 +1,4 @@
-SPECIAL,go
+SPECIAL,Go
 PROPERTY,Mediterranean Avenue,001,2,10,30,90,160,250,true,60,50
 SPECIAL,Chance
 PROPERTY,Baltic Avenue,001,4,20,60,180,320,450,true,80,50
@@ -36,7 +36,7 @@ PROPERTY,Pennsylvania Avenue,009,28,150,450,1000,1200,1400,true,320,200
 PROPERTY,Short Line,002,DOLATER,false,200
 SPECIAL,Chance
 PROPERTY,Park Place,010,35,175,500,1100,1300,1500,true,350,200
-SPECIAL,tax
+SPECIAL,Income Tax
 PROPERTY,Boardwalk,010,50,200,600,1400,1700,2000,true,400,200
 
 --------------------------------------------------
