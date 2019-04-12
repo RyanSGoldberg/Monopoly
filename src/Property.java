@@ -19,30 +19,34 @@ public class Property extends Tile {
         this.rent = rent;
         this.canBuild = canBuild;
         this.costs = costs;
+        owner = null;
     }
 
     @Override
     public String toString() { // returns information about property
-
         if(numberHouses < 5 && owner != null) {
-            return name + "'s ent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
+            return name + "'s rent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
         }
         else if(numberHouses == 5 && owner != null){
-            return name + "'s ent costs: " + rent[numberHouses] + " with 1 hotel";
+            return name + "'s rent costs: " + rent[numberHouses] + " with 1 hotel";
         }
-        else if(owner == null){
+        else{
 
-            return name+" is an available property";
+            return name+" is an available property, it costs "+this.getCost()+" to buy and rent costs "+rent[0];
 
         }
     }
 
+
     public void landedOn(Player p){ // charges money for somebody that lands on a proeprty they do not own
+        //TODO sout a message to the user telling them what is being taken
         if(owner != null){//If there is an owner pay rent
             if(playerHasMonopoly()){
                 p.removeMoney(rent[numberHouses]*2);
+                System.out.println(p.getName()+" just paid "+rent[numberHouses]*2+" to "+owner.getName());
             }else {
                 p.removeMoney(rent[numberHouses]);
+                System.out.println(p.getName()+" just paid "+rent[numberHouses]+" to "+owner.getName());
             }
         }
     }
@@ -53,20 +57,20 @@ public class Property extends Tile {
 
     public void buildHouse(){
         //TODO
-        if(owner.getBalance() >= getCost() && numberHouses < 5 && canBuild){
+        if(/*owner.getBalance() >= this.getCost() && */numberHouses < 5 && canBuild){
 
-            owner.removeMoney(getCost());
+            owner.removeMoney(this.getCost());
 
             numberHouses++;
 
         }
         else{
 
-            if(owner.getBalance() < getCost()){
+            /*if(owner.getBalance() < this.getCost()){
 
                 System.out.println("You do not have enough money to buy this property");
 
-            } if(canBuild == false){
+            }*/ if(canBuild == false){
 
                 System.out.println("Sorry you cannot build here");
 
@@ -102,10 +106,22 @@ public class Property extends Tile {
         return costs[numberHouses];
     }
 
+    public int getSalePrice(){
+        return costs[0]/2;
+    }
+
     public void sellProperty(){
         owner.addMoney(costs[0]/2);
         owner.removeProperty(this);
         owner = null;
+    }
+
+    public int getNumberHouses() {
+        return numberHouses;
+    }
+
+    public int houseSalePrice(){
+        return (costs[numberHouses-1]/2);
     }
 
     public void sellHouse(){
@@ -118,6 +134,10 @@ public class Property extends Tile {
     private boolean playerHasMonopoly(){
         //TODO if the player owns the whole group
         return false;
+
+       /* if(owner.getInventory().contains()){
+
+        }*/
     }
 
 

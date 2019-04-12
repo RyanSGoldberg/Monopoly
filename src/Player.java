@@ -16,7 +16,9 @@ public class Player {
     private ArrayList<Property> inventory;
     private int numberOfJailCards;
 
-    public Player(String name) {
+    private Board myBoard;
+
+    public Player(String name, Board myBoard) {
         this.name = name;
         this.wallet = 1500;
         this.position = 0;
@@ -24,6 +26,7 @@ public class Player {
         this.inJail = false;
         this.turnsLeftInJail = 0;
         this.inventory = new ArrayList<>();
+        this.myBoard = myBoard;
     }
 
     public void removeMoney(int amount){
@@ -32,7 +35,7 @@ public class Player {
         }else {
             int extra = amount - wallet;
             wallet = 0;
-            mortgageMode(extra);
+            myBoard.mortgageMode(this,extra);
         }
     }
 
@@ -55,6 +58,10 @@ public class Player {
         inJail = true;
     }
 
+    public ArrayList<Property> getInventory() {
+        return inventory;
+    }
+
     public boolean isInJail() {
         return inJail;
     }
@@ -73,9 +80,27 @@ public class Player {
 
     }
 
-    public void mortgageMode(int debt){
-        //TODO
-        //Player cannot leave this mode until debt is paid, if they have no more properties then game is over for player
+    public boolean hasJailCard(){
+        if(numberOfJailCards > 0){
+            return true;
+        }
+        return false;
+    }
+
+    public void useJailCard(){
+        numberOfJailCards--;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int netWorth(){
+        int net = wallet;
+        for (Property p:inventory) {
+            net+= (p.getNumberHouses()*p.houseSalePrice())+p.getSalePrice();
+        }
+        return net;
     }
 
     @Override
@@ -89,15 +114,5 @@ public class Player {
                 ", turnsLeftInJail=" + turnsLeftInJail +
                 ", inventory=" + inventory +
                 '}';
-    }
-
-    public boolean hasJailCard(){
-        if(numberOfJailCards > 0){
-            return true;
-        }
-        return false;
-    }
-    public void useJailCard(){
-        numberOfJailCards--;
     }
 }

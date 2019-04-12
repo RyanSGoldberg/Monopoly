@@ -11,21 +11,22 @@ public class Special extends Tile{
     }
 
     public void landedOn(Player p){
+        //TODO In each option with a TODO let the user know what is happening
         String userChoice;
         switch (name){
-            case "go":
+            case "GO":
                 myBoard.passGo(p);
                 break;
-            case "goToJail":
-                myBoard.sendToJail(p);
+            case "Go To Jail":
+                myBoard.sendToJail(p);//TODO
                 break;
-            case "getCard":
+            case "Chance":
                 myBoard.drawCard(p);
                 break;
-            case "freeParking":
-                p.addMoney(myBoard.emptyCashPot());
+            case "Free Parking":
+                p.addMoney(myBoard.emptyCashPot()); //TODO (tell them how much they are getting)
                 break;
-            case "tax":
+            case "Income Tax":
                 System.out.println("Would you like to: a) pay $150 or b) 10% of your wallet?");
                 Scanner sc=new Scanner(System.in);
                 userChoice=sc.nextLine();
@@ -39,5 +40,11 @@ public class Special extends Tile{
                 }
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "";
+        //TODO
     }
 }
