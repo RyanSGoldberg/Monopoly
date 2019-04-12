@@ -37,15 +37,27 @@ public class Property extends Tile {
         }
     }
 
-    public void landedOn(Player p){ // charges money for somebody that lands on a proeprty they do not own
+    public void landedOn(Player p, int rollSum){ // charges money for somebody that lands on a proeprty they do not own
         //TODO sout a message to the user telling them what is being taken
         if(owner != null){//If there is an owner pay rent
-            if(playerHasMonopoly()){
-                p.removeMoney(rent[numberHouses]*2);
-                System.out.println(p.getName()+" just paid "+rent[numberHouses]*2+" to "+owner.getName());
-            }else {
-                p.removeMoney(rent[numberHouses]);
-                System.out.println(p.getName()+" just paid "+rent[numberHouses]+" to "+owner.getName());
+            if(groupName != 005 && groupName != 002) { // if it is not a railroad and not a utility (water works and electric company)
+                if (playerHasMonopoly()) {
+                    p.removeMoney(rent[numberHouses] * 2);
+                    System.out.println(p.getName() + " just paid " + rent[numberHouses] * 2 + " to " + owner.getName());
+                } else {
+                    p.removeMoney(rent[numberHouses]);
+                    System.out.println(p.getName() + " just paid " + rent[numberHouses] + " to " + owner.getName());
+                }
+            } else if(groupName == 005){ // if it is a utility
+                if (playerHasMonopoly()) {
+                    p.removeMoney(rollSum * 10);
+                    System.out.println(p.getName() + " just paid " + rollSum * 10 + " to " + owner.getName());
+                } else {
+                    p.removeMoney(rollSum * 4);
+                    System.out.println(p.getName() + " just paid " + rollSum * 4 + " to " + owner.getName());
+                }
+            } else{
+
             }
         }
     }
