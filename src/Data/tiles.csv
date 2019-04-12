@@ -43,4 +43,4 @@ PROPERTY,Boardwalk,010,50,200,600,1400,1700,2000,true,400,200
 PROPERTY,name,group(001,002,003...),rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
 
 SPECIAL, name
---------------------------------------------------
+--------------------------------------------------k
