@@ -22,9 +22,12 @@ public class Board{
     //Number of players (2-6)
     private int numPlayers;
 
+    public int[] monopolySizes;
+
     public Board(boolean newGame) {
         tiles = new Tile[40];
         loadTiles();
+        monopolySizes = {2, 4, 3, 3, 2, 3, 3, 3, 3, 2};
         if(newGame){
             //TODO
             players = new ArrayList<>();
