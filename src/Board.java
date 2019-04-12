@@ -38,7 +38,7 @@ public class Board{
          /*
         PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
         SPECIAL, name
-         */
+        */
 
          //The path to the file containing the tile data
          Path tileData = Paths.get("src/Data/tiles.csv");
@@ -59,7 +59,7 @@ public class Board{
 
         //Parses the file, and saves each line as a tile
         for (int i = 0; i < 40; i++) {
-
+            /*
             String[] parsed =lines.get(i).split(",");
 
             String name = parsed[1];
@@ -88,7 +88,7 @@ public class Board{
             }else{
                 tiles[i] = new Special(i,name);
             }
-
+              */
 
             //TODO test files
             tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
