@@ -37,7 +37,6 @@ public class Property extends Tile {
         }
     }
 
-
     public void landedOn(Player p){ // charges money for somebody that lands on a proeprty they do not own
         //TODO sout a message to the user telling them what is being taken
         if(owner != null){//If there is an owner pay rent
@@ -106,7 +105,7 @@ public class Property extends Tile {
         return costs[numberHouses];
     }
 
-    public int getSalePrice(){
+    public int propertySalePrice(){
         return costs[0]/2;
     }
 
@@ -139,7 +138,4 @@ public class Property extends Tile {
 
         }*/
     }
-
-
-
 }

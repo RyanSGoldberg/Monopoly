@@ -20,4 +20,8 @@ public class Tile{
     public String toString() {
         return super.toString();
     }
+
+    public int getGroupName() {
+        return groupName;
+    }
 }
