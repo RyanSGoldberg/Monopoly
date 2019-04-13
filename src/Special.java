@@ -4,10 +4,11 @@
  */
 import java.util.*;
 public class Special extends Tile{
-    public Special(int location, String name) {
+    public Special(int location, String name, Board myBoard) {
         type = Utilities.Type.SPECIAL;
         this.name = name;
         this.location = location;
+        this.myBoard = myBoard;
     }
 
     public void landedOn(Player p){

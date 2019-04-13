@@ -11,7 +11,7 @@ public class Property extends Tile {
     private int[] costs;
     private boolean canBuild;
 
-    public Property(int location, String name, int group, int[] rent, boolean canBuild, int[] costs) {
+    public Property(int location, String name, int group, int[] rent, boolean canBuild, int[] costs, Board myBoard) {
         type = Utilities.Type.PROPERTY;
         this.location = location;
         this.name = name;
@@ -20,6 +20,7 @@ public class Property extends Tile {
         this.canBuild = canBuild;
         this.costs = costs;
         owner = null;
+        this.myBoard = myBoard;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class Property extends Tile {
                     System.out.println(p.getName() + " just paid " + rollSum * 4 + " to " + owner.getName());
                 }
             } else{
-
+                //TODO
             }
         }
     }

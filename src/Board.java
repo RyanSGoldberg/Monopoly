@@ -61,7 +61,6 @@ public class Board{
 
         //Parses the file, and saves each line as a tile
         for (int i = 0; i < 40; i++) {
-            /*
             String[] parsed =lines.get(i).split(",");
 
             String name = parsed[1];
@@ -70,30 +69,31 @@ public class Board{
 
                 //002 - rail, 005 - electric
 
-                int[] rent = new int[5];
-                for (int j = 3; j < 9; j++) {
-                    rent[j-3] = Integer.parseInt(parsed[j]);
-                }
-
-                boolean canBuild = Boolean.parseBoolean(parsed[9]);
-
+                int[] rent;
+                boolean canBuild;
                 int[] cost;
-                if(canBuild){
-                    cost = new int[2];
-                    for (int j = 10; j < 12; j++) {
-                        cost[j-10] = Integer.parseInt(parsed[j]);
-                    }
-                }else{
-                    cost = null;
-                }
-                tiles[i] = new Property(i,name,group,rent,canBuild,cost);
-            }else{
-                tiles[i] = new Special(i,name);
-            }
-              */
 
-            //TODO test files
-            tiles[i] = new Property(i,i+"",000,new int[]{100,100,100,100,100},true,new int[]{50,50});
+                if(group == 002 || group == 005){
+                    rent = new int[]{-1,-1,-1,-1,-1};
+                    cost = new int[]{-1,-1};
+                    canBuild = false;
+                }else {
+                    rent = new int[6];
+                    for (int j = 3; j < 9; j++) {
+                        rent[j-3] = Integer.parseInt(parsed[j]);
+                    }
+
+                    canBuild = true;
+
+                    cost = new int[2];
+                    for (int j = 9; j < 11; j++) {
+                        cost[j-9] = Integer.parseInt(parsed[j]);
+                    }
+                }
+                tiles[i] = new Property(i,name,group,rent,canBuild,cost,this);
+            }else{
+                tiles[i] = new Special(i,name,this);
+            }
         }
     }
 
