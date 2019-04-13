@@ -22,14 +22,17 @@ public class Board{
     //Number of players (2-6)
     private int numPlayers;
 
+    public int[] monopolies;
+
     public Board(boolean newGame) {
         tiles = new Tile[40];
+        monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
         loadTiles();
         if(newGame){
             //TODO
             players = new ArrayList<>();
         }else{
-            loadBoard();
+            //TODO Load board
         }
     }
 
@@ -340,16 +343,5 @@ public class Board{
     public String toString() {
         return "";
         //TODO
-    }
-
-    public void saveBoard(){
-        //TODO
-        //Save a board as a text file, and all of the other info
-    }
-
-    public void loadBoard(){
-        //TODO
-        //load in the saved board
-        //Load in saved players
     }
 }

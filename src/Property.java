@@ -41,7 +41,7 @@ public class Property extends Tile {
         //TODO sout a message to the user telling them what is being taken
         if(owner != null){//If there is an owner pay rent
             if(groupName != 005 && groupName != 002) { // if it is not a railroad and not a utility (water works and electric company)
-                if (playerHasMonopoly()) {
+                if (playerHasMonopoly(this.groupName)) {
                     p.removeMoney(rent[numberHouses] * 2);
                     System.out.println(p.getName() + " just paid " + rent[numberHouses] * 2 + " to " + owner.getName());
                 } else {
@@ -49,7 +49,7 @@ public class Property extends Tile {
                     System.out.println(p.getName() + " just paid " + rent[numberHouses] + " to " + owner.getName());
                 }
             } else if(groupName == 005){ // if it is a utility
-                if (playerHasMonopoly()) {
+                if (playerHasMonopoly(this.groupName)) {
                     p.removeMoney(rollSum * 10);
                     System.out.println(p.getName() + " just paid " + rollSum * 10 + " to " + owner.getName());
                 } else {
@@ -142,12 +142,21 @@ public class Property extends Tile {
         }
     }
 
-    private boolean playerHasMonopoly(){
-        //TODO if the player owns the whole group
+    private boolean playerHasMonopoly(int group){
+        if(numberOfAGroupOwned(group) == myBoard.monopolies[group-1]){
+            return true;
+        }
         return false;
+    }
 
-       /* if(owner.getInventory().contains()){
+    private int numberOfAGroupOwned(int group){
+        int num = 0;
 
-        }*/
+        for (Property p:owner.getInventory()) {
+            if(p.groupName == group){
+                num++;
+            }
+        }
+        return num;
     }
 }
