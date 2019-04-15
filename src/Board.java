@@ -119,7 +119,7 @@ public class Board{
         }
 
         System.out.println("WINNER!");
-        System.out.println("WOW "+players.get(0)+" you won the game");
+        System.out.println("WOW "+players.get(0).getName()  +" you won the game");
 
     }
 
@@ -206,7 +206,7 @@ public class Board{
             System.out.println();
 
             //Calls the tile's basic function
-            tile.landedOn(p);//TODO inside landed on have a print out of whats going on
+            tile.landedOn(p);
 
             System.out.println("Your current balance is $"+p.getBalance());
 
@@ -300,6 +300,7 @@ public class Board{
         int randomLocation = Utilities.generateNumber(1, 7);
 
         switch (number) {
+            //TODO : Give player more info (How much they moved / got + Current balance/location)
             case 1:
                 cardName = "Collect Cash!";
                 p.addMoney(randomAmount);

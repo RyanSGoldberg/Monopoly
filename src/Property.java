@@ -31,7 +31,13 @@ public class Property extends Tile {
         else if(numberHouses == 5 && owner != null){
             return name + "'s rent costs: " + rent[numberHouses] + " with 1 hotel";
         }
-        else{
+        else if(groupName == 005){
+            //TODO
+            return "";
+        }else if(groupName == 002){
+            //TODO
+            return "";
+        }else {
 
             return name+" is an available property, it costs "+this.getCost()+" to buy and rent costs "+rent[0];
 
