@@ -59,7 +59,7 @@ public class Special extends Tile{
     }
 
     @Override
-    public String toString() {
-        return "You are on "+this.name+" at "+this.location;
+    public String toString(int rollSum) {
+        return "";
     }
 }

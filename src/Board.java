@@ -70,7 +70,7 @@ public class Board{
                 if(group == 002 || group == 005){
                     canBuild = false;
                     rent = new int[]{0,0,0,0,0,0};
-                    cost = new int[]{0,0};
+                    cost = new int[]{Integer.parseInt(parsed[3]),0};
                 }else {
                     canBuild = true;
 
@@ -196,7 +196,7 @@ public class Board{
             Tile tile = tiles[p.position];
 
             System.out.println("You are now located on " + tile.name);
-            System.out.println(tile.toString());
+            System.out.println(tile.toString(die1+die2));
             System.out.println();
 
             //Calls the tile's basic function
@@ -207,7 +207,7 @@ public class Board{
             //If the player landed on a property, they are given option of what to do with it
             if (tile.type == Utilities.Type.PROPERTY) {
                 Property prop = (Property) tile;
-                System.out.println("Ok friend, here are your choice...");
+                System.out.println("Ok friend, here are your choices...");
 
                 System.out.println("1: Just chill here");
 
@@ -289,7 +289,7 @@ public class Board{
 
     public void drawCard(Player p) {
         int number = Utilities.generateNumber(0, 5);
-        String cardName = null;
+        String cardName;
         int randomAmount = Utilities.generateNumber(10, 250);
         int randomLocation = Utilities.generateNumber(1, 7);
 
@@ -298,35 +298,31 @@ public class Board{
                 cardName = "Collect Cash!";
                 p.addMoney(randomAmount);
 
-                System.out.println("You picked up the following card:" + cardName +"");
-                System.out.println("You have gained $"+randomAmount+". Your balance is now"+p.getBalance());
+                System.out.println("You picked up the following card: 1" + cardName +"");
+                System.out.println("You have gained $"+randomAmount+". Your balance is now "+p.getBalance());
                 break;
             case 2:
                 cardName = "Pay Tax";
                 p.removeMoney(randomAmount);
-
-                System.out.println("You picked up the following card:" + cardName +"");
-                System.out.println("You have paid $"+randomAmount+". Your balance is now"+p.getBalance());
+                addToCashPot(randomAmount);
+                System.out.println("You picked up the following card: " + cardName +"");
+                System.out.println("You have paid $"+randomAmount+". Your balance is now "+p.getBalance());
                 break;
             case 3:
                 cardName = "Move Token";
                 move(p, randomLocation);
 
-                System.out.println("You picked up the following card:" + cardName +"");
-                System.out.println("You are now on "+p.getPosition());
+                System.out.println("You picked up the following card: " + cardName +"");
+                System.out.println("You are now on "+tiles[p.getPosition()].name);
 
                 break;
             case 4:
                 cardName = "Get Out Of Jail Free Card";
-
-                System.out.println("You picked up the following card:" + cardName +"");
                 p.getJailCard();
+
+                System.out.println("You picked up the following card: " + cardName +"");
                 break;
         }
-
-
-
-
     }
 
     public void addToCashPot(int amount){

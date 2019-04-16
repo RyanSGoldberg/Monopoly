@@ -22,10 +22,7 @@ public class Property extends Tile {
         this.myBoard = myBoard;
     }
 
-    public String toString() { // returns information about property
-
-
-
+    public String toString(int rollSum) { // returns information about property
         /*if(groupName!= 005 && groupName != 002){
         if (numberHouses < 5 && owner != null) {
             return name + "'s rent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
@@ -47,11 +44,10 @@ public class Property extends Tile {
 
         if(owner != null){ // if the property is owned
 
-
-
         } else{ // if the property is available
 
-            return name + " is an available property, it costs " + this.getCost() + " to buy and rent costs " + getRent(0);
+
+            return name + " is an available property, it costs " + this.getCost() + " to buy";
 
         }
         return "";
@@ -107,21 +103,17 @@ public class Property extends Tile {
             }
         }*/
 
-        if(owner != null){
-
+        if(owner != null && !owner.equals(p)){
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
 
             System.out.println(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName());
-
         }
 
     }
 
     public int getRent(int rollSum){
-
         if(owner != null) {
-
             if (groupName == 002) {// railroad
 
                 return (int) (Math.pow(2, (numberOfAGroupOwned(002) - 1))) * 25;
@@ -230,7 +222,7 @@ public class Property extends Tile {
     }
 
     public int houseSalePrice(){
-        return (costs[numberHouses-1]/2);
+        return (costs[numberHouses]/2);
     }
 
     public void sellHouse(){
