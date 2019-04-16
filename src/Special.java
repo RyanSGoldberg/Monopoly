@@ -11,7 +11,7 @@ public class Special extends Tile{
         this.myBoard = myBoard;
     }
 
-    public void landedOn(Player p){
+    public void landedOn(Player p, int rollSum){
         switch (name){
             //Has the player pass the Go tile
             case "Go":

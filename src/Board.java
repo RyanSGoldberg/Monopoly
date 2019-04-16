@@ -200,7 +200,7 @@ public class Board{
             System.out.println();
 
             //Calls the tile's basic function
-            tile.landedOn(p);
+            tile.landedOn(p,die1+die2);
 
             System.out.println("Your current balance is $"+p.getBalance());
 

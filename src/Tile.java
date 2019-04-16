@@ -13,7 +13,7 @@ public class Tile{
     public Tile() {
     }
 
-    public void landedOn(Player p){
+    public void landedOn(Player p, int rollSum){
     }
 
     @Override
