@@ -13,25 +13,30 @@ public class Special extends Tile{
 
     public void landedOn(Player p){
         switch (name){
+            //Has the player pass the Go tile
             case "Go":
                 myBoard.passGo(p);
                 break;
+            //Sends the player to jail due to landing on the Go To Jail tile
             case "Go To Jail":
                 System.out.println("Sorry Pal, off to the clink with you");
                 myBoard.sendToJail(p);
                 break;
+            //Has the player draw a card due to landing on the Chance tile
             case "Chance":
                 System.out.println("You just got a chance card?!?!");
                 myBoard.drawCard(p);
                 break;
+            //Has the player take all the money from the money pot due to landing on the Free Parking tile
             case "Free Parking":
                 int received = myBoard.emptyCashPot();
                 System.out.println("You lucky duck. You just got $"+received);
                 p.addMoney(received);
                 break;
+            //Has the player pay either $150 or 10% of his/her wallet due to landing on the Income Tax tile
             case "Income Tax":
-                System.out.println("You have to pay your taxes pal. Here are you options ...");
-                if(p.getBalance() >= 150){
+                System.out.println("You have to pay your taxes pal. Here are your options ...");
+                if(p.getBalance()>=150){
                     System.out.println("1) You can pay $150");
                 }
 
@@ -55,7 +60,6 @@ public class Special extends Tile{
 
     @Override
     public String toString() {
-        return "";
-        //TODO
+        return "You are on "+this.name+" at "+this.location;
     }
 }
