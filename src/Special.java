@@ -12,32 +12,42 @@ public class Special extends Tile{
     }
 
     public void landedOn(Player p){
-        //TODO In each option with a TODO let the user know what is happening
-        String userChoice;
         switch (name){
             case "Go":
                 myBoard.passGo(p);
                 break;
             case "Go To Jail":
-                myBoard.sendToJail(p);//TODO
+                System.out.println("Sorry Pal, off to the clink with you");
+                myBoard.sendToJail(p);
                 break;
             case "Chance":
+                System.out.println("You just got a chance card?!?!");
                 myBoard.drawCard(p);
                 break;
             case "Free Parking":
-                p.addMoney(myBoard.emptyCashPot()); //TODO (tell them how much they are getting)
+                int received = myBoard.emptyCashPot();
+                System.out.println("You lucky duck. You just got $"+received);
+                p.addMoney(received);
                 break;
             case "Income Tax":
-                System.out.println("Would you like to: a) pay $150 or b) 10% of your wallet?");
-                Scanner sc=new Scanner(System.in);
-                userChoice=sc.nextLine();
-                if(userChoice.equalsIgnoreCase("a")||userChoice.equalsIgnoreCase("a)")){
-                    p.removeMoney(150);
-                    myBoard.addToCashPot(150);
+                System.out.println("You have to pay your taxes pal. Here are you options ...");
+                if(p.getBalance() >= 150){
+                    System.out.println("1) You can pay $150");
                 }
-                else if(userChoice.equalsIgnoreCase("b")||userChoice.equalsIgnoreCase("b)")){
-                    p.removeMoney((int)(p.getBalance()*0.1));
-                    myBoard.addToCashPot((int)(p.getBalance()*0.1));
+
+                System.out.println("2) You can pay 10% of your wallet");
+
+                Scanner sc=new Scanner(System.in);
+                int userChoice=sc.nextInt();
+                switch (userChoice){
+                    case 1:
+                        p.removeMoney(150);
+                        myBoard.addToCashPot(150);
+                        break;
+                    case 2:
+                        p.removeMoney((int)(p.getBalance()*0.1));
+                        myBoard.addToCashPot((int)(p.getBalance()*0.1));
+                        break;
                 }
                 break;
         }

@@ -29,6 +29,17 @@ public class Player {
         this.myBoard = myBoard;
     }
 
+    public Player(String name, int wallet, int position, boolean inJail, int turnsLeftInJail, ArrayList<Property> inventory, int numberOfJailCards, Board myBoard) {
+        this.name = name;
+        this.wallet = wallet;
+        this.position = position;
+        this.inJail = inJail;
+        this.turnsLeftInJail = turnsLeftInJail;
+        this.inventory = inventory;
+        this.numberOfJailCards = numberOfJailCards;
+        this.myBoard = myBoard;
+    }
+
     public void removeMoney(int amount){
         if(wallet - amount > 0){
             wallet -= amount;
@@ -89,6 +100,14 @@ public class Player {
 
     public void useJailCard(){
         numberOfJailCards--;
+    }
+
+    public void getJailCard(){
+        numberOfJailCards++;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     public String getName() {

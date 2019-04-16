@@ -37,11 +37,6 @@ public class Board{
     }
 
     public void loadTiles(){
-         /*
-        PROPERTY,name,group(001, 002,003...)rent(5 numbers seperated by commas),canBuild,costs(2 numbers seperated by commas)
-        SPECIAL, name
-        */
-
          //The path to the file containing the tile data
          Path tileData = Paths.get("src/Data/tiles.csv");
 
@@ -67,23 +62,22 @@ public class Board{
             if(parsed[0].equals("PROPERTY")){
                 int group = Integer.parseInt(parsed[2]);
 
-                //002 - rail, 005 - electric
-
                 int[] rent;
                 boolean canBuild;
                 int[] cost;
 
+                //Checks if the tile is a non-buildable property
                 if(group == 002 || group == 005){
-                    rent = new int[]{-1,-1,-1,-1,-1};
-                    cost = new int[]{-1,-1};
                     canBuild = false;
+                    rent = new int[]{0,0,0,0,0,0};
+                    cost = new int[]{0,0};
                 }else {
+                    canBuild = true;
+
                     rent = new int[6];
                     for (int j = 3; j < 9; j++) {
                         rent[j-3] = Integer.parseInt(parsed[j]);
                     }
-
-                    canBuild = true;
 
                     cost = new int[2];
                     for (int j = 9; j < 11; j++) {
@@ -100,7 +94,7 @@ public class Board{
     public void play(){
         Scanner sc = new Scanner(System.in);
         System.out.println("How many players are there?");
-        numPlayers = sc.nextInt(); //Place restrictions later
+        numPlayers = sc.nextInt();
 
         for (int i = 0; i < numPlayers; i++) {
             sc = new Scanner(System.in);
@@ -300,22 +294,38 @@ public class Board{
         int randomLocation = Utilities.generateNumber(1, 7);
 
         switch (number) {
-            //TODO : Give player more info (How much they moved / got + Current balance/location)
             case 1:
                 cardName = "Collect Cash!";
                 p.addMoney(randomAmount);
+
+                System.out.println("You picked up the following card:" + cardName +"");
+                System.out.println("You have gained $"+randomAmount+". Your balance is now"+p.getBalance());
                 break;
             case 2:
                 cardName = "Pay Tax";
                 p.removeMoney(randomAmount);
+
+                System.out.println("You picked up the following card:" + cardName +"");
+                System.out.println("You have paid $"+randomAmount+". Your balance is now"+p.getBalance());
                 break;
             case 3:
                 cardName = "Move Token";
                 move(p, randomLocation);
+
+                System.out.println("You picked up the following card:" + cardName +"");
+                System.out.println("You are now on "+p.getPosition());
+
+                break;
+            case 4:
+                cardName = "Get Out Of Jail Free Card";
+
+                System.out.println("You picked up the following card:" + cardName +"");
+                p.getJailCard();
                 break;
         }
 
-        System.out.println("You picked up the following card:" + cardName +"");
+
+
 
     }
 
@@ -343,6 +353,14 @@ public class Board{
     @Override
     public String toString() {
         return "";
+        //TODO
+    }
+
+    public void loadBoard(){
+        //TODO
+    }
+
+    public void saveBoard(){
         //TODO
     }
 }
