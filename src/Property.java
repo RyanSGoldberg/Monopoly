@@ -60,17 +60,17 @@ public class Property extends Tile {
 
             if(this.groupName != 005){// if it is not a utility
 
-                return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
+                return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
 
             } else{// if it is a utility
 
                 if(playerHasMonopoly(this.groupName)){// if player has both utilities
 
-                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
+                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
 
                 } else{// if player has one utility
 
-                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
+                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
 
                 }
 
