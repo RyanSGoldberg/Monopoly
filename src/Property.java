@@ -30,27 +30,27 @@ public class Property extends Tile {
 
                 if(this.playerHasMonopoly(005)) {
 
-                    return this.name + " is owned by " + this.owner + " rent costs $" + this.getRent(rollSum) + " which is 10 times what you rolled";
+                    return this.name + " is owned by " + this.owner.getName() + " rent costs $" + this.getRent(rollSum) + " which is 10 times what you rolled";
 
                 }else {
 
-                    return this.name + " is owned by " + this.owner + " rent costs $" + this.getRent(rollSum) + " which is 4 times what you rolled";
+                    return this.name + " is owned by " + this.owner.getName() + " rent costs $" + this.getRent(rollSum) + " which is 4 times what you rolled";
 
                 }
 
             } else if(this.groupName == 002){// if it is a railroad
 
-                return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" "+this.owner+" owns "+numberOfAGroupOwned(002)+" railraods";
+                return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" "+this.owner+" owns "+numberOfAGroupOwned(002)+" railraods";
 
             } else{// if it is a regular property
 
                 if(this.numberHouses == 5){// if player has hotels
 
-                    return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" with a hotel";
+                    return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" with a hotel";
 
                 }else{// if player does not have hotels
 
-                    return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" with "+numberHouses+" houses";
+                    return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" with "+numberHouses+" houses";
 
                 }
 
@@ -60,7 +60,7 @@ public class Property extends Tile {
 
             if(this.groupName != 005){// if it is not a utility
 
-                return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.getRent(rollSum);
+                return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
 
             } else{// if it is a utility
 
@@ -75,12 +75,11 @@ public class Property extends Tile {
                 }
 
             }
-            //return name + " is an available property, it costs " + this.getCost() + " to buy";
-
         }
     }
 
     public void landedOn(Player p, int rollSum){ // charges money for somebody that lands on a proeprty they do not own
+
         if(owner != null && !owner.equals(p)){
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
@@ -145,11 +144,7 @@ public class Property extends Tile {
         }
         else{
 
-            /*if(owner.getBalance() < this.getCost()){
-
-                System.out.println("You do not have enough money to buy this property");
-
-            }*/ if(canBuild == false){
+            if(canBuild == false){
 
                 System.out.println("Sorry you cannot build here");
 
@@ -175,6 +170,7 @@ public class Property extends Tile {
         p.addProperty(this);
         owner = p;
         p.removeMoney(costs[0]);
+        System.out.println("you have just bought "+this.name+" your current balance is $"+p.getBalance());
     }
 
     public Player getOwner(){
