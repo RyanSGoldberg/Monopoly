@@ -23,86 +23,64 @@ public class Property extends Tile {
     }
 
     public String toString(int rollSum) { // returns information about property
-        /*if(groupName!= 005 && groupName != 002){
-        if (numberHouses < 5 && owner != null) {
-            return name + "'s rent costs: " + rent[numberHouses] + " with " + numberHouses + " houses";
-        } else if (numberHouses == 5 && owner != null) {
-            return name + "'s rent costs: " + rent[numberHouses] + " with 1 hotel";
-        }
-    }
-        else if(groupName == 005){
-            //TODO
-            return "";
-        }else if(groupName == 002){
-            //TODO
-            return "";
-        }else {
-
-            return name+" is an available property, it costs "+this.getCost()+" to buy and rent costs "+rent[0];
-
-        }*/
 
         if(owner != null){ // if the property is owned
 
+            if(this.groupName == 005){// if it is a utility
+
+                if(this.playerHasMonopoly(005)) {
+
+                    return this.name + " is owned by " + this.owner + " rent costs $" + this.getRent(rollSum) + " which is 10 times what you rolled";
+
+                }else {
+
+                    return this.name + " is owned by " + this.owner + " rent costs $" + this.getRent(rollSum) + " which is 4 times what you rolled";
+
+                }
+
+            } else if(this.groupName == 002){// if it is a railroad
+
+                return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" "+this.owner+" owns "+numberOfAGroupOwned(002)+" railraods";
+
+            } else{// if it is a regular property
+
+                if(this.numberHouses == 5){// if player has hotels
+
+                    return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" with a hotel";
+
+                }else{// if player does not have hotels
+
+                    return this.name+" is owned by "+this.owner+" rent costs $"+this.getRent(rollSum)+" with "+numberHouses+" houses";
+
+                }
+
+            }
+
         } else{ // if the property is available
 
+            if(this.groupName != 005){// if it is not a utility
 
-            return name + " is an available property, it costs " + this.getCost() + " to buy";
+                return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.getRent(rollSum);
+
+            } else{// if it is a utility
+
+                if(playerHasMonopoly(this.groupName)){// if player has both utilities
+
+                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
+
+                } else{// if player has one utility
+
+                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
+
+                }
+
+            }
+            //return name + " is an available property, it costs " + this.getCost() + " to buy";
 
         }
-        return "";
     }
 
     public void landedOn(Player p, int rollSum){ // charges money for somebody that lands on a proeprty they do not own
-        //TODO sout a message to the user telling them what is being taken
-        /*if(owner != null){//If there is an owner pay rent
-
-            if(groupName != 005 && groupName != 002) { // if it is not a railroad and not a utility (water works and electric company)
-
-                if (playerHasMonopoly(this.groupName)) {
-
-                    p.removeMoney(getRent(rollSum));
-                    owner.addMoney(getRent(rollSum));
-
-                    System.out.println(p.getName() + " just paid $" + rent[numberHouses] * 2 + " to " + owner.getName());
-                }
-
-                else {
-
-                    p.removeMoney(getRent(rollSum));
-                    owner.addMoney(getRent(rollSum));
-
-                    System.out.println(p.getName() + " just paid $" + rent[numberHouses] + " to " + owner.getName());
-                }
-            }
-
-            else if(groupName == 005){ // if it is a utility
-
-                if (playerHasMonopoly(this.groupName)) {
-
-                    p.removeMoney(rollSum * 10);
-                    owner.addMoney(rollSum * 10);
-
-                    System.out.println(p.getName() + " just paid $" + rollSum * 10 + " to " + owner.getName());
-                }
-
-                else {
-
-                    p.removeMoney(rollSum * 4);
-                    owner.addMoney(rollSum * 4);
-
-                    System.out.println(p.getName() + " just paid $" + rollSum * 4 + " to " + owner.getName());
-                }
-            }
-
-            else{ // if it is a railroad
-                p.removeMoney((int)(Math.pow(2, (numberOfAGroupOwned(002)))));
-                owner.addMoney((int)(Math.pow(2, (numberOfAGroupOwned(002)))));
-
-                System.out.println(p.getName()+" just paied $"+ Math.pow(2, (numberOfAGroupOwned(002)))+" to "+owner.getName());
-            }
-        }*/
-
         if(owner != null && !owner.equals(p)){
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
