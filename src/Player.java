@@ -106,6 +106,10 @@ public class Player {
         numberOfJailCards++;
     }
 
+    public int getNumberOfJailCards(){
+        return numberOfJailCards;
+    }
+
     public int getPosition() {
         return position;
     }

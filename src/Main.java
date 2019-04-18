@@ -5,11 +5,11 @@ import javafx.application.Application;
 
 public class Main {
     public static void main(String[] args) {
-        //Application.launch(Display.class,args);
+        Application.launch(Display.class,args);
 
 
         Board game = new Board(true);
-        game.play();
+        //game.play();
     }
 }
 
