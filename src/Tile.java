@@ -13,15 +13,10 @@ public class Tile{
     public Tile() {
     }
 
-    public void landedOn(Player p){
+    public void landedOn(Player p, int rollSum){
     }
 
-    @Override
-    public String toString() {
+    public String toString(int rollSum) {
         return super.toString();
-    }
-
-    public int getGroupName() {
-        return groupName;
     }
 }
