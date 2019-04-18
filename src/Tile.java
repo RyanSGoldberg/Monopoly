@@ -19,4 +19,8 @@ public class Tile{
     public String toString(int rollSum) {
         return super.toString();
     }
+
+    public String getName() {
+        return name;
+    }
 }

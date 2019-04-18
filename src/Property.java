@@ -227,4 +227,12 @@ public class Property extends Tile {
         }
         return num;
     }
+
+    public int[] getRents() {
+        return rent;
+    }
+
+    public boolean isBuildable() {
+        return canBuild;
+    }
 }
