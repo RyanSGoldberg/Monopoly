@@ -28,7 +28,7 @@ public class Property extends Tile {
 
             if(this.groupName == 005){// if it is a utility
 
-                if(this.playerHasMonopoly(005)) {
+                if(this.numberOfAGroupOwned(005)==2) {
 
                     return this.name + " is owned by " + this.owner.getName() + " rent costs $" + this.getRent(rollSum) + " which is 10 times what you rolled";
 
@@ -60,17 +60,17 @@ public class Property extends Tile {
 
             if(this.groupName != 005){// if it is not a utility
 
-                return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
+                return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
 
             } else{// if it is a utility
 
                 if(playerHasMonopoly(this.groupName)){// if player has both utilities
 
-                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
+                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
 
                 } else{// if player has one utility
 
-                    return name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
+                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
 
                 }
 
@@ -97,7 +97,7 @@ public class Property extends Tile {
 
             } else if (groupName == 005) {// utilities
 
-                if (playerHasMonopoly(this.groupName)) {// if they own both utilities
+                if (numberOfAGroupOwned(005)==2) {// if they own both utilities
 
                     return rollSum * 10;
 
@@ -109,14 +109,18 @@ public class Property extends Tile {
 
             } else {//normal properties
 
-                if (playerHasMonopoly(this.groupName)) {// if they have a monopoly
+                if (playerHasMonopoly(this.groupName) && this.numberHouses == 0) {// if they have a monopoly but no houses
 
-                    return rent[numberHouses] * 2;
+                    return this.rent[numberHouses] * 2;
 
 
-                } else {// if they dont have a monopoly
+                }else if(playerHasMonopoly(this.groupName) && this.numberHouses != 0) {// if they have a monopoly and any amount of houses
 
-                    return rent[numberHouses];
+                    return this.rent[numberHouses];
+
+                } else{// if they don't have a monopoly
+
+                    return this.rent[numberHouses];
 
                 }
 
