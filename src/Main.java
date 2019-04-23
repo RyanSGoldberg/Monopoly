@@ -7,8 +7,8 @@ public class Main {
     public static void main(String[] args) {
         Application.launch(Display.class,args);
 
-
-        Board game = new Board(true);
+        //Display d = new Display();
+        //Board game = new Board(true,d);
         //game.play();
     }
 }

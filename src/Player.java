@@ -1,3 +1,6 @@
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
 import java.util.ArrayList;
 
 /**
@@ -29,16 +32,7 @@ public class Player {
         this.myBoard = myBoard;
     }
 
-    public Player(String name, int wallet, int position, boolean inJail, int turnsLeftInJail, ArrayList<Property> inventory, int numberOfJailCards, Board myBoard) {
-        this.name = name;
-        this.wallet = wallet;
-        this.position = position;
-        this.inJail = inJail;
-        this.turnsLeftInJail = turnsLeftInJail;
-        this.inventory = inventory;
-        this.numberOfJailCards = numberOfJailCards;
-        this.myBoard = myBoard;
-    }
+    public Circle sprite = new Circle(20, Color.PURPLE);
 
     public void removeMoney(int amount){
         if(wallet - amount > 0){

@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * PURPOSE OF CLASS
@@ -12,9 +11,11 @@ import java.util.Scanner;
  * @author Goldberg
  */
 public class Board{
-    Tile[] tiles;
-    private ArrayList<Player> players;
-    private int currentPlayer;
+    public GameDisplay gameDisplay;
+
+    public Tile[] tiles;
+    public ArrayList<Player> players;
+    public int currentPlayer;
 
     private int cashPot;
 
@@ -24,9 +25,11 @@ public class Board{
 
     public int[] monopolies;
 
-    public Board(boolean newGame) {
+    public Board(boolean newGame, Display gameDisplay, int numPlayers){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
+        this.gameDisplay = gameDisplay;
+        this.numPlayers = numPlayers;
         loadTiles();
         if(newGame){
             //TODO
@@ -92,6 +95,7 @@ public class Board{
     }
 
     public void play(){
+        /*
         Scanner sc = new Scanner(System.in);
         System.out.println("How many players are there?");
         numPlayers = sc.nextInt();
@@ -102,46 +106,44 @@ public class Board{
             String name = sc.next();
             players.add(new Player(name,this));
         }
+        */
 
         currentPlayer = 0;
-        while (players.size() > 1){
+        while (players.size() > 1) {
             handleTurn(players.get(currentPlayer));
             currentPlayer++;
             if(currentPlayer == numPlayers){
                 currentPlayer = 0;
             }
         }
-
-        System.out.println("WINNER!");
-        System.out.println("WOW "+players.get(0).getName()  +" you won the game");
-
+        gameDisplay.message("WOW "+players.get(0).getName()  +" you won the game");
     }
 
-    public void handleTurn(Player p) {
-        System.out.println("________________________________________________");
-        System.out.println("It is " + p.getName() + "'s turn");
-
+    public void handleTurn(Player p){
         boolean doubleRoll;
-        numDoubleRollsOnTurn = 0;
-        Scanner sc = new Scanner(System.in);
-
         do {
+            gameDisplay.message("It is " + p.getName() + "'s turn");
+
+            gameDisplay.updatePlayerPane(p);
+
+            gameDisplay.prompt("Roll the die", new int[]{0});
+
             //Rolls the dice
             int die1 = Utilities.roll();
             int die2 = Utilities.roll();
-            System.out.println(p.getName() + " rolled a " + die1 + " and a " + die2);
+            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2);
 
             //If a double is rolled
             doubleRoll = false;
             if (die1 == die2) {
                 doubleRoll = true;
                 numDoubleRollsOnTurn++;
-                System.out.println("WOW: You got a double");
+                gameDisplay.message("WOW: You got a double");
             }
 
             //If a double is rolled 3 times, then end the turn and send to jail
             if (numDoubleRollsOnTurn == 3) {
-                System.out.println("That's 3 doubles in a row, sorry friend off to jail with you");
+                gameDisplay.message("That's 3 doubles in a row, sorry friend off to jail with you");
                 sendToJail(p);
                 return;
             }
@@ -150,24 +152,26 @@ public class Board{
                 //If the player rolled a double, free them
                 if (doubleRoll) {
                     p.decreaseJail(true);
-                    System.out.println("Lucky for you, that double will set you free");
+                    gameDisplay.message("Lucky for you, that double will set you free");
                 } else {
-                    System.out.println("You have a few options friend. \n You can...");
-
-                    System.out.println("1: Do your time, and wait another turn");
+                    int[] options = new int[3];
+                    options[0] = 1;
 
                     //Buy out of jail
                     if (p.getBalance() > 150) {
-                        System.out.println("2: Bribe a guard, and free yourself for $150");
+                        options[1] = 2;
+                    } else {
+                        options[1] = -1;
                     }
 
                     //Use a get out of jail free card
                     if (p.hasJailCard()) {
-                        System.out.println("3: Use your get out of jail free card");
+                        options[2] = 3;
+                    } else {
+                        options[2] = -1;
                     }
 
-                    int choice = sc.nextInt();
-
+                    int choice = gameDisplay.prompt("You're still in jail. Here are your choices", options);
                     switch (choice) {
                         case 1:
                             p.decreaseJail(false);
@@ -180,88 +184,103 @@ public class Board{
                             p.useJailCard();
                             p.decreaseJail(true);
                             break;
-                        default:
-                            System.out.println("That was not an option, you're gonna have to do your time");
-                            p.decreaseJail(false);
-                            return;
                     }
                 }
             }
 
             //Move the player
             move(p, die1 + die2);
+            gameDisplay.movePlayer(p);
 
 
             //The tile the player is currently on
             Tile tile = tiles[p.position];
 
-            System.out.println("You are now located on " + tile.name);
-            System.out.println(tile.toString(die1+die2));
-            System.out.println();
+            gameDisplay.movePlayer(p);
+            //System.out.println("You are now located on " + tile.name);
+            //System.out.println(tile.toString(die1 + die2));//TODO How to do with graphics
+
 
             //Calls the tile's basic function
-            tile.landedOn(p,die1+die2);
+            tile.landedOn(p, die1 + die2);//TODO Add graphical capabilities
 
-            System.out.println("Your current balance is $"+p.getBalance());
+            gameDisplay.updatePlayerPane(p);
 
             //If the player landed on a property, they are given option of what to do with it
             if (tile.type == Utilities.Type.PROPERTY) {
                 Property prop = (Property) tile;
-                System.out.println("Ok friend, here are your choices...");
 
-                System.out.println("1: Just chill here");
+                gameDisplay.showProperty(prop);
+
+                int[] options = new int[5];
+
+
+                //Do nothing this turn option
+                options[0] = 4;
 
                 if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
-                    System.out.println("2: You can buy this property for " + prop.getCost());
+                    options[1] = 5;
+                } else {
+                    options[1] = -1;
                 }
 
                 try {
                     if (prop.getOwner().equals(p) && p.getBalance() >= prop.getCost() && prop.canBuild()) {
-                        System.out.println("3: You can build a house here for " + prop.getCost());
+                        options[2] = 6;
+                    } else {
+                        options[2] = -1;
                     }
+                } catch (NullPointerException e) {
+                    options[2] = -1;
+                }
 
+                try {
                     if (prop.getOwner().equals(p)) {
-                        System.out.println("4: You can sell this property for " + prop.propertySalePrice());
+                        options[3] = 7;
+                    } else {
+                        options[3] = -1;
                     }
-
+                } catch (NullPointerException e) {
+                    options[3] = -1;
+                }
+                try {
                     if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
-                        System.out.println("5: You can sell a house for " + prop.houseSalePrice());
+                        options[4] = 8;
+                    } else {
+                        options[4] = -1;
                     }
-                }catch (NullPointerException e){}
+                } catch (NullPointerException e) {
+                    options[4] = -1;
+                }
 
-                int choice = sc.nextInt();
+                int choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
                 switch (choice) {
-                    case 1:
-                        System.out.println("Ok. See you next turn");
-                        return;
-                    case 2:
-                        System.out.println(prop.name + " is now yours");
-                        prop.buy(p);
-                        break;
-                    case 3:
-                        System.out.println("Wow, now have " + prop.getNumberHouses() + " built here. Quite the estate");
-                        prop.buildHouse();
-                        break;
                     case 4:
-                        System.out.println("With today's market, I don't blame you for selling");
-                        prop.sellProperty();
+                        gameDisplay.message("Ok. See you next turn");
                         break;
                     case 5:
-                        System.out.println("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses");
+                        gameDisplay.message(prop.name + " is now yours");
+                        prop.buy(p);
+                        break;
+                    case 6:
+                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " built here. Quite the estate");
+                        prop.buildHouse();
+                        break;
+                    case 7:
+                        gameDisplay.message("With today's market, I don't blame you for selling");
+                        prop.sellProperty();
+                        break;
+                    case 8:
+                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses");
                         prop.sellHouse();
                         break;
-                    default:
-                        System.out.println("I guess you are confused, you can try again next turn");
-                        return;
                 }
             }
-
-            System.out.println();
         } while (doubleRoll);
-
     }
 
     public void move(Player p, int numberOfSpaces){
+        gameDisplay.movePlayer(p);
         p.position += numberOfSpaces;
         if(p.position > 39){
             p.position = p.position%40;
