@@ -8,4 +8,8 @@ public interface GameDisplay {
     void showProperty(Property p);
 
     void movePlayer(Player p);
+
+    void showChance(String title, String message);
+
+    void updateGameBoard();
 }

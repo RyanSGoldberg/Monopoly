@@ -110,6 +110,7 @@ public class Board{
 
         currentPlayer = 0;
         while (players.size() > 1) {
+            numDoubleRollsOnTurn = 0;
             handleTurn(players.get(currentPlayer));
             currentPlayer++;
             if(currentPlayer == numPlayers){
@@ -190,7 +191,8 @@ public class Board{
 
             //Move the player
             move(p, die1 + die2);
-            gameDisplay.movePlayer(p);
+            gameDisplay.updateGameBoard();
+            //gameDisplay.movePlayer(p);
 
 
             //The tile the player is currently on
@@ -308,40 +310,39 @@ public class Board{
 
     public void drawCard(Player p) {
         int number = Utilities.generateNumber(0, 5);
-        String cardName;
+        String cardName = "";
+        String cardMessage = "";
         int randomAmount = Utilities.generateNumber(10, 250);
         int randomLocation = Utilities.generateNumber(1, 7);
 
         switch (number) {
             case 1:
                 cardName = "Collect Cash!";
-                p.addMoney(randomAmount);
+                cardMessage = "You have gained $"+randomAmount;
 
-                System.out.println("You picked up the following card: 1" + cardName +"");
-                System.out.println("You have gained $"+randomAmount+". Your balance is now "+p.getBalance());
+                p.addMoney(randomAmount);
                 break;
             case 2:
                 cardName = "Pay Tax";
+                cardMessage = "You have to pay $"+randomAmount+" in taxes";
+
                 p.removeMoney(randomAmount);
                 addToCashPot(randomAmount);
-                System.out.println("You picked up the following card: " + cardName +"");
-                System.out.println("You have paid $"+randomAmount+". Your balance is now "+p.getBalance());
                 break;
             case 3:
                 cardName = "Move Token";
+                cardMessage = "You now must move "+randomLocation+" tiles forward";
+
                 move(p, randomLocation);
-
-                System.out.println("You picked up the following card: " + cardName +"");
-                System.out.println("You are now on "+tiles[p.getPosition()].name);
-
                 break;
             case 4:
                 cardName = "Get Out Of Jail Free Card";
                 p.getJailCard();
-
-                System.out.println("You picked up the following card: " + cardName +"");
                 break;
         }
+        gameDisplay.showChance(cardName,cardMessage);
+        gameDisplay.updatePlayerPane(p);
+        //TODO Update Player location
     }
 
     public void addToCashPot(int amount){

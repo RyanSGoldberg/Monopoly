@@ -21,7 +21,9 @@ public class Player {
 
     private Board myBoard;
 
-    public Player(String name, Board myBoard) {
+    public Circle sprite;
+
+    public Player(String name, Board myBoard,Color token) {
         this.name = name;
         this.wallet = 1500;
         this.position = 0;
@@ -30,9 +32,9 @@ public class Player {
         this.turnsLeftInJail = 0;
         this.inventory = new ArrayList<>();
         this.myBoard = myBoard;
-    }
 
-    public Circle sprite = new Circle(20, Color.PURPLE);
+        this.sprite = new Circle(20, token);
+    }
 
     public void removeMoney(int amount){
         if(wallet - amount > 0){
