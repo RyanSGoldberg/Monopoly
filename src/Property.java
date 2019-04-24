@@ -220,6 +220,10 @@ public class Property extends Tile {
     private int numberOfAGroupOwned(int group){
         int num = 0;
 
+        if(owner == null){
+            return 0;
+        }
+
         for (Property p:owner.getInventory()) {
             if(p.groupName == group){
                 num++;

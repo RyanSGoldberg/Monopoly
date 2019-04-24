@@ -1,32 +1,42 @@
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.awt.*;
+import java.util.concurrent.Semaphore;
 
-public class Display extends Application{
+public class Display extends Application implements GameDisplay{
     Stage window;
     Scene scene;
     BorderPane screen;
-    StackPane gameVisual;
-    Pane spriteLayer;
     BorderPane gameBoard;
+
     private Board game;
     private int boardSize;
+
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,null,Color.CORNFLOWERBLUE,Color.MAGENTA,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.DODGERBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
 
+    private Semaphore semaphore = new Semaphore(0);
+    private int outValue;
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage){
         //The main window
         window = primaryStage;
         window.setResizable(false);
@@ -36,7 +46,6 @@ public class Display extends Application{
         //TODO Scaling stuff
 
         //Calculates the board size based on the screen size
-
         if(screenSize.width < screenSize.height){
             boardSize = screenSize.width-55;
         }else {
@@ -44,27 +53,35 @@ public class Display extends Application{
         }
 
         //Makes a new instance of board, which is the game logic
-        game = new Board(true);
+        game = new Board(true,this, 2);
 
-        //All the game components overlaid
-        gameVisual = new StackPane();
+        //TODO GET PLAYERS via UI
+        game.players.add(new Player("Ryan",game,Color.DODGERBLUE));
+        game.players.add(new Player("Hannah",game,Color.RED));
 
-        //The layer with the player sprites
-        spriteLayer = new Pane();//generageSpriteLayer();
-        spriteLayer.setMouseTransparent(true);//The node is  transparent to mouse events. This allows the user to interact with the bellow layer
-
-        //The board images
-        gameBoard = generateGameBoard();
-
-        gameVisual.getChildren().addAll(gameBoard,spriteLayer);
-
-
+        //The border pane covering the entire 'screen'
         screen = new BorderPane();
-        screen.setLeft(gameVisual);
-        screen.setRight(generatePlayerPane());
 
+        //Updates the physical board
+        generateGameBoard();
+        screen.setCenter(gameBoard);
+
+        //Shows player stats / inventory
+        screen.setRight(generatePlayerPane(game.players.get(game.currentPlayer)));
+
+        //The main scene of the game
         scene = new Scene(screen,window.getWidth(),window.getHeight());
 
+        //The Task and Thread that the game logic is run om
+        Task task = new Task() {
+            @Override
+            protected Object call(){
+                game.play();
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -78,7 +95,7 @@ public class Display extends Application{
         window.show();
     }
 
-    public BorderPane generateGameBoard(){
+    private void generateGameBoard(){
         int tileWidth  = (int)(3.0*boardSize/37.0);
         /*
         let board width be n
@@ -90,7 +107,7 @@ public class Display extends Application{
          */
         int tileLength = (int) ((double)tileWidth*(5.0/3.0));
 
-        BorderPane gameBoard = new BorderPane();
+        gameBoard = new BorderPane();
         gameBoard.setMaxSize(boardSize,boardSize);
 
         //Bottom Row
@@ -132,40 +149,6 @@ public class Display extends Application{
         gameBoard.setLeft(left);
         gameBoard.setRight(right);
         gameBoard.setTop(top);
-
-        return gameBoard;
-    }
-
-    public Pane generageSpriteLayer(){//TODO
-        return null;
-    }
-
-    public VBox generatePlayerPane(){//TODO Player info
-        VBox temp = new VBox(10);
-        temp.setMinWidth(400);
-        temp.setPadding(new Insets(30,0,0,10));
-
-        Player p = new Player("Ryan",game);
-
-
-        //Name
-        Text name = new Text(p.getName());
-
-        //Balance
-        Text balance = new Text("Balance: $"+p.getBalance());
-
-        Text inventory = new Text("Inventory: ");
-
-        temp.getChildren().addAll(name,balance,inventory);
-
-        for (Property prop:p.getInventory()) {
-            temp.getChildren().add(new Text("\t"+prop.getName()));
-        }
-
-        if(p.hasJailCard()){
-            temp.getChildren().add(new Text("\t Get Out Of Jail Free Card x"+ p.getNumberOfJailCards()));
-        }
-        return temp;
     }
 
     private StackPane drawCorner(int len,int i){
@@ -178,8 +161,16 @@ public class Display extends Application{
         image.setPreserveRatio(true);
         image.setFitHeight(len);
 
-        base.getChildren().addAll(baseRec,image);
+        //The pane, players are stored on
+        VBox players = new VBox(5);
+        players.setAlignment(Pos.CENTER);
+        for (Player p:game.players) {
+            if(p.getPosition() == i){
+                players.getChildren().add(p.sprite);
+            }
+        }
 
+        base.getChildren().addAll(baseRec,image,players);
         return base;
     }
 
@@ -222,91 +213,393 @@ public class Display extends Application{
 
         }else {
             //The colored rectangle
-            Rectangle coloredRec;
-            StackPane colorStack = new StackPane();
+            Rectangle coloredRec = null;
             switch (orientation){
                 case UP:
                     coloredRec = new Rectangle(wid-1,height/3,c);
-                    base.getChildren().addAll(baseRec,coloredRec);
                     base.setAlignment(Pos.TOP_CENTER);
                     break;
                 case LEFT:
                     coloredRec = new Rectangle(wid/3,height-1,c);
-                    base.getChildren().addAll(baseRec,coloredRec);
                     base.setAlignment(Pos.CENTER_RIGHT);
                     break;
                 case DOWN:
                     coloredRec = new Rectangle(wid-1,height/3,c);
-                    base.getChildren().addAll(baseRec,coloredRec);
                     base.setAlignment(Pos.BOTTOM_CENTER);
                     break;
                 case RIGHT:
                     coloredRec = new Rectangle(wid/3,height-1,c);
-                    base.getChildren().addAll(baseRec,coloredRec);
                     base.setAlignment(Pos.CENTER_LEFT);
                     break;
             }
+            base.getChildren().addAll(baseRec,coloredRec);
         }
 
-
+        //TODO
         Text text = new Text(Integer.toString(game.tiles[i].location));
         text.setRotate(0);
 
-        tempTile.getChildren().addAll(base,text);
+        //The pane, players are stored on
+        VBox players = new VBox(5);
+        players.setAlignment(Pos.CENTER);
+        for (Player p:game.players) {
+            if(p.getPosition() == i){
+                players.getChildren().add(p.sprite);
+            }
+        }
 
+        tempTile.getChildren().addAll(base,text,players);
         tempTile.setOnMouseClicked(event -> {
-            System.out.println("Here");
-            if(game.tiles[i].type == Utilities.Type.PROPERTY && game.tiles[i].groupName != 002 && game.tiles[i].groupName != 005){
+            if(game.tiles[i].type == Utilities.Type.PROPERTY){
                 showProperty((Property)game.tiles[i]);
             }
         });
         return tempTile;
     }
 
+    public void updateGameBoard(){
+        Platform.runLater(() -> {
+            generateGameBoard();
+            screen.setCenter(gameBoard);
+        });
+    }
+
+    private VBox generatePlayerPane(Player p){
+        VBox temp = new VBox(10);
+        temp.setMinWidth(400);
+        temp.setPadding(new Insets(30,0,0,10));
+        temp.setMouseTransparent(false);
+
+        //Name
+        Text name = new Text(p.getName());
+
+        //Balance
+        Text balance = new Text("Balance: $"+p.getBalance());
+
+        Text inventory = new Text("Inventory: ");
+
+        temp.getChildren().addAll(name,balance,inventory);
+
+        for (Property prop:p.getInventory()) {
+            Text t = new Text("\t"+prop.getName());
+
+            //FIXME
+            //When the property is clicked, display its card
+            t.setOnMouseClicked(event -> {
+                showProperty(prop);
+            });
+
+            temp.getChildren().add(t);
+        }
+
+        if(p.hasJailCard()){
+            temp.getChildren().add(new Text("\t Get Out Of Jail Free Card x"+ p.getNumberOfJailCards()));
+        }
+        return temp;
+    }
+
+    public void updatePlayerPane(Player p){
+        Platform.runLater(() ->{
+            screen.setRight(generatePlayerPane(p));
+        });
+    }
+
+    public int prompt(String question, int[] buttonsToDisplay){
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        Platform.runLater(() ->{
+            Text text = new Text(question);
+
+            VBox pane = new VBox();
+            pane.getChildren().add(text);
+            pane.setAlignment(Pos.CENTER);
+
+            Property prop = null;
+            //To use if button text requires property values
+            if(game.tiles[game.players.get(game.currentPlayer).position].type == Utilities.Type.PROPERTY){
+                prop = (Property) game.tiles[game.players.get(game.currentPlayer).position];
+            }
+
+            //Adds the corresponding buttons to those given in options[]
+            for (int i = 0; i < buttonsToDisplay.length; i++) {
+                switch (buttonsToDisplay[i]){
+                    case 0:
+                        pane.getChildren().add(buttonBuilder("ROLL",0,pane));
+                        break;
+                    case 1:
+                        pane.getChildren().add(buttonBuilder("Do your time, and wait another turn",1,pane));
+                        break;
+                    case 2:
+                        pane.getChildren().add(buttonBuilder("Bribe a guard, and free yourself for $150",2,pane));
+                        break;
+                    case 3:
+                        pane.getChildren().add(buttonBuilder("Use your get out of jail free card",3,pane));
+                        break;
+                    case 4:
+                        pane.getChildren().add(buttonBuilder("Just chill here",4,pane));
+                        break;
+                    case 5:
+                        pane.getChildren().add(buttonBuilder("You can buy this property for " + prop.getCost(),5,pane));
+                        break;
+                    case 6:
+                        pane.getChildren().add(buttonBuilder("You can build a house here for " + prop.getCost(),6,pane));
+                        break;
+                    case 7:
+                        pane.getChildren().add(buttonBuilder("You can sell this property for " + prop.propertySalePrice(),7,pane));
+                        break;
+                    case 8:
+                        pane.getChildren().add(buttonBuilder("You can sell a house for " + prop.houseSalePrice(),8,pane));
+                        break;
+                }
+            }
+            gameBoard.setCenter(pane);
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return outValue;
+    }
+
+    private Button buttonBuilder(String text, int returnValue, Pane parent){
+        Button b = new Button(text);
+        b.setDefaultButton(true);
+        b.setOnAction(event ->{
+            setOutValue(returnValue);
+            parent.getChildren().removeAll();
+            semaphore.release(1);
+        });
+        return b;
+    }
+
+    /**
+    The value to be returned to prompt
+     */
+    private void setOutValue(int outValue) {
+        this.outValue = outValue;
+    }
+
+    public void movePlayer(Player p){}//TODO Player token animation
+
     public void showProperty(Property p){
-        int wid = 250;
-        int height = 400;
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
 
-        Stage popup = new Stage();
+        Platform.runLater(() -> {
+            int wid = 350;
+            int height = 500;
 
-        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+            //The window
+            Stage popup = new Stage();
+            popup.initStyle(StageStyle.UNDECORATED);//No window border
+            popup.setAlwaysOnTop(true);
+            popup.initModality(Modality.APPLICATION_MODAL);//Can't access below windows
 
-        VBox vBox = new VBox();
-        vBox.setMaxSize(wid,height);
-        vBox.setMinSize(wid,height);
+            //The background of the card
+            Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
-        StackPane coloredStack = new StackPane();
-        Rectangle coloredRec = new Rectangle(wid,height/4,tileColors[p.groupName]);
+            //A button which closes the card, and returns to the game
+            Button close = new Button("Return to game");
+            close.setOnAction(event -> {
+                popup.close();
+                semaphore.release();
+            });
 
-        VBox textColumn = new VBox(10);
-        Text header = new Text("TITLE DEED");
-        Text name = new Text(p.name);
-        textColumn.getChildren().addAll(header,name);
-        textColumn.setAlignment(Pos.CENTER);
-
-        coloredStack.getChildren().addAll(coloredRec,textColumn);
-
-        Text values = new Text(
-                "\t\tRent $"+p.getRents()[0]+
-                        "\nWith 1 house :$"+p.getRents()[1]+
-                        "\nWith 2 houses :$"+p.getRents()[2]+
-                        "\nWith 3 houses :$"+p.getRents()[3]+
-                        "\nWith 4 houses :$"+p.getRents()[4]+
-                        "\nWith 1 hotel :$"+p.getRents()[5]+
-                        "\n\t\tMortgage Value $"+p.propertySalePrice()
-        );
-        values.setTextAlignment(TextAlignment.CENTER);
-
-        vBox.getChildren().addAll(coloredStack,values);
-
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(card,vBox);
-
-        Scene scene = new Scene(stackPane,wid,height);
-        popup.setScene(scene);
-        popup.show();
+            //A vbox containing the column of nodes
+            VBox vBox = new VBox(15);
+            vBox.setMaxSize(wid,height);
+            vBox.setMinSize(wid,height);
 
 
+            if(p.groupName == 002){//Railroad
+                ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/Railroad.png")));
+                image.setPreserveRatio(true);
+                image.setFitHeight(wid/2);//TODO Make Dynamic
+
+                Text name = new Text(p.name);
+
+                Text text = new Text("Rent $20"+
+                        "\nIf 2 Railroads Are Owned: $50"+
+                        "\nIf 3 Railroads Are Owned: $100"+
+                        "\nIf 4 Railroads Are Owned: $200"+
+                        "\nMortgage Value $"+p.propertySalePrice());
+
+                vBox.getChildren().addAll(image,name,text,close);
+
+            }else if(p.groupName == 005){//Utilities
+                ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
+                image.setPreserveRatio(true);
+                image.setFitHeight(wid/2);//TODO Make Dynamic
+
+                Text name = new Text(p.name);
+
+                Text text = new Text("If ONE Utility is owned," +
+                        "\nRent is 4x number shown on the dice" +
+                        "\nIf BOTH Utilities are owned," +
+                        "\nRent is 10x the amount shown on the dice."+
+                        "\nMortgage Value $"+p.propertySalePrice());
+
+                vBox.getChildren().addAll(image,name,text,close);
+            }else{
+                StackPane coloredStack = new StackPane();
+                Rectangle coloredRec = new Rectangle(wid,height/4,tileColors[p.groupName]);
+
+                VBox textColumn = new VBox(10);
+                Text header = new Text("TITLE DEED");
+                Text name = new Text(p.name);
+                textColumn.getChildren().addAll(header,name);
+                textColumn.setAlignment(Pos.CENTER);
+
+                coloredStack.getChildren().addAll(coloredRec,textColumn);
+
+                Text values = new Text(
+                        "Rent $"+p.getRents()[0]+
+                                "\nWith 1 house :$"+p.getRents()[1]+
+                                "\nWith 2 houses :$"+p.getRents()[2]+
+                                "\nWith 3 houses :$"+p.getRents()[3]+
+                                "\nWith 4 houses :$"+p.getRents()[4]+
+                                "\nWith 1 hotel :$"+p.getRents()[5]+
+                                "\nMortgage Value $"+p.propertySalePrice()
+                );
+                values.setTextAlignment(TextAlignment.CENTER);
+
+                vBox.getChildren().addAll(coloredStack,values,close);
+
+
+            }
+
+            vBox.setAlignment(Pos.TOP_CENTER);
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().addAll(card,vBox);
+
+            Scene scene = new Scene(stackPane,wid,height);
+
+            popup.setScene(scene);
+            popup.showAndWait();
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void message(String message){
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        Platform.runLater(() ->{
+            int wid = 400;
+            int height = 150;
+
+            Stage popup = new Stage();
+            popup.initStyle(StageStyle.UNDECORATED);
+            popup.setAlwaysOnTop(true);
+            popup.initModality(Modality.APPLICATION_MODAL);
+
+            Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+            Text text = new Text(message);
+            text.setTextAlignment(TextAlignment.CENTER);
+
+            Button close = new Button("Return to game");
+            close.setOnAction(event -> {
+                popup.close();
+                semaphore.release(1);
+            });
+
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(text,close);
+            vBox.setAlignment(Pos.TOP_CENTER);
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().addAll(card,vBox);
+
+            Scene scene = new Scene(stackPane,wid,height);
+
+            scene.setOnKeyPressed(event -> {
+                popup.close();
+                semaphore.release(1);
+            });
+
+            popup.setScene(scene);
+            popup.showAndWait();
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showChance(String title, String message){//FIXME
+        Platform.runLater(() ->{
+            int wid = 400;
+            int height = 150;
+
+            Stage popup = new Stage();
+            popup.initStyle(StageStyle.UNDECORATED);
+            popup.setAlwaysOnTop(true);
+            popup.initModality(Modality.APPLICATION_MODAL);
+
+            Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+            Text ti = new Text(title);
+            ti.setFont(new Font(java.awt.Font.BOLD));
+            ti.setTextAlignment(TextAlignment.CENTER);
+
+            Text mes = new Text(message);
+            mes.setTextAlignment(TextAlignment.CENTER);
+
+            Button close = new Button("Return to game");
+            close.setOnAction(event -> {
+                popup.close();
+                semaphore.release(1);
+            });
+
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(ti,mes,close);
+            vBox.setAlignment(Pos.TOP_CENTER);
+
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().addAll(card,vBox);
+
+            Scene scene = new Scene(stackPane,wid,height);
+
+            scene.setOnKeyPressed(event -> {
+                popup.close();
+                semaphore.release(1);
+            });
+
+            popup.setScene(scene);
+            popup.showAndWait();
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private enum Orientation {UP,DOWN,LEFT,RIGHT}
