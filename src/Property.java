@@ -11,7 +11,7 @@ public class Property extends Tile {
     private boolean canBuild;
 
     public Property(int location, String name, int group, int[] rent, boolean canBuild, int[] costs, Board myBoard) {
-        type = Utilities.Type.PROPERTY;
+        type = Tile.Type.PROPERTY;
         this.location = location;
         this.name = name;
         this.groupName = group;
@@ -84,7 +84,7 @@ public class Property extends Tile {
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
 
-            System.out.println(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName());
+            myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName());
         }
 
     }
@@ -138,27 +138,8 @@ public class Property extends Tile {
     }
 
     public void buildHouse(){
-        //TODO
-        if(/*owner.getBalance() >= this.getCost() && */numberHouses < 5 && canBuild){
-
-            owner.removeMoney(this.getCost());
-
-            numberHouses++;
-
-        }
-        else{
-
-            if(canBuild == false){
-
-                System.out.println("Sorry you cannot build here");
-
-            } if(numberHouses == 5){
-
-                System.out.println("You already have a hotel (5 houses) here and cannot build more");
-
-            }
-
-        }
+        owner.removeMoney(this.getCost());
+        numberHouses++;
     }
 
     public boolean hasOwner(){
@@ -174,7 +155,6 @@ public class Property extends Tile {
         p.addProperty(this);
         owner = p;
         p.removeMoney(costs[0]);
-        System.out.println("you have just bought "+this.name+" your current balance is $"+p.getBalance());
     }
 
     public Player getOwner(){

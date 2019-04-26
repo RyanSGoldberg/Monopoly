@@ -4,7 +4,7 @@
  */
 public class Tile{
     protected Board myBoard;
-    protected Utilities.Type type;
+    protected Type type;
 
     protected String name;
     protected int location;
@@ -23,4 +23,6 @@ public class Tile{
     public String getName() {
         return name;
     }
+
+    enum Type{PROPERTY, SPECIAL}
 }

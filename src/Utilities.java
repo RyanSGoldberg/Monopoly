@@ -17,5 +17,4 @@ public class Utilities {
         return start+(int)(Math.random()*(end-start));
     }
 
-    enum Type{PROPERTY, SPECIAL}
 }

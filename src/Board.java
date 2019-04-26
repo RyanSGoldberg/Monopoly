@@ -198,7 +198,7 @@ public class Board{
             //The tile the player is currently on
             Tile tile = tiles[p.position];
 
-            gameDisplay.movePlayer(p);
+            //gameDisplay.movePlayer(p);//FIXME
             //System.out.println("You are now located on " + tile.name);
             //System.out.println(tile.toString(die1 + die2));//TODO How to do with graphics
 
@@ -206,56 +206,70 @@ public class Board{
             //Calls the tile's basic function
             tile.landedOn(p, die1 + die2);//TODO Add graphical capabilities
 
-            gameDisplay.updatePlayerPane(p);
+            //The player's choices
+            int[] options = new int[]{-1,-1,-1,-1,-1,-1};
+            //End Turn
+            options[0] = 4;
+            //Trade option
+            options[5] = 11;
 
-            //If the player landed on a property, they are given option of what to do with it
-            if (tile.type == Utilities.Type.PROPERTY) {
-                Property prop = (Property) tile;
-
+            Property prop = null;
+            if (tile.type == Tile.Type.PROPERTY) {
+                prop = (Property) tile;
                 gameDisplay.showProperty(prop);
 
-                int[] options = new int[5];
+            }
 
+            //Loop until the user has ended their turn (choice == 4)
+            int choice = -1;
+            while (choice != 4){
+                gameDisplay.updatePlayerPane(p);
 
-                //Do nothing this turn option
-                options[0] = 4;
-
-                if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
-                    options[1] = 5;
-                } else {
-                    options[1] = -1;
-                }
-
-                try {
-                    if (prop.getOwner().equals(p) && p.getBalance() >= prop.getCost() && prop.canBuild()) {
-                        options[2] = 6;
+                //If the player landed on a property, they are given option of what to do with it
+                if (tile.type == Tile.Type.PROPERTY) {
+                    //Buy property
+                    if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
+                        options[1] = 5;
                     } else {
+                        options[1] = -1;
+                    }
+
+                    //Build house
+                    try {
+                        if (prop.getOwner().equals(p) && p.getBalance() >= prop.getCost() && prop.canBuild() && prop.getNumberHouses() < 6) {
+                            options[2] = 6;
+                        } else {
+                            options[2] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[2] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[2] = -1;
-                }
 
-                try {
-                    if (prop.getOwner().equals(p)) {
-                        options[3] = 7;
-                    } else {
+                    //Sell Property
+                    try {
+                        if (prop.getOwner().equals(p)) {
+                            options[3] = 7;
+                        } else {
+                            options[3] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[3] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[3] = -1;
-                }
-                try {
-                    if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
-                        options[4] = 8;
-                    } else {
+
+                    //Sell house
+                    try {
+                        if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
+                            options[4] = 8;
+                        } else {
+                            options[4] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[4] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[4] = -1;
+
                 }
 
-                int choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
+                choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
                 switch (choice) {
                     case 4:
                         gameDisplay.message("Ok. See you next turn");
@@ -265,17 +279,19 @@ public class Board{
                         prop.buy(p);
                         break;
                     case 6:
-                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " built here. Quite the estate");
                         prop.buildHouse();
+                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " houses built here. Quite the estate");
                         break;
                     case 7:
-                        gameDisplay.message("With today's market, I don't blame you for selling");
                         prop.sellProperty();
+                        gameDisplay.message("With today's market, I don't blame you for selling");
                         break;
                     case 8:
-                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses");
                         prop.sellHouse();
+                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses");
                         break;
+                    case 11:
+                        //TODO TRADE
                 }
             }
         } while (doubleRoll);
@@ -342,6 +358,7 @@ public class Board{
         }
         gameDisplay.showChance(cardName,cardMessage);
         gameDisplay.updatePlayerPane(p);
+        gameDisplay.updateGameBoard();
         //TODO Update Player location
     }
 
@@ -355,9 +372,13 @@ public class Board{
         return c;
     }
 
+    public int getCashPot() {
+        return cashPot;
+    }
+
     public void mortgageMode(Player p, int debt){
         if(p.netWorth() < debt){
-            System.out.println("Sorry pal, looks like your gambling days are over: You're OUT");
+            gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT");
             players.remove(p);
         }
 

@@ -10,7 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -63,11 +62,10 @@ public class Display extends Application implements GameDisplay{
         screen = new BorderPane();
 
         //Updates the physical board
-        generateGameBoard();
-        screen.setCenter(gameBoard);
+        updateGameBoardFX();
 
         //Shows player stats / inventory
-        screen.setRight(generatePlayerPane(game.players.get(game.currentPlayer)));
+        updatePlayerPaneFX(game.players.get(game.currentPlayer));
 
         //The main scene of the game
         scene = new Scene(screen,window.getWidth(),window.getHeight());
@@ -183,7 +181,7 @@ public class Display extends Application implements GameDisplay{
         baseRec.setStroke(Color.BLACK);
 
         //Generates the tile based on orientation and type
-        if((game.tiles[i].type == Utilities.Type.SPECIAL) || (game.tiles[i].groupName == 002) || (game.tiles[i].groupName == 005)){
+        if((game.tiles[i].type == Tile.Type.SPECIAL) || (game.tiles[i].groupName == 002) || (game.tiles[i].groupName == 005)){
             String imageName;
             if(game.tiles[i].groupName == 002){//Railroads
                 imageName = "Railroad";
@@ -250,8 +248,8 @@ public class Display extends Application implements GameDisplay{
 
         tempTile.getChildren().addAll(base,text,players);
         tempTile.setOnMouseClicked(event -> {
-            if(game.tiles[i].type == Utilities.Type.PROPERTY){
-                showProperty((Property)game.tiles[i]);
+            if(game.tiles[i].type == Tile.Type.PROPERTY){
+                showPropertyFX((Property)game.tiles[i]);
             }
         });
         return tempTile;
@@ -259,9 +257,13 @@ public class Display extends Application implements GameDisplay{
 
     public void updateGameBoard(){
         Platform.runLater(() -> {
-            generateGameBoard();
-            screen.setCenter(gameBoard);
+            updateGameBoardFX();
         });
+    }
+
+    public void updateGameBoardFX(){
+        generateGameBoard();
+        screen.setCenter(gameBoard);
     }
 
     private VBox generatePlayerPane(Player p){
@@ -286,7 +288,7 @@ public class Display extends Application implements GameDisplay{
             //FIXME
             //When the property is clicked, display its card
             t.setOnMouseClicked(event -> {
-                showProperty(prop);
+                showPropertyFX(prop);
             });
 
             temp.getChildren().add(t);
@@ -300,8 +302,12 @@ public class Display extends Application implements GameDisplay{
 
     public void updatePlayerPane(Player p){
         Platform.runLater(() ->{
-            screen.setRight(generatePlayerPane(p));
+            updatePlayerPaneFX(p);
         });
+    }
+
+    public void updatePlayerPaneFX(Player p){
+        screen.setRight(generatePlayerPane(p));
     }
 
     public int prompt(String question, int[] buttonsToDisplay){
@@ -315,51 +321,7 @@ public class Display extends Application implements GameDisplay{
         }
 
         Platform.runLater(() ->{
-            Text text = new Text(question);
-
-            VBox pane = new VBox();
-            pane.getChildren().add(text);
-            pane.setAlignment(Pos.CENTER);
-
-            Property prop = null;
-            //To use if button text requires property values
-            if(game.tiles[game.players.get(game.currentPlayer).position].type == Utilities.Type.PROPERTY){
-                prop = (Property) game.tiles[game.players.get(game.currentPlayer).position];
-            }
-
-            //Adds the corresponding buttons to those given in options[]
-            for (int i = 0; i < buttonsToDisplay.length; i++) {
-                switch (buttonsToDisplay[i]){
-                    case 0:
-                        pane.getChildren().add(buttonBuilder("ROLL",0,pane));
-                        break;
-                    case 1:
-                        pane.getChildren().add(buttonBuilder("Do your time, and wait another turn",1,pane));
-                        break;
-                    case 2:
-                        pane.getChildren().add(buttonBuilder("Bribe a guard, and free yourself for $150",2,pane));
-                        break;
-                    case 3:
-                        pane.getChildren().add(buttonBuilder("Use your get out of jail free card",3,pane));
-                        break;
-                    case 4:
-                        pane.getChildren().add(buttonBuilder("Just chill here",4,pane));
-                        break;
-                    case 5:
-                        pane.getChildren().add(buttonBuilder("You can buy this property for " + prop.getCost(),5,pane));
-                        break;
-                    case 6:
-                        pane.getChildren().add(buttonBuilder("You can build a house here for " + prop.getCost(),6,pane));
-                        break;
-                    case 7:
-                        pane.getChildren().add(buttonBuilder("You can sell this property for " + prop.propertySalePrice(),7,pane));
-                        break;
-                    case 8:
-                        pane.getChildren().add(buttonBuilder("You can sell a house for " + prop.houseSalePrice(),8,pane));
-                        break;
-                }
-            }
-            gameBoard.setCenter(pane);
+            promptFX(question,buttonsToDisplay);
         });
         try {
             semaphore.acquire();
@@ -369,12 +331,69 @@ public class Display extends Application implements GameDisplay{
         return outValue;
     }
 
+    public void promptFX(String question, int[] buttonsToDisplay){
+        Text text = new Text(question);
+
+        VBox pane = new VBox();
+        pane.getChildren().add(text);
+        pane.setAlignment(Pos.CENTER);
+
+        Property prop = null;
+        //To use if button text requires property values
+        if(game.tiles[game.players.get(game.currentPlayer).position].type == Tile.Type.PROPERTY){
+            prop = (Property) game.tiles[game.players.get(game.currentPlayer).position];
+        }
+
+        //Adds the corresponding buttons to those given in options[]
+        for (int i = 0; i < buttonsToDisplay.length; i++) {
+            switch (buttonsToDisplay[i]){
+                case 0:
+                    pane.getChildren().add(buttonBuilder("ROLL",0,pane));
+                    break;
+                case 1:
+                    pane.getChildren().add(buttonBuilder("Do your time, and wait another turn",1,pane));
+                    break;
+                case 2:
+                    pane.getChildren().add(buttonBuilder("Bribe a guard, and free yourself for $150",2,pane));
+                    break;
+                case 3:
+                    pane.getChildren().add(buttonBuilder("Use your get out of jail free card",3,pane));
+                    break;
+                case 4:
+                    pane.getChildren().add(buttonBuilder("Just chill here",4,pane));
+                    break;
+                case 5:
+                    pane.getChildren().add(buttonBuilder("You can buy this property for " + prop.getCost(),5,pane));
+                    break;
+                case 6:
+                    pane.getChildren().add(buttonBuilder("You can build a house here for " + prop.getCost(),6,pane));
+                    break;
+                case 7:
+                    pane.getChildren().add(buttonBuilder("You can sell this property for " + prop.propertySalePrice(),7,pane));
+                    break;
+                case 8:
+                    pane.getChildren().add(buttonBuilder("You can sell a house for " + prop.houseSalePrice(),8,pane));
+                    break;
+                case 9:
+                    pane.getChildren().add(buttonBuilder("You can pay $150",9,pane));
+                    break;
+                case 10:
+                    pane.getChildren().add(buttonBuilder("You can pay 10% of your wallet",10,pane));
+                    break;
+                case 11:
+                    pane.getChildren().add(buttonBuilder("Trade Mode",11,pane));
+                    break;
+            }
+        }
+        gameBoard.setCenter(pane);
+    }
+
     private Button buttonBuilder(String text, int returnValue, Pane parent){
         Button b = new Button(text);
         b.setDefaultButton(true);
         b.setOnAction(event ->{
             setOutValue(returnValue);
-            parent.getChildren().removeAll();
+            parent.getChildren().clear();
             semaphore.release(1);
         });
         return b;
@@ -390,113 +409,116 @@ public class Display extends Application implements GameDisplay{
     public void movePlayer(Player p){}//TODO Player token animation
 
     public void showProperty(Property p){
-        if(semaphore.availablePermits() != 0){
-            try{
-                throw new Exception ("Invalid Permit Count");
-            }catch (Exception e){
+        if(semaphore.availablePermits() != 0) {
+            try {
+                throw new Exception("Invalid Permit Count");
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
         }
-
         Platform.runLater(() -> {
-            int wid = 350;
-            int height = 500;
-
-            //The window
-            Stage popup = new Stage();
-            popup.initStyle(StageStyle.UNDECORATED);//No window border
-            popup.setAlwaysOnTop(true);
-            popup.initModality(Modality.APPLICATION_MODAL);//Can't access below windows
-
-            //The background of the card
-            Rectangle card = new Rectangle(wid,height,Color.WHITE);
-
-            //A button which closes the card, and returns to the game
-            Button close = new Button("Return to game");
-            close.setOnAction(event -> {
-                popup.close();
-                semaphore.release();
-            });
-
-            //A vbox containing the column of nodes
-            VBox vBox = new VBox(15);
-            vBox.setMaxSize(wid,height);
-            vBox.setMinSize(wid,height);
-
-
-            if(p.groupName == 002){//Railroad
-                ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/Railroad.png")));
-                image.setPreserveRatio(true);
-                image.setFitHeight(wid/2);//TODO Make Dynamic
-
-                Text name = new Text(p.name);
-
-                Text text = new Text("Rent $20"+
-                        "\nIf 2 Railroads Are Owned: $50"+
-                        "\nIf 3 Railroads Are Owned: $100"+
-                        "\nIf 4 Railroads Are Owned: $200"+
-                        "\nMortgage Value $"+p.propertySalePrice());
-
-                vBox.getChildren().addAll(image,name,text,close);
-
-            }else if(p.groupName == 005){//Utilities
-                ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
-                image.setPreserveRatio(true);
-                image.setFitHeight(wid/2);//TODO Make Dynamic
-
-                Text name = new Text(p.name);
-
-                Text text = new Text("If ONE Utility is owned," +
-                        "\nRent is 4x number shown on the dice" +
-                        "\nIf BOTH Utilities are owned," +
-                        "\nRent is 10x the amount shown on the dice."+
-                        "\nMortgage Value $"+p.propertySalePrice());
-
-                vBox.getChildren().addAll(image,name,text,close);
-            }else{
-                StackPane coloredStack = new StackPane();
-                Rectangle coloredRec = new Rectangle(wid,height/4,tileColors[p.groupName]);
-
-                VBox textColumn = new VBox(10);
-                Text header = new Text("TITLE DEED");
-                Text name = new Text(p.name);
-                textColumn.getChildren().addAll(header,name);
-                textColumn.setAlignment(Pos.CENTER);
-
-                coloredStack.getChildren().addAll(coloredRec,textColumn);
-
-                Text values = new Text(
-                        "Rent $"+p.getRents()[0]+
-                                "\nWith 1 house :$"+p.getRents()[1]+
-                                "\nWith 2 houses :$"+p.getRents()[2]+
-                                "\nWith 3 houses :$"+p.getRents()[3]+
-                                "\nWith 4 houses :$"+p.getRents()[4]+
-                                "\nWith 1 hotel :$"+p.getRents()[5]+
-                                "\nMortgage Value $"+p.propertySalePrice()
-                );
-                values.setTextAlignment(TextAlignment.CENTER);
-
-                vBox.getChildren().addAll(coloredStack,values,close);
-
-
-            }
-
-            vBox.setAlignment(Pos.TOP_CENTER);
-
-            StackPane stackPane = new StackPane();
-            stackPane.getChildren().addAll(card,vBox);
-
-            Scene scene = new Scene(stackPane,wid,height);
-
-            popup.setScene(scene);
-            popup.showAndWait();
+            showPropertyFX(p);
         });
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showPropertyFX(Property p){
+        int wid = 350;
+        int height = 500;
+
+        //The window
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.UNDECORATED);//No window border
+        popup.setAlwaysOnTop(true);
+        popup.initModality(Modality.APPLICATION_MODAL);//Can't access below windows
+
+        //The background of the card
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+        //A button which closes the card, and returns to the game
+        Button close = new Button("Return to game");
+        close.setOnAction(event -> {
+            popup.close();
+            semaphore.release();
+        });
+
+        //A vbox containing the column of nodes
+        VBox vBox = new VBox(15);
+        vBox.setMaxSize(wid,height);
+        vBox.setMinSize(wid,height);
+
+
+        if(p.groupName == 002){//Railroad
+            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/Railroad.png")));
+            image.setPreserveRatio(true);
+            image.setFitHeight(wid/2);//TODO Make Dynamic
+
+            Text name = new Text(p.name);
+
+            Text text = new Text("Rent $20"+
+                    "\nIf 2 Railroads Are Owned: $50"+
+                    "\nIf 3 Railroads Are Owned: $100"+
+                    "\nIf 4 Railroads Are Owned: $200"+
+                    "\nMortgage Value $"+p.propertySalePrice());
+
+            vBox.getChildren().addAll(image,name,text,close);
+
+        }else if(p.groupName == 005){//Utilities
+            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
+            image.setPreserveRatio(true);
+            image.setFitHeight(wid/2);//TODO Make Dynamic
+
+            Text name = new Text(p.name);
+
+            Text text = new Text("If ONE Utility is owned," +
+                    "\nRent is 4x number shown on the dice" +
+                    "\nIf BOTH Utilities are owned," +
+                    "\nRent is 10x the amount shown on the dice."+
+                    "\nMortgage Value $"+p.propertySalePrice());
+
+            vBox.getChildren().addAll(image,name,text,close);
+        }else{
+            StackPane coloredStack = new StackPane();
+            Rectangle coloredRec = new Rectangle(wid,height/4,tileColors[p.groupName]);
+
+            VBox textColumn = new VBox(10);
+            Text header = new Text("TITLE DEED");
+            Text name = new Text(p.name);
+            textColumn.getChildren().addAll(header,name);
+            textColumn.setAlignment(Pos.CENTER);
+
+            coloredStack.getChildren().addAll(coloredRec,textColumn);
+
+            Text values = new Text(
+                    "Rent $"+p.getRents()[0]+
+                            "\nWith 1 house :$"+p.getRents()[1]+
+                            "\nWith 2 houses :$"+p.getRents()[2]+
+                            "\nWith 3 houses :$"+p.getRents()[3]+
+                            "\nWith 4 houses :$"+p.getRents()[4]+
+                            "\nWith 1 hotel :$"+p.getRents()[5]+
+                            "\nMortgage Value $"+p.propertySalePrice()
+            );
+            values.setTextAlignment(TextAlignment.CENTER);
+
+            vBox.getChildren().addAll(coloredStack,values,close);
+
+
+        }
+
+        vBox.setAlignment(Pos.TOP_CENTER);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(card,vBox);
+
+        Scene scene = new Scene(stackPane,wid,height);
+
+        popup.setScene(scene);
+        popup.showAndWait();
     }
 
     public void message(String message){
@@ -510,41 +532,7 @@ public class Display extends Application implements GameDisplay{
         }
 
         Platform.runLater(() ->{
-            int wid = 400;
-            int height = 150;
-
-            Stage popup = new Stage();
-            popup.initStyle(StageStyle.UNDECORATED);
-            popup.setAlwaysOnTop(true);
-            popup.initModality(Modality.APPLICATION_MODAL);
-
-            Rectangle card = new Rectangle(wid,height,Color.WHITE);
-
-            Text text = new Text(message);
-            text.setTextAlignment(TextAlignment.CENTER);
-
-            Button close = new Button("Return to game");
-            close.setOnAction(event -> {
-                popup.close();
-                semaphore.release(1);
-            });
-
-            VBox vBox = new VBox();
-            vBox.getChildren().addAll(text,close);
-            vBox.setAlignment(Pos.TOP_CENTER);
-
-            StackPane stackPane = new StackPane();
-            stackPane.getChildren().addAll(card,vBox);
-
-            Scene scene = new Scene(stackPane,wid,height);
-
-            scene.setOnKeyPressed(event -> {
-                popup.close();
-                semaphore.release(1);
-            });
-
-            popup.setScene(scene);
-            popup.showAndWait();
+            messageFX(message);
         });
         try {
             semaphore.acquire();
@@ -553,53 +541,102 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
-    public void showChance(String title, String message){//FIXME
+    public void messageFX(String message){
+        int wid = 400;
+        int height = 150;
+
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.UNDECORATED);
+        popup.setAlwaysOnTop(true);
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+        Text text = new Text(message);
+        text.setTextAlignment(TextAlignment.CENTER);
+
+        Button close = new Button("Return to game");
+        close.setOnAction(event -> {
+            popup.close();
+            semaphore.release(1);
+        });
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(text,close);
+        vBox.setAlignment(Pos.TOP_CENTER);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(card,vBox);
+
+        Scene scene = new Scene(stackPane,wid,height);
+
+        scene.setOnKeyPressed(event -> {
+            popup.close();
+            semaphore.release(1);
+        });
+
+        popup.setScene(scene);
+        popup.showAndWait();
+    }
+
+    public void showChance(String title, String message){
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
         Platform.runLater(() ->{
-            int wid = 400;
-            int height = 150;
-
-            Stage popup = new Stage();
-            popup.initStyle(StageStyle.UNDECORATED);
-            popup.setAlwaysOnTop(true);
-            popup.initModality(Modality.APPLICATION_MODAL);
-
-            Rectangle card = new Rectangle(wid,height,Color.WHITE);
-
-            Text ti = new Text(title);
-            ti.setFont(new Font(java.awt.Font.BOLD));
-            ti.setTextAlignment(TextAlignment.CENTER);
-
-            Text mes = new Text(message);
-            mes.setTextAlignment(TextAlignment.CENTER);
-
-            Button close = new Button("Return to game");
-            close.setOnAction(event -> {
-                popup.close();
-                semaphore.release(1);
-            });
-
-            VBox vBox = new VBox();
-            vBox.getChildren().addAll(ti,mes,close);
-            vBox.setAlignment(Pos.TOP_CENTER);
-
-            StackPane stackPane = new StackPane();
-            stackPane.getChildren().addAll(card,vBox);
-
-            Scene scene = new Scene(stackPane,wid,height);
-
-            scene.setOnKeyPressed(event -> {
-                popup.close();
-                semaphore.release(1);
-            });
-
-            popup.setScene(scene);
-            popup.showAndWait();
+            showChanceFX(title,message);
         });
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showChanceFX(String title, String message){
+        int wid = 400;
+        int height = 150;
+
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.UNDECORATED);
+        popup.setAlwaysOnTop(true);
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+        Text ti = new Text(title);
+        ti.setTextAlignment(TextAlignment.CENTER);
+
+        Text mes = new Text(message);
+        mes.setTextAlignment(TextAlignment.CENTER);
+
+        Button close = new Button("Return to game");
+        close.setOnAction(event -> {
+            popup.close();
+            semaphore.release(1);
+        });
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(ti,mes,close);
+        vBox.setAlignment(Pos.CENTER);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(card,vBox);
+
+        Scene scene = new Scene(stackPane,wid,height);
+
+        scene.setOnKeyPressed(event -> {
+            popup.close();
+            semaphore.release(1);
+        });
+
+        popup.setScene(scene);
+        popup.showAndWait();
     }
 
     private enum Orientation {UP,DOWN,LEFT,RIGHT}
