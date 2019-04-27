@@ -1,9 +1,6 @@
-import javafx.scene.paint.Color;
-
 public class NPC extends Player{
-
-    public NPC(String name, Board myBoard, Color token) {
-        super(name, myBoard, token);
+    public NPC(String name, Board myBoard, String token, int tokenSize) {
+        super(name, myBoard, token, tokenSize);
         this.type = Type.NPC;
     }
 

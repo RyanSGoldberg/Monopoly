@@ -20,13 +20,15 @@ import java.awt.*;
 import java.util.concurrent.Semaphore;
 
 public class Display extends Application implements GameDisplay{
-    Stage window;
-    Scene scene;
-    BorderPane screen;
-    BorderPane gameBoard;
+    private Stage window;
+    private BorderPane screen;
+    private BorderPane gameBoard;
 
     private Board game;
-    private int boardSize;
+
+    private int BOARDSIZE;
+    private int TILE_LENGTH;
+    private int TILE_WIDTH;
 
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,null,Color.CORNFLOWERBLUE,Color.MAGENTA,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.DODGERBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
@@ -38,32 +40,95 @@ public class Display extends Application implements GameDisplay{
     public void start(Stage primaryStage){
         //The main window
         window = primaryStage;
+        window.setTitle("Monopoly");
         window.setResizable(false);
 
+        //Initializes the scale of the window/components
+        initializeSizes();
+
+        //Start the main menu
+        startMainMenu();
+
+        window.show();
+    }
+
+    private void initializeSizes(){
         //Gets the current screen size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //TODO Scaling stuff
 
         //Calculates the board size based on the screen size
         if(screenSize.width < screenSize.height){
-            boardSize = screenSize.width-55;
+            BOARDSIZE = screenSize.width-55;
         }else {
-            boardSize = screenSize.height-55;
+            BOARDSIZE = screenSize.height-55;
         }
 
-        final int NUM_PLAYERS = 1;//TODO
-        final int NUM_NPC = 2;
+        /*
+        let board width be n
+        let tile width be w
 
-        //Makes a new instance of board, which is the game logic
-        game = new Board(true,this, NUM_PLAYERS+NUM_NPC);
+        9w + 2(5/3)w = n
+        n = 37w/3
+        w = 3n/37
+         */
+        TILE_WIDTH  = (int)(3.0* BOARDSIZE /37.0);
 
+        //The L is 5/3 of the W
+        TILE_LENGTH = (int) ((double)TILE_WIDTH*(5.0/3.0));
+
+
+    }
+
+    private void startMainMenu(){
+        //The border pane covering the entire 'screen'
+        BorderPane mainMenu = new BorderPane();
+        mainMenu.setMaxSize(BOARDSIZE,BOARDSIZE);
+        mainMenu.setMinSize(BOARDSIZE,BOARDSIZE);
+
+        VBox centre = new VBox(10);
+
+        Button newGame = new Button("New Game");
+        newGame.setOnAction(event -> {
+            System.out.println("New Game");
+            //Makes a new instance of board, which is the game logic
+            game = new Board(true,this);
+            startPlayerCreator();
+            startGame();
+
+        });
+
+        Button loadGame = new Button("Load Game");
+        loadGame.setOnAction(event -> {
+            System.out.println("Load Game");
+            //game = new Board(false,this);
+            //startGame();
+            System.out.println("TODO");
+        });
+
+        centre.getChildren().addAll(newGame,loadGame);
+        centre.setAlignment(Pos.CENTER);
+
+        mainMenu.setCenter(centre);
+
+        Scene scene = new Scene(mainMenu);
+        window.setScene(scene);
+    }
+
+    private void startPlayerCreator(){
         //TODO GET PLAYERS via UI
-        game.players.add(new NPC("AI",game,Color.DODGERBLUE));
-        game.players.add(new Player("Hannah",game,Color.RED));
-        game.players.add(new NPC("Computer",game,Color.ORANGE));
 
-        //game.players.add(new NPC("Computer",game,Color.GREEN,Player.Type.NPC));
+        int spriteSize = 40;
 
+        game.players.add(new NPC("AI",game,"car",spriteSize));
+        //game.players.add(new Player("Hannah",game,"dog",spriteSize));
+        //game.players.add(new Player("Ryan",game,"hat",spriteSize));
+        //game.players.add(new NPC("Computer",game,"hat",spriteSize));
+
+        game.setNumPlayers();
+    }//TODO
+
+    private void startGame(){
         //The border pane covering the entire 'screen'
         screen = new BorderPane();
 
@@ -71,12 +136,12 @@ public class Display extends Application implements GameDisplay{
         updateGameBoardFX();
 
         //Shows player stats / inventory
-        updatePlayerPaneFX(game.players.get(game.currentPlayer));
+        updatePlayerPaneFX(game.getCurrentPlayer());
 
         //The main scene of the game
-        scene = new Scene(screen,window.getWidth(),window.getHeight());
+        Scene scene = new Scene(screen);
 
-        //The Task and Thread that the game logic is run om
+        //The Task and Thread that the game logic is run on
         Task task = new Task() {
             @Override
             protected Object call(){
@@ -87,68 +152,47 @@ public class Display extends Application implements GameDisplay{
         Thread thread = new Thread(task);
         thread.start();
 
-        scene.setOnKeyPressed(e -> {
-            switch (e.getCode()) {
-                case ESCAPE:
-                    System.exit(0);
-                    break;
-            }
-        });
-
         window.setScene(scene);
-        window.show();
     }
 
     private void generateGameBoard(){
-        int tileWidth  = (int)(3.0*boardSize/37.0);
-        /*
-        let board width be n
-        let tile width be w
-
-        9w + 2(5/3)w = n
-        n = 37w/3
-        w = 3n/37
-         */
-        int tileLength = (int) ((double)tileWidth*(5.0/3.0));
-
         gameBoard = new BorderPane();
-        gameBoard.setMaxSize(boardSize,boardSize);
+        gameBoard.setMaxSize(BOARDSIZE, BOARDSIZE);
 
         //Bottom Row
         HBox bottom = new HBox();
         //Left Column
         VBox left = new VBox();
-        left.setPadding(new Insets(0,-tileLength,0,0));
+        left.setPadding(new Insets(0,-TILE_LENGTH,0,0));
         //Right Column
         VBox right = new VBox();
-        right.setPadding(new Insets(0,0,0,-tileLength));
+        right.setPadding(new Insets(0,0,0,-TILE_LENGTH));
         //Top Row
         HBox top = new HBox();
 
         for (int i = 0; i < 40; i++) {
             if(i == 0){
                 int x = 10;
-                bottom.getChildren().add(drawCorner(tileLength,x));
+                bottom.getChildren().add(drawCorner(TILE_LENGTH,x));
             }else if(i < 10){
                 int x = 10-i; //Flips the bottom row, so it is oriented correctly
-                bottom.getChildren().add(drawMid(tileWidth,tileLength,tileColors[game.tiles[x].groupName],x,Orientation.UP));
+                bottom.getChildren().add(drawMid(TILE_WIDTH,TILE_LENGTH,tileColors[game.tiles[x].groupName],x,Orientation.UP));
             }else if(i == 10){
                 int x = 0;
-                bottom.getChildren().add(drawCorner(tileLength,x));
+                bottom.getChildren().add(drawCorner(TILE_LENGTH,x));
             }else if(i < 20){
                 int x = 30-i;//Flips the left column, so it is oriented correctly
-                left.getChildren().add(drawMid(tileLength,tileWidth,tileColors[game.tiles[x].groupName],x,Orientation.LEFT));
+                left.getChildren().add(drawMid(TILE_LENGTH,TILE_WIDTH,tileColors[game.tiles[x].groupName],x,Orientation.LEFT));
             }else if(i == 20){
-                top.getChildren().add(drawCorner(tileLength,i));
+                top.getChildren().add(drawCorner(TILE_LENGTH,i));
             }else if(i < 30){
-                top.getChildren().add(drawMid(tileWidth,tileLength,tileColors[game.tiles[i].groupName],i,Orientation.DOWN));
+                top.getChildren().add(drawMid(TILE_WIDTH,TILE_LENGTH,tileColors[game.tiles[i].groupName],i,Orientation.DOWN));
             }else if(i == 30){
-                top.getChildren().add(drawCorner(tileLength,i));
+                top.getChildren().add(drawCorner(TILE_LENGTH,i));
             }else {
-                right.getChildren().add(drawMid(tileLength,tileWidth,tileColors[game.tiles[i].groupName],i,Orientation.RIGHT));
+                right.getChildren().add(drawMid(TILE_LENGTH,TILE_WIDTH,tileColors[game.tiles[i].groupName],i,Orientation.RIGHT));
             }
         }
-
         gameBoard.setBottom(bottom);
         gameBoard.setLeft(left);
         gameBoard.setRight(right);
@@ -197,20 +241,23 @@ public class Display extends Application implements GameDisplay{
 
             ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+imageName+".png")));
             image.setPreserveRatio(true);
-            image.setFitHeight(50);//TODO Make Dynamic
 
             switch (orientation){
                 case UP:
                     image.setRotate(0);
+                    image.setFitHeight(wid*3/5);
                     break;
                 case LEFT:
                     image.setRotate(90);
+                    image.setFitHeight(height*3/5);
                     break;
                 case DOWN:
                     image.setRotate(180);
+                    image.setFitHeight(wid*3/5);
                     break;
                 case RIGHT:
                     image.setRotate(270);
+                    image.setFitHeight(height*3/5);
                     break;
             }
             base.getChildren().addAll(baseRec,image);
@@ -239,7 +286,7 @@ public class Display extends Application implements GameDisplay{
             base.getChildren().addAll(baseRec,coloredRec);
         }
 
-        //TODO
+        //TODO Text rotation
         Text text = new Text(Integer.toString(game.tiles[i].location));
         text.setRotate(0);
 
@@ -252,6 +299,7 @@ public class Display extends Application implements GameDisplay{
             }
         }
 
+        //FIXME
         tempTile.getChildren().addAll(base,text,players);
         tempTile.setOnMouseClicked(event -> {
             if(game.tiles[i].type == Tile.Type.PROPERTY){
@@ -274,7 +322,7 @@ public class Display extends Application implements GameDisplay{
 
     private VBox generatePlayerPane(Player p){
         VBox temp = new VBox(10);
-        temp.setMinWidth(400);
+        temp.setMinWidth((double)BOARDSIZE/2.5);
         temp.setPadding(new Insets(30,0,0,10));
         temp.setMouseTransparent(false);
 
@@ -298,10 +346,8 @@ public class Display extends Application implements GameDisplay{
 
             Text t = new Text(s);
 
-            //FIXME
             //When the property is clicked, display its card
             t.setOnMouseClicked(event -> {
-                outValue = -1;
                 showPropertyFX(prop);
             });
 
@@ -347,7 +393,10 @@ public class Display extends Application implements GameDisplay{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return outValue;
+
+        int t = outValue;
+        outValue = -1;
+        return t;
     }
 
     public void promptFX(String question, int[] buttonsToDisplay){
@@ -464,6 +513,16 @@ public class Display extends Application implements GameDisplay{
         //The background of the card
         Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
+        //The owner
+        String s;
+        if(p.hasOwner()){
+            s = "Owner: "+p.getOwner().getName();
+        }else {
+            s = "Available";
+        }
+
+        Text owner = new Text(s);
+
         //A button which closes the card, and returns to the game
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
@@ -490,7 +549,7 @@ public class Display extends Application implements GameDisplay{
                     "\nIf 4 Railroads Are Owned: $200"+
                     "\nMortgage Value $"+p.propertySalePrice());
 
-            vBox.getChildren().addAll(image,name,text,close);
+            vBox.getChildren().addAll(image,name,owner,text,close);
 
         }else if(p.groupName == 005){//Utilities
             ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
@@ -505,7 +564,7 @@ public class Display extends Application implements GameDisplay{
                     "\nRent is 10x the amount shown on the dice."+
                     "\nMortgage Value $"+p.propertySalePrice());
 
-            vBox.getChildren().addAll(image,name,text,close);
+            vBox.getChildren().addAll(image,name,owner,text,close);
         }else{
             StackPane coloredStack = new StackPane();
             Rectangle coloredRec = new Rectangle(wid,height/4,tileColors[p.groupName]);
@@ -529,9 +588,7 @@ public class Display extends Application implements GameDisplay{
             );
             values.setTextAlignment(TextAlignment.CENTER);
 
-            vBox.getChildren().addAll(coloredStack,values,close);
-
-
+            vBox.getChildren().addAll(coloredStack,owner,values,close);
         }
 
         vBox.setAlignment(Pos.TOP_CENTER);

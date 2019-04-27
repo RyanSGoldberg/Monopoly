@@ -20,22 +20,22 @@ public class Board{
     private int cashPot;
 
     private int numDoubleRollsOnTurn;
-    //Number of players (2-6)
-    private int numPlayers;
+
+    public int numPlayers;
 
     public int[] monopolies;
 
-    public Board(boolean newGame, Display gameDisplay, int numPlayers){
+    public Board(boolean newGame, Display gameDisplay){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
         this.gameDisplay = gameDisplay;
-        this.numPlayers = numPlayers;
         loadTiles();
         if(newGame){
             //TODO
             players = new ArrayList<>();
         }else{
             //TODO Load board
+            setNumPlayers();
         }
     }
 
@@ -108,14 +108,8 @@ public class Board{
         }
         */
 
-        System.out.println("Start");
-
-        long before = System.currentTimeMillis();
-        long turns = 0;
-
         currentPlayer = 0;
         while (players.size() > 1) {
-            turns++;
             numDoubleRollsOnTurn = 0;
             handleTurn(getCurrentPlayer());
             currentPlayer++;
@@ -123,12 +117,7 @@ public class Board{
                 currentPlayer = 0;
             }
         }
-        long after = System.currentTimeMillis();
-
-        long time = (after-before)/1000/60;
-        System.out.println(getCurrentPlayer().getName()+" won the game");
-        System.out.println("The algorithm took "+time+" minutes");
-        System.out.println("The algorithm took "+turns+" turns");
+        gameDisplay.message(getCurrentPlayer().getName()+" won the game",getCurrentPlayer());
     }
 
     public void handleTurn(Player p){
@@ -419,6 +408,10 @@ public class Board{
 
     public Player getCurrentPlayer(){
         return players.get(currentPlayer);
+    }
+
+    public void setNumPlayers() {
+        this.numPlayers = players.size();
     }
 
     @Override
