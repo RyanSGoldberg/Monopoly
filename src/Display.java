@@ -51,12 +51,18 @@ public class Display extends Application implements GameDisplay{
             boardSize = screenSize.height-55;
         }
 
+        final int NUM_PLAYERS = 1;//TODO
+        final int NUM_NPC = 2;
+
         //Makes a new instance of board, which is the game logic
-        game = new Board(true,this, 2);
+        game = new Board(true,this, NUM_PLAYERS+NUM_NPC);
 
         //TODO GET PLAYERS via UI
-        game.players.add(new Player("Ryan",game,Color.DODGERBLUE));
+        game.players.add(new NPC("AI",game,Color.DODGERBLUE));
         game.players.add(new Player("Hannah",game,Color.RED));
+        game.players.add(new NPC("Computer",game,Color.ORANGE));
+
+        //game.players.add(new NPC("Computer",game,Color.GREEN,Player.Type.NPC));
 
         //The border pane covering the entire 'screen'
         screen = new BorderPane();
@@ -283,11 +289,19 @@ public class Display extends Application implements GameDisplay{
         temp.getChildren().addAll(name,balance,inventory);
 
         for (Property prop:p.getInventory()) {
-            Text t = new Text("\t"+prop.getName());
+            String s = "\t"+prop.getName();
+            if(prop.getNumberHouses() == 5){
+                s+= " x 1 hotel";
+            }else if(prop.getNumberHouses() >0){
+                s+= " x "+prop.getNumberHouses()+"houses";
+            }
+
+            Text t = new Text(s);
 
             //FIXME
             //When the property is clicked, display its card
             t.setOnMouseClicked(event -> {
+                outValue = -1;
                 showPropertyFX(prop);
             });
 
@@ -301,6 +315,11 @@ public class Display extends Application implements GameDisplay{
     }
 
     public void updatePlayerPane(Player p){
+        //Don't show visual for NPC
+        if(p.getType() == Player.Type.NPC){
+            return;
+        }
+
         Platform.runLater(() ->{
             updatePlayerPaneFX(p);
         });
@@ -360,7 +379,7 @@ public class Display extends Application implements GameDisplay{
                     pane.getChildren().add(buttonBuilder("Use your get out of jail free card",3,pane));
                     break;
                 case 4:
-                    pane.getChildren().add(buttonBuilder("Just chill here",4,pane));
+                    pane.getChildren().add(buttonBuilder("End Turn",4,pane));
                     break;
                 case 5:
                     pane.getChildren().add(buttonBuilder("You can buy this property for " + prop.getCost(),5,pane));
@@ -408,7 +427,12 @@ public class Display extends Application implements GameDisplay{
 
     public void movePlayer(Player p){}//TODO Player token animation
 
-    public void showProperty(Property p){
+    public void showProperty(Property p, Player player){
+        //Don't show visual for NPC
+        if(player.getType() == Player.Type.NPC){
+            return;
+        }
+
         if(semaphore.availablePermits() != 0) {
             try {
                 throw new Exception("Invalid Permit Count");
@@ -521,7 +545,12 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void message(String message){
+    public void message(String message,Player player){
+        //Don't show visual for NPC
+        if(player.getType() == Player.Type.NPC){
+            return;
+        }
+
         if(semaphore.availablePermits() != 0){
             try{
                 throw new Exception ("Invalid Permit Count");
@@ -579,7 +608,12 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void showChance(String title, String message){
+    public void showChance(String title, String message,Player player){
+        //Don't show visual for NPC
+        if(player.getType() == Player.Type.NPC){
+            return;
+        }
+
         if(semaphore.availablePermits() != 0){
             try{
                 throw new Exception ("Invalid Permit Count");

@@ -84,7 +84,7 @@ public class Property extends Tile {
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
 
-            myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName());
+            myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName(),p);
         }
 
     }
@@ -190,7 +190,7 @@ public class Property extends Tile {
         }
     }
 
-    private boolean playerHasMonopoly(int group){
+    public boolean playerHasMonopoly(int group){
         if(numberOfAGroupOwned(group) == myBoard.monopolies[group-1]){
             return true;
         }

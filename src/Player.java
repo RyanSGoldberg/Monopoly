@@ -21,6 +21,8 @@ public class Player {
 
     private Board myBoard;
 
+    protected Type type;
+
     public Circle sprite;
 
     public Player(String name, Board myBoard,Color token) {
@@ -33,7 +35,9 @@ public class Player {
         this.inventory = new ArrayList<>();
         this.myBoard = myBoard;
 
-        this.sprite = new Circle(20, token);
+        this.type = Type.PC;
+
+        this.sprite = new Circle(15, token);
     }
 
     public void removeMoney(int amount){
@@ -122,6 +126,10 @@ public class Player {
         return net;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -134,4 +142,6 @@ public class Player {
                 ", inventory=" + inventory +
                 '}';
     }
+
+    enum Type {PC,NPC}
 }
