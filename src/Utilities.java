@@ -17,8 +17,4 @@ public class Utilities {
         return start+(int)(Math.random()*(end-start));
     }
 
-    enum Type{PROPERTY, SPECIAL}
-
-    //have to write board.ToString and in that method, put in all the info on each of the players
-    //from there, I need to write the board.ToString file to a file
 }

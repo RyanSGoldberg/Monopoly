@@ -1,5 +1,5 @@
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 
@@ -21,9 +21,11 @@ public class Player {
 
     private Board myBoard;
 
-    public Circle sprite;
+    protected Type type;
 
-    public Player(String name, Board myBoard,Color token) {
+    public ImageView sprite;
+
+    public Player(String name, Board myBoard,String token, int tokenSize) {
         this.name = name;
         this.wallet = 1500;
         this.position = 0;
@@ -33,7 +35,9 @@ public class Player {
         this.inventory = new ArrayList<>();
         this.myBoard = myBoard;
 
-        this.sprite = new Circle(20, token);
+        this.type = Type.PC;
+
+        initializeSprite(token,tokenSize);
     }
 
     public void removeMoney(int amount){
@@ -122,6 +126,16 @@ public class Player {
         return net;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    private void initializeSprite(String token, int size){
+        sprite = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+token+".png")));
+        sprite.setPreserveRatio(true);
+        sprite.setFitHeight(size);
+    }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -134,4 +148,6 @@ public class Player {
                 ", inventory=" + inventory +
                 '}';
     }
+
+    enum Type {PC,NPC}
 }

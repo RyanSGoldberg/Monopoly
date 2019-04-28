@@ -20,22 +20,22 @@ public class Board{
     private int cashPot;
 
     private int numDoubleRollsOnTurn;
-    //Number of players (2-6)
-    private int numPlayers;
+
+    public int numPlayers;
 
     public int[] monopolies;
 
-    public Board(boolean newGame, Display gameDisplay, int numPlayers){
+    public Board(boolean newGame, Display gameDisplay){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
         this.gameDisplay = gameDisplay;
-        this.numPlayers = numPlayers;
         loadTiles();
         if(newGame){
             //TODO
             players = new ArrayList<>();
         }else{
             //TODO Load board
+            setNumPlayers();
         }
     }
 
@@ -111,40 +111,43 @@ public class Board{
         currentPlayer = 0;
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
-            handleTurn(players.get(currentPlayer));
+            handleTurn(getCurrentPlayer());
             currentPlayer++;
-            if(currentPlayer == numPlayers){
+            if(currentPlayer  == numPlayers){
                 currentPlayer = 0;
             }
         }
-        gameDisplay.message("WOW "+players.get(0).getName()  +" you won the game");
+        gameDisplay.message(getCurrentPlayer().getName()+" won the game",getCurrentPlayer());
     }
 
     public void handleTurn(Player p){
         boolean doubleRoll;
         do {
-            gameDisplay.message("It is " + p.getName() + "'s turn");
+            gameDisplay.message("It is " + p.getName() + "'s turn",p);
 
             gameDisplay.updatePlayerPane(p);
 
-            gameDisplay.prompt("Roll the die", new int[]{0});
+            //If it is a playable character
+            if(p.getType() == Player.Type.PC){
+                gameDisplay.prompt("Roll the die", new int[]{0});
+            }
 
             //Rolls the dice
             int die1 = Utilities.roll();
             int die2 = Utilities.roll();
-            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2);
+            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2,p);
 
             //If a double is rolled
             doubleRoll = false;
             if (die1 == die2) {
                 doubleRoll = true;
                 numDoubleRollsOnTurn++;
-                gameDisplay.message("WOW: You got a double");
+                gameDisplay.message("WOW: You got a double",p);
             }
 
             //If a double is rolled 3 times, then end the turn and send to jail
             if (numDoubleRollsOnTurn == 3) {
-                gameDisplay.message("That's 3 doubles in a row, sorry friend off to jail with you");
+                gameDisplay.message("That's 3 doubles in a row, sorry friend off to jail with you",p);
                 sendToJail(p);
                 return;
             }
@@ -153,7 +156,7 @@ public class Board{
                 //If the player rolled a double, free them
                 if (doubleRoll) {
                     p.decreaseJail(true);
-                    gameDisplay.message("Lucky for you, that double will set you free");
+                    gameDisplay.message("Lucky for you, that double will set you free",p);
                 } else {
                     int[] options = new int[3];
                     options[0] = 1;
@@ -172,7 +175,14 @@ public class Board{
                         options[2] = -1;
                     }
 
-                    int choice = gameDisplay.prompt("You're still in jail. Here are your choices", options);
+                    int choice;
+                    if(p.getType() == Player.Type.PC) {
+                        choice = gameDisplay.prompt("You're still in jail. Here are your choices", options);
+                    }else {
+                        NPC npc = (NPC)p;
+                        choice = npc.makeDecisionJail(options);
+                    }
+
                     switch (choice) {
                         case 1:
                             p.decreaseJail(false);
@@ -198,7 +208,7 @@ public class Board{
             //The tile the player is currently on
             Tile tile = tiles[p.position];
 
-            gameDisplay.movePlayer(p);
+            //gameDisplay.movePlayer(p);//FIXME
             //System.out.println("You are now located on " + tile.name);
             //System.out.println(tile.toString(die1 + die2));//TODO How to do with graphics
 
@@ -206,76 +216,100 @@ public class Board{
             //Calls the tile's basic function
             tile.landedOn(p, die1 + die2);//TODO Add graphical capabilities
 
-            gameDisplay.updatePlayerPane(p);
+            //The player's choices
+            int[] options = new int[]{-1,-1,-1,-1,-1,-1};
+            //End Turn
+            options[0] = 4;
+            //Trade option
+            options[5] = 11;
 
-            //If the player landed on a property, they are given option of what to do with it
-            if (tile.type == Utilities.Type.PROPERTY) {
-                Property prop = (Property) tile;
+            Property prop = null;
+            if (tile.type == Tile.Type.PROPERTY) {
+                prop = (Property) tile;
+                gameDisplay.showProperty(prop,p);
 
-                gameDisplay.showProperty(prop);
+            }
 
-                int[] options = new int[5];
+            //Loop until the user has ended their turn (choice == 4)
+            int choice = -1;
+            int numActionsThisTurn = 0;
+            while (choice != 4){
+                gameDisplay.updatePlayerPane(p);
 
-
-                //Do nothing this turn option
-                options[0] = 4;
-
-                if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
-                    options[1] = 5;
-                } else {
-                    options[1] = -1;
-                }
-
-                try {
-                    if (prop.getOwner().equals(p) && p.getBalance() >= prop.getCost() && prop.canBuild()) {
-                        options[2] = 6;
+                //If the player landed on a property, they are given option of what to do with it
+                if (tile.type == Tile.Type.PROPERTY) {
+                    //Buy property
+                    if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
+                        options[1] = 5;
                     } else {
+                        options[1] = -1;
+                    }
+
+                    //Build house
+                    try {
+                        if (prop.getOwner().equals(p) && p.getBalance() >= prop.getCost() && prop.canBuild() && prop.getNumberHouses() < 6 && prop.playerHasMonopoly(prop.groupName)) {
+                            options[2] = 6;
+                        } else {
+                            options[2] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[2] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[2] = -1;
-                }
 
-                try {
-                    if (prop.getOwner().equals(p)) {
-                        options[3] = 7;
-                    } else {
+                    //Sell Property
+                    try {
+                        if (prop.getOwner().equals(p)) {
+                            options[3] = 7;
+                        } else {
+                            options[3] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[3] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[3] = -1;
-                }
-                try {
-                    if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
-                        options[4] = 8;
-                    } else {
+
+                    //Sell house
+                    try {
+                        if (prop.getOwner().equals(p) && prop.getNumberHouses() > 0) {
+                            options[4] = 8;
+                        } else {
+                            options[4] = -1;
+                        }
+                    } catch (NullPointerException e) {
                         options[4] = -1;
                     }
-                } catch (NullPointerException e) {
-                    options[4] = -1;
+
                 }
 
-                int choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
+                if(p.getType() == Player.Type.PC) {
+                    choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
+                }else {
+                    NPC npc = (NPC)p;
+                    numActionsThisTurn++;
+                    choice = npc.makeDecisionLandedOn(options,numActionsThisTurn);
+                }
+
                 switch (choice) {
                     case 4:
-                        gameDisplay.message("Ok. See you next turn");
+                        gameDisplay.message("Ok. See you next turn",p);
                         break;
                     case 5:
-                        gameDisplay.message(prop.name + " is now yours");
+                        gameDisplay.message(prop.name + " is now yours",p);
                         prop.buy(p);
                         break;
                     case 6:
-                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " built here. Quite the estate");
                         prop.buildHouse();
+                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " houses built here. Quite the estate",p);
                         break;
                     case 7:
-                        gameDisplay.message("With today's market, I don't blame you for selling");
                         prop.sellProperty();
+                        gameDisplay.message("With today's market, I don't blame you for selling",p);
                         break;
                     case 8:
-                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses");
                         prop.sellHouse();
+                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses",p);
                         break;
+                    case 11:
+                        //TODO TRADE
                 }
             }
         } while (doubleRoll);
@@ -340,8 +374,9 @@ public class Board{
                 p.getJailCard();
                 break;
         }
-        gameDisplay.showChance(cardName,cardMessage);
+        gameDisplay.showChance(cardName,cardMessage,p);
         gameDisplay.updatePlayerPane(p);
+        gameDisplay.updateGameBoard();
         //TODO Update Player location
     }
 
@@ -355,15 +390,28 @@ public class Board{
         return c;
     }
 
+    public int getCashPot() {
+        return cashPot;
+    }
+
     public void mortgageMode(Player p, int debt){
         if(p.netWorth() < debt){
-            System.out.println("Sorry pal, looks like your gambling days are over: You're OUT");
+            gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",p);
             players.remove(p);
         }
 
         while (debt != 0){
+            System.out.println("Debt entered");
             //TODO Force sell of stuff
         }
+    }
+
+    public Player getCurrentPlayer(){
+        return players.get(currentPlayer);
+    }
+
+    public void setNumPlayers() {
+        this.numPlayers = players.size();
     }
 
     @Override

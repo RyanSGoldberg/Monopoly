@@ -2,10 +2,9 @@
  * PURPOSE OF CLASS
  * @author Shafran
  */
-import java.util.*;
 public class Special extends Tile{
     public Special(int location, String name, Board myBoard) {
-        type = Utilities.Type.SPECIAL;
+        type = Tile.Type.SPECIAL;
         this.name = name;
         this.location = location;
         this.myBoard = myBoard;
@@ -19,37 +18,49 @@ public class Special extends Tile{
                 break;
             //Sends the player to jail due to landing on the Go To Jail tile
             case "Go To Jail":
-                System.out.println("Sorry Pal, off to the clink with you");
+                myBoard.gameDisplay.message("Sorry Pal, off to the clink with you",p);
                 myBoard.sendToJail(p);
                 break;
             //Has the player draw a card due to landing on the Chance tile
             case "Chance":
-                System.out.println("You just got a chance card?!?!");
                 myBoard.drawCard(p);
                 break;
             //Has the player take all the money from the money pot due to landing on the Free Parking tile
             case "Free Parking":
                 int received = myBoard.emptyCashPot();
-                System.out.println("You lucky duck. You just got $"+received);
                 p.addMoney(received);
+
+                if(myBoard.getCashPot() > 0){
+                    myBoard.gameDisplay.message("You lucky duck. You just got $"+received,p);
+                }
                 break;
             //Has the player pay either $150 or 10% of his/her wallet due to landing on the Income Tax tile
             case "Income Tax":
-                System.out.println("You have to pay your taxes pal. Here are your options ...");
+                int[] options = new int[2];
+
                 if(p.getBalance()>=150){
-                    System.out.println("1) You can pay $150");
+                    options[0] = 9;
+                }else {
+                    options[0] = -1;
                 }
 
-                System.out.println("2) You can pay 10% of your wallet");
+                //You can pay %10 of your wallet
+                options[1] = 10;
 
-                Scanner sc=new Scanner(System.in);
-                int userChoice=sc.nextInt();
-                switch (userChoice){
-                    case 1:
+                int choice;
+                if(p.getType() == Player.Type.PC) {
+                    choice = myBoard.gameDisplay.prompt("You have to pay your taxes pal. Here are your options ...",options);
+                }else {
+                    NPC npc = (NPC)p;
+                    choice = npc.makeDecisionTaxes(options);
+                }
+
+                switch (choice){
+                    case 9:
                         p.removeMoney(150);
                         myBoard.addToCashPot(150);
                         break;
-                    case 2:
+                    case 10:
                         p.removeMoney((int)(p.getBalance()*0.1));
                         myBoard.addToCashPot((int)(p.getBalance()*0.1));
                         break;
