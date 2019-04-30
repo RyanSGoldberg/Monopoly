@@ -14,7 +14,8 @@ public class Special extends Tile{
         switch (name){
             //Has the player pass the Go tile
             case "Go":
-                myBoard.passGo(p);
+                //Double pass go, if you land on go
+                p.addMoney(400);
                 break;
             //Sends the player to jail due to landing on the Go To Jail tile
             case "Go To Jail":
