@@ -223,6 +223,8 @@ public class Board{
             //Loop until the user has ended their turn (choice == 4)
             int choice = -1;
             int numActionsThisTurn = 0;
+            boolean boughtProperty = false;
+            boolean boughtHouse = false;
             while (choice != 4){
                 gameDisplay.updatePlayerPane(p);
 
@@ -275,7 +277,13 @@ public class Board{
                 }else {
                     NPC npc = (NPC)p;
                     numActionsThisTurn++;
-                    choice = npc.makeDecisionLandedOn(options,numActionsThisTurn);
+                    choice = npc.makeDecisionLandedOn(options,numActionsThisTurn, boughtProperty, boughtHouse);
+                    if (choice == 5){
+                        boughtProperty = true;
+                    }
+                    else if(choice == 6){
+                        boughtHouse = true;
+                    }
                 }
 
                 switch (choice) {

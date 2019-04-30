@@ -19,25 +19,53 @@ public class NPC extends Player{
         return 1;
     }
 
-    public int makeDecisionLandedOn(int[] options, int numActions){
-        //Always buy
-        if(options[1] == 5){
+    public int makeDecisionLandedOn(int[] options, int numActions, boolean boughtProperty, boolean boughtHouse){
+        if(makeDecisionBuyProperty(options)) {
             return 5;
-        }
-
-        //Buy a house if they can, and they haven't done more than 2 things
-        if(options[2] == 6 && numActions < 2){
+        } else if(makeDecisionBuildHouse(options)){
             return 6;
+        } else if(makeDecisionSellProperty(options) && boughtProperty == false){
+            return 7;
+        } else if(makeDecisionSellHouse(options) && boughtHouse == false){
+            return 8;
+        } else {
+            return 4;
+        }
+    }
+
+    public boolean makeDecisionBuyProperty(int[] options){
+        if(options[1] == 5){
+            return true;
+        }
+        else{
+            return false;
         }
 
-        //Never sell house
+    }
 
-        //Never sell property
+    public boolean makeDecisionBuildHouse(int[] options){
+        if(options[2] == 6){
+            return true;
+        } else{
+            return false;
+        }
 
-        //Never Trade
+    }
 
-        //Ends the turn
-        return 4;
+    public boolean makeDecisionSellProperty(int[] options){
+        if(this.getBalance() <= 169 && options[3] == 7){
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    public boolean makeDecisionSellHouse(int[] options){
+        if(this.getBalance() <= 169 && options[4] == 8){
+            return true;
+        } else{
+            return false;
+        }
     }
 
     public int makeDecisionTaxes(int[] options){
