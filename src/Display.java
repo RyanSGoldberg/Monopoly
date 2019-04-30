@@ -26,7 +26,7 @@ public class Display extends Application implements GameDisplay{
 
     private Board game;
 
-    private int BOARDSIZE;
+    private int BOARD_SIZE;
     private int TILE_LENGTH;
     private int TILE_WIDTH;
 
@@ -59,9 +59,9 @@ public class Display extends Application implements GameDisplay{
 
         //Calculates the board size based on the screen size
         if(screenSize.width < screenSize.height){
-            BOARDSIZE = screenSize.width-55;
+            BOARD_SIZE = screenSize.width-55;
         }else {
-            BOARDSIZE = screenSize.height-55;
+            BOARD_SIZE = screenSize.height-55;
         }
 
         /*
@@ -72,7 +72,7 @@ public class Display extends Application implements GameDisplay{
         n = 37w/3
         w = 3n/37
          */
-        TILE_WIDTH  = (int)(3.0* BOARDSIZE /37.0);
+        TILE_WIDTH  = (int)(3.0* BOARD_SIZE /37.0);
 
         //The L is 5/3 of the W
         TILE_LENGTH = (int) ((double)TILE_WIDTH*(5.0/3.0));
@@ -83,14 +83,13 @@ public class Display extends Application implements GameDisplay{
     private void startMainMenu(){
         //The border pane covering the entire 'screen'
         BorderPane mainMenu = new BorderPane();
-        mainMenu.setMaxSize(BOARDSIZE,BOARDSIZE);
-        mainMenu.setMinSize(BOARDSIZE,BOARDSIZE);
+        mainMenu.setMaxSize(BOARD_SIZE, BOARD_SIZE);
+        mainMenu.setMinSize(BOARD_SIZE, BOARD_SIZE);
 
         VBox centre = new VBox(10);
 
         Button newGame = new Button("New Game");
         newGame.setOnAction(event -> {
-            System.out.println("New Game");
             //Makes a new instance of board, which is the game logic
             game = new Board(true,this);
             startPlayerCreator();
@@ -120,9 +119,9 @@ public class Display extends Application implements GameDisplay{
 
         int spriteSize = 40;
 
-        game.players.add(new NPC("AI",game,"car",spriteSize));
-        //game.players.add(new Player("Hannah",game,"dog",spriteSize));
-        //game.players.add(new Player("Ryan",game,"hat",spriteSize));
+        //game.players.add(new NPC("AI",game,"car",spriteSize));
+        game.players.add(new Player("Ryan",game,"dog",spriteSize));
+        game.players.add(new Player("Player 2",game,"hat",spriteSize));
         //game.players.add(new NPC("Computer",game,"hat",spriteSize));
 
         game.setNumPlayers();
@@ -157,7 +156,7 @@ public class Display extends Application implements GameDisplay{
 
     private void generateGameBoard(){
         gameBoard = new BorderPane();
-        gameBoard.setMaxSize(BOARDSIZE, BOARDSIZE);
+        gameBoard.setMaxSize(BOARD_SIZE, BOARD_SIZE);
 
         //Bottom Row
         HBox bottom = new HBox();
@@ -322,7 +321,7 @@ public class Display extends Application implements GameDisplay{
 
     private VBox generatePlayerPane(Player p){
         VBox temp = new VBox(10);
-        temp.setMinWidth((double)BOARDSIZE/2.5);
+        temp.setMinWidth((double) BOARD_SIZE /2.5);
         temp.setPadding(new Insets(30,0,0,10));
         temp.setMouseTransparent(false);
 
@@ -476,9 +475,9 @@ public class Display extends Application implements GameDisplay{
 
     public void movePlayer(Player p){}//TODO Player token animation
 
-    public void showProperty(Property p, Player player){
+    public void showProperty(Property p, boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 
@@ -602,9 +601,9 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void message(String message,Player player){
+    public void message(String message,boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 
@@ -665,9 +664,9 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void showChance(String title, String message,Player player){
+    public void showChance(String title, String message,boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 

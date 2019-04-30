@@ -10,7 +10,7 @@ public class Special extends Tile{
         this.myBoard = myBoard;
     }
 
-    public void landedOn(Player p, int rollSum){
+    public void landedOn(Player p, int rollSum, boolean show){
         switch (name){
             //Has the player pass the Go tile
             case "Go":
@@ -18,12 +18,13 @@ public class Special extends Tile{
                 break;
             //Sends the player to jail due to landing on the Go To Jail tile
             case "Go To Jail":
-                myBoard.gameDisplay.message("Sorry Pal, off to the clink with you",p);
+                myBoard.gameDisplay.message("Sorry Pal, off to the clink with you",show);
                 myBoard.sendToJail(p);
+                myBoard.gameDisplay.updateGameBoard();
                 break;
             //Has the player draw a card due to landing on the Chance tile
             case "Chance":
-                myBoard.drawCard(p);
+                myBoard.drawCard(p, show);
                 break;
             //Has the player take all the money from the money pot due to landing on the Free Parking tile
             case "Free Parking":
@@ -31,7 +32,7 @@ public class Special extends Tile{
                 p.addMoney(received);
 
                 if(myBoard.getCashPot() > 0){
-                    myBoard.gameDisplay.message("You lucky duck. You just got $"+received,p);
+                    myBoard.gameDisplay.message("You lucky duck. You just got $"+received,show);
                 }
                 break;
             //Has the player pay either $150 or 10% of his/her wallet due to landing on the Income Tax tile
