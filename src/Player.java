@@ -138,14 +138,12 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
+        return  "name='" + name + '\'' +
                 ", wallet=" + wallet +
                 ", position=" + position +
                 ", numberOfJailCards=" + numberOfJailCards +
                 ", inJail=" + inJail +
                 ", turnsLeftInJail=" + turnsLeftInJail +
-                ", inventory=" + inventory +
                 '}';
     }
 
