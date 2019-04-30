@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
+import java.io.*;
 
 /**
  * PURPOSE OF CLASS
@@ -14,7 +16,7 @@ public class Board{
     public GameDisplay gameDisplay;
 
     public Tile[] tiles;
-    public ArrayList<Player> players;
+    public static ArrayList<Player> players;
     public int currentPlayer;
 
     private int cashPot;
@@ -418,7 +420,29 @@ public class Board{
         //TODO
     }
 
-    public void saveBoard(){
-        //TODO
+    public static void saveBoard(){
+
+        FileWriter fw;
+        PrintWriter pw;
+
+        try{
+            System.out.println("Enter the name of your game");
+            Scanner sc = new Scanner (System.in);
+            String game = (sc.nextLine())+".txt";
+
+            fw = new FileWriter(game);
+            pw = new PrintWriter(fw);
+
+            for (int i=0; i<players.size(); i++){
+                pw.println();
+            }
+            pw.println();
+
+            pw.close();
+        }catch(Exception e){
+            System.err.println("Error 404");
+        }
+
     }
+
 }

@@ -86,6 +86,7 @@ public class Property extends Tile {
             myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName(),show);
         }
 
+
     }
 
     public int getRent(int rollSum){
