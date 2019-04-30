@@ -78,13 +78,13 @@ public class Property extends Tile {
         }
     }
 
-    public void landedOn(Player p, int rollSum){ // charges money for somebody that lands on a proeprty they do not own
+    public void landedOn(Player p, int rollSum, boolean show){ // charges money for somebody that lands on a property they do not own
 
         if(owner != null && !owner.equals(p)){
             p.removeMoney(getRent(rollSum));
             owner.addMoney(getRent(rollSum));
 
-            myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName(),p);
+            myBoard.gameDisplay.message(p.getName() + " just paid $" + getRent(rollSum) + " to " + owner.getName(),show);
         }
 
     }

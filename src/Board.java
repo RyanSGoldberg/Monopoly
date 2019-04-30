@@ -111,19 +111,26 @@ public class Board{
         currentPlayer = 0;
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
-            handleTurn(getCurrentPlayer());
+
+            boolean show;
+            if(getCurrentPlayer().type == Player.Type.PC){
+                show = true;
+            }else {
+                show = false;
+            }
+            handleTurn(getCurrentPlayer(),show);
             currentPlayer++;
             if(currentPlayer  == numPlayers){
                 currentPlayer = 0;
             }
         }
-        gameDisplay.message(getCurrentPlayer().getName()+" won the game",getCurrentPlayer());
+        gameDisplay.message(getCurrentPlayer().getName()+" won the game",true);
     }
 
-    public void handleTurn(Player p){
+    public void handleTurn(Player p, boolean show){
         boolean doubleRoll;
         do {
-            gameDisplay.message("It is " + p.getName() + "'s turn",p);
+            gameDisplay.message("It is " + p.getName() + "'s turn",show);
 
             gameDisplay.updatePlayerPane(p);
 
@@ -135,19 +142,19 @@ public class Board{
             //Rolls the dice
             int die1 = Utilities.roll();
             int die2 = Utilities.roll();
-            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2,p);
+            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2,show);
 
             //If a double is rolled
             doubleRoll = false;
             if (die1 == die2) {
                 doubleRoll = true;
                 numDoubleRollsOnTurn++;
-                gameDisplay.message("WOW: You got a double",p);
+                gameDisplay.message("WOW: You got a double",show);
             }
 
             //If a double is rolled 3 times, then end the turn and send to jail
             if (numDoubleRollsOnTurn == 3) {
-                gameDisplay.message("That's 3 doubles in a row, sorry friend off to jail with you",p);
+                gameDisplay.message("That's 3 doubles in a row, sorry friend off to jail with you",show);
                 sendToJail(p);
                 return;
             }
@@ -156,7 +163,7 @@ public class Board{
                 //If the player rolled a double, free them
                 if (doubleRoll) {
                     p.decreaseJail(true);
-                    gameDisplay.message("Lucky for you, that double will set you free",p);
+                    gameDisplay.message("Lucky for you, that double will set you free",show);
                 } else {
                     int[] options = new int[3];
                     options[0] = 1;
@@ -214,7 +221,7 @@ public class Board{
 
 
             //Calls the tile's basic function
-            tile.landedOn(p, die1 + die2);//TODO Add graphical capabilities
+            tile.landedOn(p, die1 + die2, show);//TODO Add graphical capabilities
 
             //The player's choices
             int[] options = new int[]{-1,-1,-1,-1,-1,-1};
@@ -226,7 +233,7 @@ public class Board{
             Property prop = null;
             if (tile.type == Tile.Type.PROPERTY) {
                 prop = (Property) tile;
-                gameDisplay.showProperty(prop,p);
+                gameDisplay.showProperty(prop,show);
 
             }
 
@@ -290,23 +297,23 @@ public class Board{
 
                 switch (choice) {
                     case 4:
-                        gameDisplay.message("Ok. See you next turn",p);
+                        gameDisplay.message("Ok. See you next turn",show);
                         break;
                     case 5:
-                        gameDisplay.message(prop.name + " is now yours",p);
+                        gameDisplay.message(prop.name + " is now yours",show);
                         prop.buy(p);
                         break;
                     case 6:
                         prop.buildHouse();
-                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " houses built here. Quite the estate",p);
+                        gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " houses built here. Quite the estate",show);
                         break;
                     case 7:
                         prop.sellProperty();
-                        gameDisplay.message("With today's market, I don't blame you for selling",p);
+                        gameDisplay.message("With today's market, I don't blame you for selling",show);
                         break;
                     case 8:
                         prop.sellHouse();
-                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses",p);
+                        gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses",show);
                         break;
                     case 11:
                         //TODO TRADE
@@ -342,7 +349,7 @@ public class Board{
         moveTo(p,10);
     }
 
-    public void drawCard(Player p) {
+    public void drawCard(Player p, boolean show) {
         int number = Utilities.generateNumber(0, 5);
         String cardName = "";
         String cardMessage = "";
@@ -374,7 +381,7 @@ public class Board{
                 p.getJailCard();
                 break;
         }
-        gameDisplay.showChance(cardName,cardMessage,p);
+        gameDisplay.showChance(cardName,cardMessage,show);
         gameDisplay.updatePlayerPane(p);
         gameDisplay.updateGameBoard();
         //TODO Update Player location
@@ -396,7 +403,7 @@ public class Board{
 
     public void mortgageMode(Player p, int debt){
         if(p.netWorth() < debt){
-            gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",p);
+            gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
             players.remove(p);
         }
 

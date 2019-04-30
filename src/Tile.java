@@ -13,7 +13,7 @@ public class Tile{
     public Tile() {
     }
 
-    public void landedOn(Player p, int rollSum){
+    public void landedOn(Player p, int rollSum, boolean show){
     }
 
     public String toString(int rollSum) {

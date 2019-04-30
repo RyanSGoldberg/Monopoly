@@ -120,10 +120,10 @@ public class Display extends Application implements GameDisplay{
 
         int spriteSize = 40;
 
-        game.players.add(new NPC("AI",game,"car",spriteSize));
-        //game.players.add(new Player("Hannah",game,"dog",spriteSize));
+        //game.players.add(new NPC("AI",game,"car",spriteSize));
+        game.players.add(new Player("Ryan",game,"dog",spriteSize));
         //game.players.add(new Player("Ryan",game,"hat",spriteSize));
-        //game.players.add(new NPC("Computer",game,"hat",spriteSize));
+        game.players.add(new NPC("Computer",game,"hat",spriteSize));
 
         game.setNumPlayers();
     }//TODO
@@ -476,9 +476,9 @@ public class Display extends Application implements GameDisplay{
 
     public void movePlayer(Player p){}//TODO Player token animation
 
-    public void showProperty(Property p, Player player){
+    public void showProperty(Property p, boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 
@@ -602,9 +602,9 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void message(String message,Player player){
+    public void message(String message,boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 
@@ -665,9 +665,9 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
-    public void showChance(String title, String message,Player player){
+    public void showChance(String title, String message,boolean show){
         //Don't show visual for NPC
-        if(player.getType() == Player.Type.NPC){
+        if(!show){
             return;
         }
 

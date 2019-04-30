@@ -1,15 +1,15 @@
 public interface GameDisplay {
     int prompt(String question, int[] buttonsToDisplay);
 
-    void message(String message, Player player);
+    void message(String message, boolean show);
 
     void updatePlayerPane(Player p);
 
-    void showProperty(Property p, Player player);
+    void showProperty(Property p, boolean show);
 
     void movePlayer(Player p);
 
-    void showChance(String title, String message, Player player);
+    void showChance(String title, String message,boolean show);
 
     void updateGameBoard();
 }
