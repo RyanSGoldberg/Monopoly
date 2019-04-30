@@ -95,19 +95,6 @@ public class Board{
     }
 
     public void play(){
-        /*
-        Scanner sc = new Scanner(System.in);
-        System.out.println("How many players are there?");
-        numPlayers = sc.nextInt();
-
-        for (int i = 0; i < numPlayers; i++) {
-            sc = new Scanner(System.in);
-            System.out.println("What is player "+(i+1)+"'s name");
-            String name = sc.next();
-            players.add(new Player(name,this));
-        }
-        */
-
         currentPlayer = 0;
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -209,16 +196,12 @@ public class Board{
             //Move the player
             move(p, die1 + die2);
             gameDisplay.updateGameBoard();
-            //gameDisplay.movePlayer(p);
 
 
             //The tile the player is currently on
             Tile tile = tiles[p.position];
 
             //gameDisplay.movePlayer(p);//FIXME
-            //System.out.println("You are now located on " + tile.name);
-            //System.out.println(tile.toString(die1 + die2));//TODO How to do with graphics
-
 
             //Calls the tile's basic function
             tile.landedOn(p, die1 + die2, show);//TODO Add graphical capabilities
@@ -375,12 +358,16 @@ public class Board{
                 cardMessage = "You now must move "+randomLocation+" tiles forward";
 
                 move(p, randomLocation);
+                handleTurn(getCurrentPlayer(),show);
+
                 break;
             case 4:
                 cardName = "Get Out Of Jail Free Card";
+
                 p.getJailCard();
                 break;
         }
+
         gameDisplay.showChance(cardName,cardMessage,show);
         gameDisplay.updatePlayerPane(p);
         gameDisplay.updateGameBoard();

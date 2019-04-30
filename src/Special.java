@@ -20,6 +20,7 @@ public class Special extends Tile{
             case "Go To Jail":
                 myBoard.gameDisplay.message("Sorry Pal, off to the clink with you",show);
                 myBoard.sendToJail(p);
+                myBoard.gameDisplay.updateGameBoard();
                 break;
             //Has the player draw a card due to landing on the Chance tile
             case "Chance":
