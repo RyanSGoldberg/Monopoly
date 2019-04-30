@@ -10,8 +10,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -528,6 +530,7 @@ public class Display extends Application implements GameDisplay{
             popup.close();
             semaphore.release();
         });
+        close.setFont(Font.font("Futura",12));
 
         //A vbox containing the column of nodes
         VBox vBox = new VBox(15);
@@ -573,19 +576,22 @@ public class Display extends Application implements GameDisplay{
             Text name = new Text(p.name);
             textColumn.getChildren().addAll(header,name);
             textColumn.setAlignment(Pos.CENTER);
+            header.setFont(Font.font("Copperplate",15));
+            name.setFont(Font.font("Copperplate",30));
 
             coloredStack.getChildren().addAll(coloredRec,textColumn);
 
             Text values = new Text(
                     "Rent $"+p.getRents()[0]+
-                            "\nWith 1 house :$"+p.getRents()[1]+
-                            "\nWith 2 houses :$"+p.getRents()[2]+
-                            "\nWith 3 houses :$"+p.getRents()[3]+
-                            "\nWith 4 houses :$"+p.getRents()[4]+
-                            "\nWith 1 hotel :$"+p.getRents()[5]+
-                            "\nMortgage Value $"+p.propertySalePrice()
+                            "\nWith 1 house: $"+p.getRents()[1]+
+                            "\nWith 2 houses: $"+p.getRents()[2]+
+                            "\nWith 3 houses: $"+p.getRents()[3]+
+                            "\nWith 4 houses: $"+p.getRents()[4]+
+                            "\nWith 1 hotel: $"+p.getRents()[5]+
+                            "\nMortgage Value: $"+p.propertySalePrice()
             );
             values.setTextAlignment(TextAlignment.CENTER);
+            values.setFont(Font.font("Futura",15));
 
             vBox.getChildren().addAll(coloredStack,owner,values,close);
         }
@@ -639,6 +645,7 @@ public class Display extends Application implements GameDisplay{
 
         Text text = new Text(message);
         text.setTextAlignment(TextAlignment.CENTER);
+        text.setFont(Font.font("Futura",25));
 
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
@@ -648,7 +655,7 @@ public class Display extends Application implements GameDisplay{
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(text,close);
-        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.setAlignment(Pos.CENTER);
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(card,vBox);
