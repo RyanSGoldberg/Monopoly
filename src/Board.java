@@ -15,6 +15,7 @@ import java.util.Scanner;
  */
 public class Board{
     public GameDisplay gameDisplay;
+    public String gameName = "customGameName";
 
     public Tile[] tiles;
     public static ArrayList<Player> players;
@@ -474,21 +475,33 @@ public class Board{
         PrintWriter pw;
 
         try{
-            System.out.println("Enter the name of your game");
-            Scanner sc = new Scanner (System.in);
-            String game = (sc.nextLine())+".txt";
+            System.out.println("TODO///// Enter the name of your game");
 
-            fw = new FileWriter(game);
+            fw = new FileWriter(gameName+".txt");
             pw = new PrintWriter(fw);
 
-            for (int i=0; i<players.size(); i++){
-                pw.println();
+            //players
+            for(Player p:players){
+                pw.println(p.toString());
             }
-            pw.println();
+            //tiles
+            for(Tile t:tiles){
+                pw.println(t.toString());
+            }
+
+            //current player
+            pw.println(currentPlayer);
+            //cashPot
+            pw.println(cashPot);
+            //rollsOnTurn
+            pw.println(numDoubleRollsOnTurn);
+            //numPlayers
+            pw.println(numPlayers);
 
             pw.close();
         }catch(Exception e){
             System.err.println("Error 404");
+            e.printStackTrace();
         }
 
     }

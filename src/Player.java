@@ -143,8 +143,7 @@ public class Player {
                 ", position=" + position +
                 ", numberOfJailCards=" + numberOfJailCards +
                 ", inJail=" + inJail +
-                ", turnsLeftInJail=" + turnsLeftInJail +
-                '}';
+                ", turnsLeftInJail=" + turnsLeftInJail;
     }
 
     enum Type {PC,NPC}

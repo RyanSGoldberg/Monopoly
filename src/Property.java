@@ -22,61 +22,16 @@ public class Property extends Tile {
         this.myBoard = myBoard;
     }
 
-    public String toString(int rollSum) { // returns information about property
-
-        if(owner != null){ // if the property is owned
-
-            if(this.groupName == 005){// if it is a utility
-
-                if(this.numberOfAGroupOwned(005)==2) {
-
-                    return this.name + " is owned by " + this.owner.getName() + " rent costs $" + this.getRent(rollSum) + " which is 10 times what you rolled";
-
-                }else {
-
-                    return this.name + " is owned by " + this.owner.getName() + " rent costs $" + this.getRent(rollSum) + " which is 4 times what you rolled";
-
-                }
-
-            } else if(this.groupName == 002){// if it is a railroad
-
-                return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" "+this.owner+" owns "+numberOfAGroupOwned(002)+" railraods";
-
-            } else{// if it is a regular property
-
-                if(this.numberHouses == 5){// if player has hotels
-
-                    return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" with a hotel";
-
-                }else{// if player does not have hotels
-
-                    return this.name+" is owned by "+this.owner.getName()+" rent costs $"+this.getRent(rollSum)+" with "+numberHouses+" houses";
-
-                }
-
-            }
-
-        } else{ // if the property is available
-
-            if(this.groupName != 005){// if it is not a utility
-
-                return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs $"+this.rent[0];
-
-            } else{// if it is a utility
-
-                if(playerHasMonopoly(this.groupName)){// if player has both utilities
-
-                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 10 time whatever you roll";
-
-                } else{// if player has one utility
-
-                    return this.name + " is an available property, it costs $" + this.getCost() + " to buy, rent costs 4 time whatever you roll";
-
-                }
-
-            }
+    public String toString() {
+        // returns information about property
+        if (owner != null) {
+            return numberHouses+", "+owner.getName();
+        }else{
+            return numberHouses+", NULL";
         }
-    }
+
+            }
+
 
     public void landedOn(Player p, int rollSum, boolean show){ // charges money for somebody that lands on a property they do not own
         if(owner != null && !owner.equals(p)){

@@ -72,7 +72,7 @@ public class Special extends Tile{
     }
 
     @Override
-    public String toString(int rollSum) {
-        return "";
+    public String toString() {
+        return "NULL";
     }
 }
