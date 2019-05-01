@@ -323,7 +323,7 @@ public class Display extends Application implements GameDisplay{
         tempTile.getChildren().addAll(base,text,players);
         tempTile.setOnMouseClicked(event -> {
             if(game.tiles[i].type == Tile.Type.PROPERTY){
-                showPropertyFX((Property)game.tiles[i],false);
+                showPropertyFX((Property)game.tiles[i]);
             }
         });
         return tempTile;
@@ -391,7 +391,7 @@ public class Display extends Application implements GameDisplay{
 
         //When the property is clicked, display its card
         stackPane.setOnMouseClicked(event -> {
-            showPropertyFX(prop,true);
+            showPropertyFX(prop);
         });
 
 
@@ -647,7 +647,7 @@ public class Display extends Application implements GameDisplay{
             }
         }
         Platform.runLater(() -> {
-            showPropertyFX(p,false);
+            showPropertyFX(p);
         });
         try {
             semaphore.acquire();
@@ -656,7 +656,7 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
-    public void showPropertyFX(Property p, boolean viewedByOwner){
+    public void showPropertyFX(Property p){
         int wid = 350;
         int height = 500;
 
