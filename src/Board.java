@@ -240,7 +240,10 @@ public class Board{
                     //Buy property option
                     if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
                         options[1] = 5;
-                    } else {
+                    } /*else if(p.getBalance() < prop.getCost()){
+                        options[1] = -1;
+
+                    }*/ else {
                         options[1] = -1;
                     }
                 }

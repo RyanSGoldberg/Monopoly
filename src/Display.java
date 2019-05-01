@@ -16,9 +16,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import java.awt.*;
 import java.util.concurrent.Semaphore;
+import javafx.scene.layout.StackPane;
 
 public class Display extends Application implements GameDisplay{
     private Stage window;
@@ -89,6 +89,13 @@ public class Display extends Application implements GameDisplay{
         mainMenu.setMaxSize(BOARD_SIZE, BOARD_SIZE);
         mainMenu.setMinSize(BOARD_SIZE, BOARD_SIZE);
 
+        StackPane stack = new StackPane();
+
+        Image backgroundImage = new Image("Images/Background.jpg");
+        ImageView background = new ImageView(backgroundImage);
+
+        stack.getChildren().addAll(background, mainMenu);
+
         VBox centre = new VBox(10);
 
         Button newGame = new Button("New Game");
@@ -113,7 +120,7 @@ public class Display extends Application implements GameDisplay{
 
         mainMenu.setCenter(centre);
 
-        Scene scene = new Scene(mainMenu);
+        Scene scene = new Scene(stack);
         window.setScene(scene);
     }
 
