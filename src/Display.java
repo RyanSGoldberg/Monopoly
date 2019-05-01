@@ -10,10 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,6 +36,7 @@ public class Display extends Application implements GameDisplay{
 
     private Semaphore semaphore = new Semaphore(0);
     private int outValue;
+    private String outString;
 
     @Override
     public void start(Stage primaryStage){
@@ -44,6 +44,7 @@ public class Display extends Application implements GameDisplay{
         window = primaryStage;
         window.setTitle("Monopoly");
         window.setResizable(false);
+        window.toFront();
 
         //Initializes the scale of the window/components
         initializeSizes();
@@ -61,9 +62,9 @@ public class Display extends Application implements GameDisplay{
 
         //Calculates the board size based on the screen size
         if(screenSize.width < screenSize.height){
-            BOARD_SIZE = screenSize.width-55;
+            BOARD_SIZE = screenSize.width-155;
         }else {
-            BOARD_SIZE = screenSize.height-55;
+            BOARD_SIZE = screenSize.height-155;
         }
 
         /*
@@ -116,6 +117,21 @@ public class Display extends Application implements GameDisplay{
         window.setScene(scene);
     }
 
+    private void initializeToolbar(){
+        HBox hBox = new HBox(10);
+
+        Button save_game = new Button("Save Game");
+        save_game.setOnAction(event -> {
+            System.out.println("Load Clicked");
+            game.saveBoard();
+        });
+
+        hBox.getChildren().addAll(save_game);
+        hBox.setAlignment(Pos.CENTER);
+
+        screen.setTop(hBox);
+    }
+
     private void startPlayerCreator(){
         //TODO GET PLAYERS via UI
 
@@ -138,6 +154,9 @@ public class Display extends Application implements GameDisplay{
 
         //Shows player stats / inventory
         updatePlayerPaneFX(game.getCurrentPlayer());
+
+        //The toolbar
+        initializeToolbar();
 
         //The main scene of the game
         Scene scene = new Scene(screen);
@@ -304,7 +323,7 @@ public class Display extends Application implements GameDisplay{
         tempTile.getChildren().addAll(base,text,players);
         tempTile.setOnMouseClicked(event -> {
             if(game.tiles[i].type == Tile.Type.PROPERTY){
-                showPropertyFX((Property)game.tiles[i]);
+                showPropertyFX((Property)game.tiles[i],false);
             }
         });
         return tempTile;
@@ -337,28 +356,46 @@ public class Display extends Application implements GameDisplay{
 
         temp.getChildren().addAll(name,balance,inventory);
 
-        for (Property prop:p.getInventory()) {
-            String s = "\t"+prop.getName();
-            if(prop.getNumberHouses() == 5){
-                s+= " x 1 hotel";
-            }else if(prop.getNumberHouses() >0){
-                s+= " x "+prop.getNumberHouses()+"houses";
+        p.getInventory().sort((o1, o2) -> {
+            if(o1.groupName < o2.groupName){
+                return -1;
+            }else if(o1.groupName > o2.groupName){
+                return 1;
+            }else {
+                return 0;
             }
 
-            Text t = new Text(s);
 
-            //When the property is clicked, display its card
-            t.setOnMouseClicked(event -> {
-                showPropertyFX(prop);
-            });
+        });
 
-            temp.getChildren().add(t);
+        for (Property prop:p.getInventory()) {
+            temp.getChildren().add(generatePropertyView(prop));
         }
 
         if(p.hasJailCard()){
             temp.getChildren().add(new Text("\t Get Out Of Jail Free Card x"+ p.getNumberOfJailCards()));
         }
         return temp;
+    }
+
+    private StackPane generatePropertyView(Property prop){
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.CENTER);
+
+        Rectangle back = new Rectangle((double) BOARD_SIZE /2.5 - 40,30, tileColors[prop.groupName]);
+        back.setStroke(Color.BLACK);
+
+        Text name = new Text(prop.getName());
+
+        stackPane.getChildren().addAll(back,name);
+
+        //When the property is clicked, display its card
+        stackPane.setOnMouseClicked(event -> {
+            showPropertyFX(prop,true);
+        });
+
+
+    return stackPane;
     }
 
     public void updatePlayerPane(Player p){
@@ -432,16 +469,16 @@ public class Display extends Application implements GameDisplay{
                     pane.getChildren().add(buttonBuilder("End Turn",4,pane));
                     break;
                 case 5:
-                    pane.getChildren().add(buttonBuilder("You can buy this property for " + prop.getCost(),5,pane));
+                    pane.getChildren().add(buttonBuilder("You can buy this property for $" + prop.getCost(),5,pane));
                     break;
                 case 6:
-                    pane.getChildren().add(buttonBuilder("You can build a house here for " + prop.getCost(),6,pane));
+                    pane.getChildren().add(buttonBuilder("You can build a house here for $" + prop.getCost(),6,pane));
                     break;
                 case 7:
-                    pane.getChildren().add(buttonBuilder("You can sell this property for " + prop.propertySalePrice(),7,pane));
+                    pane.getChildren().add(buttonBuilder("You can sell this property for $" + prop.propertySalePrice(),7,pane));
                     break;
                 case 8:
-                    pane.getChildren().add(buttonBuilder("You can sell a house for " + prop.houseSalePrice(),8,pane));
+                    pane.getChildren().add(buttonBuilder("You can sell a house for $" + prop.houseSalePrice(),8,pane));
                     break;
                 case 9:
                     pane.getChildren().add(buttonBuilder("You can pay $150",9,pane));
@@ -450,10 +487,62 @@ public class Display extends Application implements GameDisplay{
                     pane.getChildren().add(buttonBuilder("You can pay 10% of your wallet",10,pane));
                     break;
                 case 11:
-                    pane.getChildren().add(buttonBuilder("Trade Mode",11,pane));
+                    pane.getChildren().add(buttonBuilder("Property Manager",11,pane));
                     break;
             }
         }
+        gameBoard.setCenter(pane);
+    }
+
+    @Override
+    public String propertyManagerPrompt(String[] buttonsToDisplay) {
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        if(buttonsToDisplay.length == 0){
+            return "-1:-1";
+        }
+
+        Platform.runLater(() ->{
+            propertyManagerPromptFX(buttonsToDisplay);
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String s = outString;
+        outString = "";
+        return s;
+    }
+
+    private void propertyManagerPromptFX(String[] buttonsToDisplay){
+        Text text = new Text("Property Manager");
+
+        VBox pane = new VBox(15);
+        pane.getChildren().add(text);
+        pane.setAlignment(Pos.CENTER);
+
+        for (String s:buttonsToDisplay) {
+            pane.getChildren().add(propertyManagerGroupBuilder(s,pane));
+        }
+
+        Button backToGame = new Button("Back To Game");
+        backToGame.setOnAction(event -> {
+            setOutString("-1:-1");
+            pane.getChildren().clear();
+            semaphore.release(1);
+        });
+        pane.getChildren().add(backToGame);
+
+
         gameBoard.setCenter(pane);
     }
 
@@ -468,12 +557,78 @@ public class Display extends Application implements GameDisplay{
         return b;
     }
 
+    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME
+        //The input parsed into 4 ints
+        int[] parsed = new int[4];
+        //The initial input
+        String[] split = s.split(":");
+        for (int i = 0; i < 4; i++) {
+            parsed[i] = Integer.parseInt(split[i]);
+        }
+
+        Property prop = (Property)game.tiles[parsed[0]];
+
+        StackPane stackPane = new StackPane();
+
+        //The background rectangle
+        Rectangle back = new Rectangle(150,100,tileColors[prop.groupName]);
+        back.setStroke(Color.BLACK);
+
+        Text name = new Text(prop.name);
+
+        Button buyHouse = new Button("Buy a house for $"+prop.getCost());
+        buyHouse.setOnAction(event -> {
+            setOutString(parsed[0]+":6");
+            parent.getChildren().clear();
+            semaphore.release(1);
+
+        });
+
+        Button sellHouse = new Button("Sell a house for $"+prop.houseSalePrice());
+        sellHouse.setOnAction(event -> {
+            setOutString(parsed[0]+":8");
+            parent.getChildren().clear();
+            semaphore.release(1);
+        });
+
+        Button sellProperty = new Button("Sell Property for $"+prop.propertySalePrice());
+        sellProperty.setOnAction(event -> {
+            setOutString(parsed[0]+":7");
+            parent.getChildren().clear();
+            semaphore.release(1);
+        });
+
+        VBox column = new VBox();
+        column.getChildren().add(name);
+
+        //If they can buy a house
+        if(parsed[1] != -1){
+            column.getChildren().add(buyHouse);
+        }
+
+        //If they can sell a house
+        if(parsed[3] != -1){
+            column.getChildren().add(sellHouse);
+        }
+
+        //They can always sell a property they own
+        column.getChildren().addAll(sellProperty);
+        column.setAlignment(Pos.CENTER);
+
+
+        stackPane.getChildren().addAll(back,column);
+        stackPane.setAlignment(Pos.CENTER);
+        return stackPane;
+    }
+
     /**
     The value to be returned to prompt
      */
     private void setOutValue(int outValue) {
         this.outValue = outValue;
     }
+
+    private void setOutString(String outString){this.outString = outString;}
 
     public void movePlayer(Player p){}//TODO Player token animation
 
@@ -492,7 +647,7 @@ public class Display extends Application implements GameDisplay{
             }
         }
         Platform.runLater(() -> {
-            showPropertyFX(p);
+            showPropertyFX(p,false);
         });
         try {
             semaphore.acquire();
@@ -501,7 +656,7 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
-    public void showPropertyFX(Property p){
+    public void showPropertyFX(Property p, boolean viewedByOwner){
         int wid = 350;
         int height = 500;
 

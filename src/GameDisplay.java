@@ -1,6 +1,8 @@
 public interface GameDisplay {
     int prompt(String question, int[] buttonsToDisplay);
 
+    String propertyManagerPrompt(String[] buttonsToDisplay);
+
     void message(String message, boolean show);
 
     void updatePlayerPane(Player p);
