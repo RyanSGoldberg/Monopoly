@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -147,7 +148,7 @@ public class Display extends Application implements GameDisplay{
 
         //game.players.add(new NPC("AI",game,"car",spriteSize));
         game.players.add(new Player("Ryan",game,"dog",spriteSize));
-        game.players.add(new Player("Player 2",game,"hat",spriteSize));
+        game.players.add(new Player("Zack",game,"hat",spriteSize));
         //game.players.add(new NPC("Computer",game,"hat",spriteSize));
 
         game.setNumPlayers();
@@ -191,10 +192,8 @@ public class Display extends Application implements GameDisplay{
         HBox bottom = new HBox();
         //Left Column
         VBox left = new VBox();
-        left.setPadding(new Insets(0,-TILE_LENGTH,0,0));
         //Right Column
         VBox right = new VBox();
-        right.setPadding(new Insets(0,0,0,-TILE_LENGTH));
         //Top Row
         HBox top = new HBox();
 
@@ -221,6 +220,7 @@ public class Display extends Application implements GameDisplay{
                 right.getChildren().add(drawMid(TILE_LENGTH,TILE_WIDTH,tileColors[game.tiles[i].groupName],i,Orientation.RIGHT));
             }
         }
+
         gameBoard.setBottom(bottom);
         gameBoard.setLeft(left);
         gameBoard.setRight(right);
@@ -327,13 +327,14 @@ public class Display extends Application implements GameDisplay{
             }
         }
 
-        players.setOnMouseClicked(event -> {//FIXME
+        tempTile.getChildren().addAll(base,text,players);
+
+        tempTile.setOnMouseClicked(event -> {
             if(game.tiles[i].type == Tile.Type.PROPERTY){
-                showPropertyFX((Property)game.tiles[i]);
+                showPropertyFX((Property)game.tiles[i],false);
             }
         });
 
-        tempTile.getChildren().addAll(base,text,players);
         return tempTile;
     }
 
@@ -348,7 +349,12 @@ public class Display extends Application implements GameDisplay{
         screen.setCenter(gameBoard);
     }
 
-    private VBox generatePlayerPane(Player p){
+    private ScrollPane generatePlayerPane(Player p){
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setMinWidth(BOARD_SIZE /2.5 + 30);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
         VBox temp = new VBox(10);
         temp.setMinWidth((double) BOARD_SIZE /2.5);
         temp.setPadding(new Insets(30,0,0,10));
@@ -383,7 +389,10 @@ public class Display extends Application implements GameDisplay{
         if(p.hasJailCard()){
             temp.getChildren().add(new Text("\t Get Out Of Jail Free Card x"+ p.getNumberOfJailCards()));
         }
-        return temp;
+
+        scrollPane.setContent(temp);
+
+        return scrollPane;
     }
 
     private StackPane generatePropertyView(Property prop){
@@ -399,7 +408,7 @@ public class Display extends Application implements GameDisplay{
 
         //When the property is clicked, display its card
         stackPane.setOnMouseClicked(event -> {
-            showPropertyFX(prop);
+            showPropertyFX(prop,false);
         });
 
 
@@ -534,12 +543,31 @@ public class Display extends Application implements GameDisplay{
     private void propertyManagerPromptFX(String[] buttonsToDisplay){
         Text text = new Text("Property Manager");
 
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+
         VBox pane = new VBox(15);
         pane.getChildren().add(text);
         pane.setAlignment(Pos.CENTER);
 
+        int currentGroup = 001;
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER);
+
         for (String s:buttonsToDisplay) {
-            pane.getChildren().add(propertyManagerGroupBuilder(s,pane));
+            int groupName = game.tiles[Integer.parseInt(s.split(":")[0])].groupName;
+
+            if(groupName == currentGroup){
+                hBox.getChildren().add(propertyManagerGroupBuilder(s,pane));
+            }else {
+                pane.getChildren().add(hBox);
+                currentGroup++;
+                hBox = new HBox(10);
+                hBox.setAlignment(Pos.CENTER);
+                hBox.getChildren().add(propertyManagerGroupBuilder(s,pane));
+            }
         }
 
         Button backToGame = new Button("Back To Game");
@@ -550,8 +578,9 @@ public class Display extends Application implements GameDisplay{
         });
         pane.getChildren().add(backToGame);
 
+        scrollPane.setContent(pane);
 
-        gameBoard.setCenter(pane);
+        gameBoard.setCenter(scrollPane);
     }
 
     private Button buttonBuilder(String text, int returnValue, Pane parent){
@@ -565,7 +594,7 @@ public class Display extends Application implements GameDisplay{
         return b;
     }
 
-    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME
+    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME / FIXME (House not functional)
         //The input parsed into 4 ints
         int[] parsed = new int[4];
         //The initial input
@@ -655,7 +684,7 @@ public class Display extends Application implements GameDisplay{
             }
         }
         Platform.runLater(() -> {
-            showPropertyFX(p);
+            showPropertyFX(p, true);
         });
         try {
             semaphore.acquire();
@@ -664,7 +693,7 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
-    public void showPropertyFX(Property p){
+    public void showPropertyFX(Property p, boolean releaseSemaphore){
         int wid = 350;
         int height = 500;
 
@@ -691,7 +720,10 @@ public class Display extends Application implements GameDisplay{
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
             popup.close();
-            semaphore.release();
+
+            if(releaseSemaphore){
+                semaphore.release();
+            }
         });
         close.setFont(Font.font("Futura",12));
 
@@ -704,7 +736,7 @@ public class Display extends Application implements GameDisplay{
         if(p.groupName == 002){//Railroad
             ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/Railroad.png")));
             image.setPreserveRatio(true);
-            image.setFitHeight(wid/2);//TODO Make Dynamic
+            image.setFitHeight(wid/2);
 
             Text name = new Text(p.name);
 
@@ -719,7 +751,7 @@ public class Display extends Application implements GameDisplay{
         }else if(p.groupName == 005){//Utilities
             ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
             image.setPreserveRatio(true);
-            image.setFitHeight(wid/2);//TODO Make Dynamic
+            image.setFitHeight(wid/2);
 
             Text name = new Text(p.name);
 
@@ -806,7 +838,7 @@ public class Display extends Application implements GameDisplay{
         text.setFont(Font.font("Futura",25));
 
         //Sets the width to that of the text
-        int wid = (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(message,text.getFont()) + 40;
+        int wid =  getFontWidth(message,text.getFont())+ 40;
         int height = 150;
 
         Rectangle card = new Rectangle(wid,height,Color.WHITE);
@@ -860,21 +892,27 @@ public class Display extends Application implements GameDisplay{
     }
 
     public void showChanceFX(String title, String message){
-        int wid = 400;
-        int height = 150;
-
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
         popup.setAlwaysOnTop(true);
         popup.initModality(Modality.APPLICATION_MODAL);
 
-        Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
         Text ti = new Text(title);
         ti.setTextAlignment(TextAlignment.CENTER);
 
         Text mes = new Text(message);
         mes.setTextAlignment(TextAlignment.CENTER);
+
+        int wid;
+        if(message.length() > title.length()){
+            wid = getFontWidth(message,mes.getFont())+ 40;
+        }else {
+            wid = getFontWidth(title,ti.getFont())+ 40;
+        }
+        int height = 150;
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
@@ -898,6 +936,10 @@ public class Display extends Application implements GameDisplay{
 
         popup.setScene(scene);
         popup.showAndWait();
+    }
+
+    private int getFontWidth(String s, Font f){
+        return (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(s,f);
     }
 
     private enum Orientation {UP,DOWN,LEFT,RIGHT}

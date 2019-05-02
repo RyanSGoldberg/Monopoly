@@ -101,6 +101,7 @@ public class Board{
     }
 
     public void play(){
+        DevMode(DevCommands.BUY_ALL_PROPERTIES);
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
 
@@ -123,9 +124,11 @@ public class Board{
         boolean doubleRoll;
 
         do {
+            gameDisplay.updatePlayerPane(p);
+
             gameDisplay.message("It is " + p.getName() + "'s turn",show);
 
-            gameDisplay.updatePlayerPane(p);
+
 
             //If it is a playable character
             if(p.getType() == Player.Type.PC){
@@ -341,7 +344,8 @@ public class Board{
                         switch (choiceParsed){
                             case 6:
                                 property.buildHouse();
-                                gameDisplay.message("Wow, now have " + prop.getNumberHouses() + " houses built here. Quite the estate",show);
+
+                                gameDisplay.message("Wow, now have " + property.getNumberHouses() + " houses built here. Quite the estate",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;
@@ -353,7 +357,7 @@ public class Board{
                                 break;
                             case 8:
                                 property.sellHouse();
-                                gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + prop.getNumberHouses() + "houses",show);
+                                gameDisplay.message("Too bad, I was just starting to like the old place. You now have " + property.getNumberHouses() + "houses",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;
@@ -393,39 +397,33 @@ public class Board{
     }
 
     public void drawCard(Player p, boolean show) {
-        int number = Utilities.generateNumber(0, 5);
-        String cardName = "";
+        int number = Utilities.generateNumber(1, 100);
+        String cardName;
         String cardMessage = "";
-        int randomAmount = Utilities.generateNumber(10, 250);
+        int randomAmount = Utilities.generateNumber(10, 200);
         int randomLocation = Utilities.generateNumber(1, 7);
 
-        switch (number) {
-            case 1:
-                cardName = "Collect Cash!";
-                cardMessage = "You have gained $"+randomAmount;
+        if(number < 30){
+            cardName = "Collect Cash!";
+            cardMessage = "You have gained $"+randomAmount;
 
-                p.addMoney(randomAmount);
-                break;
-            case 2:
-                cardName = "Pay Tax";
-                cardMessage = "You have to pay $"+randomAmount+" in taxes";
+            p.addMoney(randomAmount);
+        }else if(number < 60){
+            cardName = "Pay Tax";
+            cardMessage = "You have to pay $"+randomAmount+" in taxes";
 
-                p.removeMoney(randomAmount);
-                addToCashPot(randomAmount);
-                break;
-            case 3:
-                cardName = "Move Token";
-                cardMessage = "You now must move "+randomLocation+" tiles forward";
+            p.removeMoney(randomAmount);
+            addToCashPot(randomAmount);
+        }else if(number < 90){
+            cardName = "Move Token";
+            cardMessage = "You now must move "+randomLocation+" tiles forward";
 
-                move(p, randomLocation);
-                handleTurn(getCurrentPlayer(),show);
+            move(p, randomLocation);
+            handleTurn(getCurrentPlayer(),show);
+        }else {
+            cardName = "Get Out Of Jail Free Card";
 
-                break;
-            case 4:
-                cardName = "Get Out Of Jail Free Card";
-
-                p.getJailCard();
-                break;
+            p.getJailCard();
         }
 
         gameDisplay.showChance(cardName,cardMessage,show);
@@ -502,5 +500,23 @@ public class Board{
         }
 
     }
+
+    private void DevMode(DevCommands command){
+        currentPlayer = 0;
+        getCurrentPlayer().addMoney(99999999);
+        switch (command){
+            case BUY_ALL_PROPERTIES:
+                for (Tile t:tiles) {
+                    if(t.type == Tile.Type.PROPERTY){
+                        Property property = (Property) t;
+                        property.buy(getCurrentPlayer());
+                    }
+                }
+                break;
+        }
+
+    }
+
+    enum DevCommands{BUY_ALL_PROPERTIES}
 
 }
