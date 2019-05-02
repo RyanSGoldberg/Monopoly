@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * PURPOSE OF CLASS
@@ -122,6 +121,7 @@ public class Board{
 
     public void handleTurn(Player p, boolean show){
         boolean doubleRoll;
+
         do {
             gameDisplay.message("It is " + p.getName() + "'s turn",show);
 
@@ -230,7 +230,7 @@ public class Board{
             //Loop until the user has ended their turn (choice == 4)
             int choice = -1;
 
-            int numActionsThisTurn = 0;
+            //For NPC actions
             boolean boughtProperty = false;
             boolean boughtHouse = false;
 
@@ -241,10 +241,7 @@ public class Board{
                     //Buy property option
                     if (!prop.hasOwner() && p.getBalance() >= prop.getCost()) {
                         options[1] = 5;
-                    } /*else if(p.getBalance() < prop.getCost()){
-                        options[1] = -1;
-
-                    }*/ else {
+                    }else {
                         options[1] = -1;
                     }
                 }
@@ -258,10 +255,9 @@ public class Board{
                 if(p.getType() == Player.Type.PC) {
                     choice = gameDisplay.prompt("Ok friend, here are your choices...", options);
                 }else {
-                    //TODO BENNY Z
                     NPC npc = (NPC)p;
-                    numActionsThisTurn++;
-                    choice = npc.makeDecisionLandedOn(options,numActionsThisTurn, boughtProperty, boughtHouse);
+                    choice = npc.makeDecisionLandedOn(options, boughtProperty, boughtHouse);
+
                     if (choice == 5){
                         boughtProperty = true;
                     }
@@ -269,6 +265,19 @@ public class Board{
                         boughtHouse = true;
                     }
                 }
+
+                //If player is in debt
+                if(p.isInDebt()){
+                    //If the players net worth is less than their debt, they are out
+                    if(p.isBroke()){
+                        removePlayer(p);
+                    }{
+                        gameDisplay.message("You are in debt for $"+p.getDebt()+". You must sell your inventory",show);
+                        choice = 11;
+                    }
+                }
+
+
 
                 switch (choice) {
                     case 4:
@@ -283,7 +292,7 @@ public class Board{
                         String[] optionsString = new String[p.getInventory().size()];
                         int i = 0;
 
-                        //Builds the inut string for the display prompt
+                        //Builds the input string for the display prompt
                         for (Property property:p.getInventory()) {
                             String s = property.location+":";
 
@@ -422,7 +431,7 @@ public class Board{
         gameDisplay.showChance(cardName,cardMessage,show);
         gameDisplay.updatePlayerPane(p);
         gameDisplay.updateGameBoard();
-        //TODO Update Player location
+        gameDisplay.movePlayer(p);
     }
 
     public void addToCashPot(int amount){
@@ -439,16 +448,10 @@ public class Board{
         return cashPot;
     }
 
-    public void mortgageMode(Player p, int debt){
-        if(p.netWorth() < debt){
-            gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
-            players.remove(p);
-        }
-
-        while (debt != 0){
-            System.out.println("Debt entered");
-            //TODO Force sell of stuff
-        }
+    public void removePlayer(Player p){
+        gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
+        players.remove(p);
+        //TODO what to do with their stuff
     }
 
     public Player getCurrentPlayer(){
@@ -457,12 +460,6 @@ public class Board{
 
     public void setNumPlayers() {
         this.numPlayers = players.size();
-    }
-
-    @Override
-    public String toString() {
-        return "";
-        //TODO
     }
 
     public void loadBoard(){
@@ -477,7 +474,7 @@ public class Board{
         try{
             System.out.println("TODO///// Enter the name of your game");
 
-            fw = new FileWriter(gameName+".txt");
+            fw = new FileWriter("SavedGames/"+gameName+".txt");
             pw = new PrintWriter(fw);
 
             //players

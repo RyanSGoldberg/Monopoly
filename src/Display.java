@@ -16,9 +16,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import java.awt.*;
 import java.util.concurrent.Semaphore;
-import javafx.scene.layout.StackPane;
 
 public class Display extends Application implements GameDisplay{
     private Stage window;
@@ -91,8 +91,9 @@ public class Display extends Application implements GameDisplay{
 
         StackPane stack = new StackPane();
 
-        Image backgroundImage = new Image("Images/Background.jpg");
-        ImageView background = new ImageView(backgroundImage);
+        ImageView background = new ImageView(new Image("Images/Background.jpg"));
+        background.setPreserveRatio(true);
+        background.setFitHeight(BOARD_SIZE);
 
         stack.getChildren().addAll(background, mainMenu);
 
@@ -116,7 +117,7 @@ public class Display extends Application implements GameDisplay{
         });
 
         centre.getChildren().addAll(newGame,loadGame);
-        centre.setAlignment(Pos.CENTER);
+        centre.setAlignment(Pos.CENTER_LEFT);
 
         mainMenu.setCenter(centre);
 
@@ -326,13 +327,13 @@ public class Display extends Application implements GameDisplay{
             }
         }
 
-        //FIXME
-        tempTile.getChildren().addAll(base,text,players);
-        tempTile.setOnMouseClicked(event -> {
+        players.setOnMouseClicked(event -> {//FIXME
             if(game.tiles[i].type == Tile.Type.PROPERTY){
                 showPropertyFX((Property)game.tiles[i]);
             }
         });
+
+        tempTile.getChildren().addAll(base,text,players);
         return tempTile;
     }
 
@@ -795,19 +796,20 @@ public class Display extends Application implements GameDisplay{
     }
 
     public void messageFX(String message){
-        int wid = 400;
-        int height = 150;
-
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
         popup.setAlwaysOnTop(true);
         popup.initModality(Modality.APPLICATION_MODAL);
 
-        Rectangle card = new Rectangle(wid,height,Color.WHITE);
-
         Text text = new Text(message);
         text.setTextAlignment(TextAlignment.CENTER);
         text.setFont(Font.font("Futura",25));
+
+        //Sets the width to that of the text
+        int wid = (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(message,text.getFont()) + 40;
+        int height = 150;
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
