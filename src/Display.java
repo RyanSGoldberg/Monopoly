@@ -17,7 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import javafx.scene.control.TextField;
 import java.awt.*;
 import java.util.concurrent.Semaphore;
 
@@ -32,7 +32,7 @@ public class Display extends Application implements GameDisplay{
     private int TILE_LENGTH;
     private int TILE_WIDTH;
 
-    private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,null,Color.CORNFLOWERBLUE,Color.MAGENTA,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.DODGERBLUE};
+    private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
 
     private Semaphore semaphore = new Semaphore(0);
@@ -109,6 +109,46 @@ public class Display extends Application implements GameDisplay{
 
         });
 
+        Text newGame1 = new Text("New Game");
+        Text loadGame1 = new Text("Load Game");
+
+        newGame1.setOnMouseClicked(event -> {
+            game = new Board(true,this);
+            startPlayerCreator();
+            startGame();
+        });
+
+        newGame1.setFont(Font.font("Courier", 30));
+        newGame1.setFill(Color.BLACK);
+
+        loadGame1.setOnMouseClicked(event -> {
+
+            System.out.println("Load Game");
+            //game = new Board(false,this);
+            //startGame();
+            System.out.println("TODO");
+
+        });
+
+        loadGame1.setFont(Font.font("Courier", 30));
+        loadGame1.setFill(Color.BLACK);
+
+        newGame1.setOnMouseEntered(event -> {
+            newGame1.setFill(Color.WHITE);
+        });
+
+        loadGame1.setOnMouseEntered(event -> {
+            loadGame1.setFill(Color.WHITE);
+        });
+
+        newGame1.setOnMouseExited(event -> {
+            newGame1.setFill(Color.BLACK);
+        });
+
+        loadGame1.setOnMouseExited(event -> {
+            loadGame1.setFill(Color.BLACK);
+        });
+
         Button loadGame = new Button("Load Game");
         loadGame.setOnAction(event -> {
             System.out.println("Load Game");
@@ -117,7 +157,7 @@ public class Display extends Application implements GameDisplay{
             System.out.println("TODO");
         });
 
-        centre.getChildren().addAll(newGame,loadGame);
+        centre.getChildren().addAll(newGame1,loadGame1);
         centre.setAlignment(Pos.CENTER_LEFT);
 
         mainMenu.setCenter(centre);
