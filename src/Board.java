@@ -101,7 +101,7 @@ public class Board{
     }
 
     public void play(){
-        DevMode(DevCommands.BUY_ALL_PROPERTIES);
+        //DevMode(DevCommands.BUY_ALL_PROPERTIES);
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
 

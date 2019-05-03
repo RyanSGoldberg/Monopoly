@@ -548,43 +548,51 @@ public class Display extends Application implements GameDisplay{
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
 
-        VBox pane = new VBox(15);
-        pane.getChildren().add(text);
-        pane.setAlignment(Pos.CENTER);
+        VBox vBox = new VBox(15);
+        vBox.getChildren().add(text);
+        vBox.setAlignment(Pos.CENTER);
 
         int currentGroup = 001;
-        HBox hBox = new HBox(10);
+        HBox hBox = new HBox(5);
         hBox.setAlignment(Pos.CENTER);
 
         for (String s:buttonsToDisplay) {
             int groupName = game.tiles[Integer.parseInt(s.split(":")[0])].groupName;
 
             if(groupName == currentGroup){
-                hBox.getChildren().add(propertyManagerGroupBuilder(s,pane));
+                hBox.getChildren().add(propertyManagerGroupBuilder(s,vBox));
             }else {
-                pane.getChildren().add(hBox);
                 currentGroup++;
-                hBox = new HBox(10);
-                hBox.setAlignment(Pos.CENTER);
-                hBox.getChildren().add(propertyManagerGroupBuilder(s,pane));
+
+                if(!hBox.getChildren().isEmpty()){
+                    vBox.getChildren().add(hBox);
+
+                    hBox = new HBox(5);
+                    hBox.setAlignment(Pos.CENTER);
+                    hBox.getChildren().add(propertyManagerGroupBuilder(s,vBox));
+                }
             }
         }
+        vBox.getChildren().add(hBox);
 
         Button backToGame = new Button("Back To Game");
         backToGame.setOnAction(event -> {
             setOutString("-1:-1");
-            pane.getChildren().clear();
+            vBox.getChildren().clear();
             semaphore.release(1);
         });
-        pane.getChildren().add(backToGame);
+        vBox.getChildren().add(backToGame);
 
-        scrollPane.setContent(pane);
+        scrollPane.setContent(vBox);
 
         gameBoard.setCenter(scrollPane);
     }
 
     private Button buttonBuilder(String text, int returnValue, Pane parent){
         Button b = new Button(text);
+
+        //b.setGraphic(Node); //Adds an image to the right
+
         b.setDefaultButton(true);
         b.setOnAction(event ->{
             setOutValue(returnValue);
@@ -608,7 +616,7 @@ public class Display extends Application implements GameDisplay{
         StackPane stackPane = new StackPane();
 
         //The background rectangle
-        Rectangle back = new Rectangle(150,100,tileColors[prop.groupName]);
+        Rectangle back = new Rectangle(160,100,tileColors[prop.groupName]);
         back.setStroke(Color.BLACK);
 
         Text name = new Text(prop.name);
