@@ -19,14 +19,14 @@ public class NPC extends Player{
         return 1;
     }
 
-    public int makeDecisionLandedOn(int[] options, int numActions, boolean boughtProperty, boolean boughtHouse){
+    public int makeDecisionLandedOn(int[] options,boolean boughtProperty, boolean boughtHouse){
         if(makeDecisionBuyProperty(options)) {
             return 5;
         } else if(makeDecisionBuildHouse(options)){
             return 6;
-        } else if(makeDecisionSellProperty(options) && boughtProperty == false){
+        } else if(makeDecisionSellProperty(options) && !boughtProperty){
             return 7;
-        } else if(makeDecisionSellHouse(options) && boughtHouse == false){
+        } else if(makeDecisionSellHouse(options) && !boughtHouse){
             return 8;
         } else {
             return 4;

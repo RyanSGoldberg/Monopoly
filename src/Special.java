@@ -15,7 +15,7 @@ public class Special extends Tile{
             //Has the player pass the Go tile
             case "Go":
                 //Double pass go, if you land on go
-                p.addMoney(400);
+                p.addMoney(200);
                 break;
             //Sends the player to jail due to landing on the Go To Jail tile
             case "Go To Jail":
@@ -29,10 +29,10 @@ public class Special extends Tile{
                 break;
             //Has the player take all the money from the money pot due to landing on the Free Parking tile
             case "Free Parking":
-                int received = myBoard.emptyCashPot();
-                p.addMoney(received);
-
                 if(myBoard.getCashPot() > 0){
+                    int received = myBoard.emptyCashPot();
+                    p.addMoney(received);
+
                     myBoard.gameDisplay.message("You lucky duck. You just got $"+received,show);
                 }
                 break;

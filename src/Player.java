@@ -25,6 +25,9 @@ public class Player {
 
     public ImageView sprite;
 
+    private boolean inDebt;
+    private int debt;
+
     public Player(String name, Board myBoard,String token, int tokenSize) {
         this.name = name;
         this.wallet = 1500;
@@ -44,14 +47,20 @@ public class Player {
         if(wallet - amount > 0){
             wallet -= amount;
         }else {
-            int extra = amount - wallet;
+            debt = amount - wallet;
             wallet = 0;
-            myBoard.mortgageMode(this,extra);
+            inDebt = true;
         }
     }
 
     public void addMoney(int amount){
-        wallet+=amount;
+        if(inDebt && amount < debt){
+            debt = debt-amount;
+        }else if(inDebt && amount > debt){
+            wallet+=amount-debt;
+        }else {
+            wallet+=amount;
+        }
     }
 
     public int getBalance() {
@@ -134,6 +143,21 @@ public class Player {
         sprite = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+token+".png")));
         sprite.setPreserveRatio(true);
         sprite.setFitHeight(size);
+    }
+
+    public boolean isInDebt() {
+        return inDebt;
+    }
+
+    public int getDebt() {
+        return debt;
+    }
+
+    public boolean isBroke(){
+        if(debt > netWorth()){
+            return true;
+        }
+        return false;
     }
 
     @Override
