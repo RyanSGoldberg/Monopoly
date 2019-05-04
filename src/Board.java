@@ -101,7 +101,8 @@ public class Board{
     }
 
     public void play(){
-        //DevMode(DevCommands.BUY_ALL_PROPERTIES);
+        devMode(DevCommands.GOD_MODE);
+
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
 
@@ -501,22 +502,24 @@ public class Board{
 
     }
 
-    private void DevMode(DevCommands command){
-        currentPlayer = 0;
-        getCurrentPlayer().addMoney(99999999);
-        switch (command){
-            case BUY_ALL_PROPERTIES:
-                for (Tile t:tiles) {
-                    if(t.type == Tile.Type.PROPERTY){
-                        Property property = (Property) t;
-                        property.buy(getCurrentPlayer());
+    private void devMode(DevCommands ... command){
+        for (DevCommands c:command) {
+            switch (c){
+                case GOD_MODE:
+                    currentPlayer = 0;
+                    getCurrentPlayer().addMoney(99999999);
+                    break;
+                case BUY_ALL_PROPERTIES:
+                    for (Tile t:tiles) {
+                        if(t.type == Tile.Type.PROPERTY){
+                            Property property = (Property) t;
+                            property.buy(getCurrentPlayer());
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
-
     }
-
-    enum DevCommands{BUY_ALL_PROPERTIES}
+    enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE}
 
 }

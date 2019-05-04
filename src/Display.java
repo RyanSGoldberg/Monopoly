@@ -17,7 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.scene.control.TextField;
+
 import java.awt.*;
 import java.util.concurrent.Semaphore;
 
@@ -100,29 +100,27 @@ public class Display extends Application implements GameDisplay{
 
         VBox centre = new VBox(10);
 
-        Button newGame = new Button("New Game");
-        newGame.setOnAction(event -> {
-            //Makes a new instance of board, which is the game logic
-            game = new Board(true,this);
-            startPlayerCreator();
-            startGame();
-
-        });
-
-        Text newGame1 = new Text("New Game");
-        Text loadGame1 = new Text("Load Game");
-
-        newGame1.setOnMouseClicked(event -> {
+        Text newGame = new Text("New Game");
+        newGame.setFont(Font.font("Futura", 30));
+        newGame.setFill(Color.BLACK);
+        newGame.setOnMouseClicked(event -> {
             game = new Board(true,this);
             startPlayerCreator();
             startGame();
         });
 
-        newGame1.setFont(Font.font("Courier", 30));
-        newGame1.setFill(Color.BLACK);
+        newGame.setOnMouseEntered(event -> {
+            newGame.setFill(Color.BLUE);
+        });
 
-        loadGame1.setOnMouseClicked(event -> {
+        newGame.setOnMouseExited(event -> {
+            newGame.setFill(Color.BLACK);
+        });
 
+        Text loadGame = new Text("Load Game");
+        loadGame.setFont(Font.font("Futura", 30));
+        loadGame.setFill(Color.BLACK);
+        loadGame.setOnMouseClicked(event -> {
             System.out.println("Load Game");
             //game = new Board(false,this);
             //startGame();
@@ -130,34 +128,15 @@ public class Display extends Application implements GameDisplay{
 
         });
 
-        loadGame1.setFont(Font.font("Courier", 30));
-        loadGame1.setFill(Color.BLACK);
-
-        newGame1.setOnMouseEntered(event -> {
-            newGame1.setFill(Color.WHITE);
+        loadGame.setOnMouseEntered(event -> {
+            loadGame.setFill(Color.BLUE);
         });
 
-        loadGame1.setOnMouseEntered(event -> {
-            loadGame1.setFill(Color.WHITE);
+        loadGame.setOnMouseExited(event -> {
+            loadGame.setFill(Color.BLACK);
         });
 
-        newGame1.setOnMouseExited(event -> {
-            newGame1.setFill(Color.BLACK);
-        });
-
-        loadGame1.setOnMouseExited(event -> {
-            loadGame1.setFill(Color.BLACK);
-        });
-
-        Button loadGame = new Button("Load Game");
-        loadGame.setOnAction(event -> {
-            System.out.println("Load Game");
-            //game = new Board(false,this);
-            //startGame();
-            System.out.println("TODO");
-        });
-
-        centre.getChildren().addAll(newGame1,loadGame1);
+        centre.getChildren().addAll(newGame,loadGame);
         centre.setAlignment(Pos.CENTER_LEFT);
 
         mainMenu.setCenter(centre);
@@ -208,6 +187,7 @@ public class Display extends Application implements GameDisplay{
         initializeToolbar();
 
         //The main scene of the game
+        screen.setBackground(new Background(new BackgroundFill(tileBaseColor,CornerRadii.EMPTY, Insets.EMPTY)));
         Scene scene = new Scene(screen);
 
         //The Task and Thread that the game logic is run on
@@ -391,14 +371,19 @@ public class Display extends Application implements GameDisplay{
 
     private ScrollPane generatePlayerPane(Player p){
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setMinWidth(BOARD_SIZE /2.5 + 30);
+        scrollPane.setMinWidth(BOARD_SIZE /2.5 + 20);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         VBox temp = new VBox(10);
         temp.setMinWidth((double) BOARD_SIZE /2.5);
+
+
+        temp.setMinHeight(BOARD_SIZE + 10);
+
         temp.setPadding(new Insets(30,0,0,10));
         temp.setMouseTransparent(false);
+        temp.setBackground(new Background(new BackgroundFill(tileBaseColor,CornerRadii.EMPTY, Insets.EMPTY)));
 
         //Name
         Text name = new Text(p.getName());
@@ -589,27 +574,34 @@ public class Display extends Application implements GameDisplay{
 
 
         VBox vBox = new VBox(15);
+        vBox.setMinWidth(BOARD_SIZE-2*TILE_LENGTH + 8);
+        vBox.setMinHeight(BOARD_SIZE-2*TILE_LENGTH + 8);
         vBox.getChildren().add(text);
         vBox.setAlignment(Pos.CENTER);
+        vBox.setBackground(new Background(new BackgroundFill(tileBaseColor,CornerRadii.EMPTY, Insets.EMPTY)));
 
         int currentGroup = 001;
         HBox hBox = new HBox(5);
         hBox.setAlignment(Pos.CENTER);
 
-        for (String s:buttonsToDisplay) {
-            int groupName = game.tiles[Integer.parseInt(s.split(":")[0])].groupName;
+        for (int i = 0; i < buttonsToDisplay.length; i++) {
+            int groupName = game.tiles[Integer.parseInt(buttonsToDisplay[i].split(":")[0])].groupName;
+
+            if(i == 0){
+                currentGroup = groupName;
+            }
 
             if(groupName == currentGroup){
-                hBox.getChildren().add(propertyManagerGroupBuilder(s,vBox));
+                hBox.getChildren().add(propertyManagerGroupBuilder(buttonsToDisplay[i],vBox));
             }else {
-                currentGroup++;
+                currentGroup = groupName;
 
                 if(!hBox.getChildren().isEmpty()){
                     vBox.getChildren().add(hBox);
 
                     hBox = new HBox(5);
                     hBox.setAlignment(Pos.CENTER);
-                    hBox.getChildren().add(propertyManagerGroupBuilder(s,vBox));
+                    hBox.getChildren().add(propertyManagerGroupBuilder(buttonsToDisplay[i],vBox));
                 }
             }
         }
