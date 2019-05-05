@@ -1,3 +1,5 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -21,6 +23,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -927,6 +930,87 @@ public class Display extends Application implements GameDisplay{
             }
         }
         gameBoard.setCenter(pane);
+    }
+
+    public void diceRoll(int die1, int die2, boolean show){
+        if(semaphore.availablePermits() != 0){
+            try{
+                throw new Exception ("Invalid Permit Count");
+            }catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        if(!show){
+            return;
+        }
+
+        Platform.runLater(() ->{
+            diceRollFX(die1,die2);
+        });
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    public void diceRollFX(int die1, int die2){
+        Stage stage = new Stage();
+        stage.toFront();
+        stage.initStyle(StageStyle.UNDECORATED);
+
+        //The size of the dice
+        int DIE_SIZE = 150;
+
+        //The 2 dice, originally set to random values
+        ImageView dieA = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+        dieA.setPreserveRatio(true);
+        dieA.setFitWidth(DIE_SIZE);
+        ImageView dieB = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+        dieB.setPreserveRatio(true);
+        dieB.setFitWidth(DIE_SIZE);
+
+        HBox root = new HBox(30);
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().addAll(dieA, dieB);
+
+        Rectangle back = new Rectangle(500,400,Color.PALEGREEN);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(back,root);
+
+        //Animate a random assortment of values while the roll is 'happening'
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
+            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+        }));
+        timeline.setCycleCount(6);
+        timeline.play();
+
+        //When the roll finishes, set the dice to the correct values
+        timeline.setOnFinished(event -> {
+            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+die1+".png")));
+            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+die2+".png")));
+
+            Button close = new Button("CLOSE");
+            close.setOnAction(clicked ->{
+                stage.close();
+                semaphore.release();
+            });
+
+            root.getChildren().add(close);
+        });
+
+        Scene scene = new Scene(stackPane,500,400);
+        stage.setScene(scene);
+
+        stage.show();
+
     }
 
     @Override

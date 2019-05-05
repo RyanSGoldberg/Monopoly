@@ -140,7 +140,7 @@ public class Board{
             //Rolls the dice
             int die1 = Utilities.roll();
             int die2 = Utilities.roll();
-            gameDisplay.message(p.getName() + " rolled a " + die1 + " and a " + die2,show);
+            gameDisplay.diceRoll(die1,die2, show);
 
             //If a double is rolled
             doubleRoll = false;

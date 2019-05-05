@@ -32,7 +32,6 @@ public class Property extends Tile {
 
             }
 
-
     public void landedOn(Player p, int rollSum, boolean show){ // charges money for somebody that lands on a property they do not own
         if(owner != null && !owner.equals(p)){
             p.removeMoney(getRent(rollSum));

@@ -14,4 +14,6 @@ public interface GameDisplay {
     void showChance(String title, String message,boolean show);
 
     void updateGameBoard();
+
+    void diceRoll(int die1, int die2, boolean show);
 }
