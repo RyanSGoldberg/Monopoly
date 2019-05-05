@@ -1,11 +1,14 @@
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -19,6 +22,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 public class Display extends Application implements GameDisplay{
@@ -34,6 +39,8 @@ public class Display extends Application implements GameDisplay{
 
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
+
+    private ArrayList<String> tokens;
 
     private Semaphore semaphore = new Semaphore(0);
     private int outValue;
@@ -104,9 +111,7 @@ public class Display extends Application implements GameDisplay{
         newGame.setFont(Font.font("Futura", 30));
         newGame.setFill(Color.BLACK);
         newGame.setOnMouseClicked(event -> {
-            game = new Board(true,this);
-            startPlayerCreator();
-            startGame();
+            startPlayerCreatorPane();
         });
 
         newGame.setOnMouseEntered(event -> {
@@ -160,18 +165,298 @@ public class Display extends Application implements GameDisplay{
         screen.setTop(hBox);
     }
 
-    private void startPlayerCreator(){
-        //TODO GET PLAYERS via UI
+    private void startPlayerCreatorPane(){
+        //Makes a new instance of game
+        game = new Board(true,this);
+        int spriteSize = 40;//TODO
 
-        int spriteSize = 40;
+        //All the possible tokens
+        tokens =  new ArrayList<String>();
+        tokens.clear();
+        tokens.addAll(Arrays.asList("car","dog","hat","ship","trolly"));
 
-        //game.players.add(new NPC("AI",game,"car",spriteSize));
-        game.players.add(new Player("Ryan",game,"dog",spriteSize));
-        game.players.add(new Player("Zack",game,"hat",spriteSize));
-        //game.players.add(new NPC("Computer",game,"hat",spriteSize));
+        //The stack of background and players
+        StackPane playerMaker = new StackPane();
+        playerMaker.setMaxSize(BOARD_SIZE*1.5, BOARD_SIZE);
+        playerMaker.setMinSize(BOARD_SIZE*1.5, BOARD_SIZE);
 
-        game.setNumPlayers();
-    }//TODO
+        HBox playersHBox = new HBox(15);
+        playersHBox.setAlignment(Pos.CENTER);
+
+        //The original number of players cannot be less than 2
+        game.numPlayers = 2;
+        //Adds the first 2 players
+        for (int i = 0; i < game.numPlayers; i++) {
+            playersHBox.getChildren().addAll(playerCreationBox(false));
+        }
+
+        //Sets the background image
+        ImageView background = new ImageView(new Image(Display.class.getResourceAsStream("Images/PlayerMakerBackground.jpg")));
+        background.setFitHeight(BOARD_SIZE);
+        background.setFitWidth(BOARD_SIZE*1.5);
+
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+
+        //Play button (when clicked checks all the inputted data for errors)
+        Button play = new Button("PLAY");
+        play.setOnAction(event -> {
+            for (Object o:playersHBox.getChildren().toArray()) {
+                PlayerCreatorPane temp = (PlayerCreatorPane) o;
+
+                //Ensure names are not empty
+                if(temp.name.isEmpty()){
+                    messageFX("Invalid Input. Names may not be empty");
+                    return;
+                }
+
+                //Ensures names do not contain commas(So they can be saved in csv files)
+                if(temp.name.contains(",")){
+                    messageFX("Invalid Input. Names may not include ','");
+                    return;
+                }
+
+                //Ensures no names are duplicated
+                for (Player p:game.players) {
+                    if(temp.name.equalsIgnoreCase(p.getName())){
+                        messageFX("Invalid Input. Names may not be repeated");
+
+                        //Clears the players so they when 1 is rejected, it must start again
+                        game.players.clear();
+                        return;
+                    }
+                }
+
+                //Ensures a token was selected
+                if(temp.token.isEmpty()){
+                    messageFX("You must pick a token");
+                    return;
+                }
+
+                //Ensures a type was selected
+                if(temp.type == null){
+                    messageFX("You must pick a player type");
+                    return;
+                }
+
+                //Adds the player
+                if(temp.type == Player.Type.PC){
+                    game.players.add(new Player(temp.name,game,temp.token,spriteSize));
+                }else {
+                    game.players.add(new NPC(temp.name,game,temp.token,spriteSize));
+                }
+            }
+            startGame();
+        });
+
+        Button addPlayer = new Button("ADD PLAYER");
+        addPlayer.setOnAction(event -> {
+            if(game.numPlayers < 5){
+                playersHBox.getChildren().add(playerCreationBox(true));
+                game.numPlayers++;
+            }else{
+                messageFX("You cannot have more than 5 players");
+            }
+        });
+
+        Button back = new Button("BACK");
+        back.setOnAction(event -> {
+            startMainMenu();
+        });
+
+
+
+        buttons.getChildren().addAll(back,addPlayer,play);
+
+
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(playersHBox,buttons);
+
+        playerMaker.getChildren().addAll(background,vBox);
+
+        Scene scene = new Scene(playerMaker);
+        window.setScene(scene);
+        //startGame();
+    }
+
+    private PlayerCreatorPane playerCreationBox(boolean showRemove){
+        PlayerCreatorPane playerCreatorPane = new PlayerCreatorPane();
+
+        double wid = BOARD_SIZE/4;
+        double height = BOARD_SIZE/2.5;
+
+        //Background Colored rectangle
+        Rectangle back = new Rectangle(wid,height,Color.DARKTURQUOISE);
+        back.setStroke(Color.DARKGREEN);
+        back.setStrokeWidth(2);
+        back.setArcHeight(15);
+        back.setArcWidth(15);
+
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+
+        //Radio Buttons which control the player type
+        VBox playerType = new VBox();
+        playerType.setAlignment(Pos.CENTER);
+        ToggleGroup toggleGroup = new ToggleGroup();
+        RadioButton radioButton = new RadioButton("HUMAN PLAYER");
+        radioButton.setUserData(Player.Type.PC);
+        radioButton.setToggleGroup(toggleGroup);
+        RadioButton radioButton2 = new RadioButton("COMPUTER PLAYER");
+        radioButton2.setUserData(Player.Type.NPC);
+        radioButton2.setToggleGroup(toggleGroup);
+        playerType.getChildren().addAll(radioButton,radioButton2);
+
+        //When the buttons are toggled, set the type
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(toggleGroup.getSelectedToggle() != null){
+                playerCreatorPane.type = (Player.Type)toggleGroup.getSelectedToggle().getUserData();
+            }
+        });
+
+        //text field for username input
+        TextField userName = new TextField();
+        userName.setAlignment(Pos.CENTER);
+        userName.setPromptText("Enter A Name");
+        userName.setMaxWidth(wid-10);
+
+        //Sets the username when the text field is updated
+        userName.setOnKeyReleased(event -> {
+            playerCreatorPane.name = userName.getText();
+        });
+
+        StackPane image = new StackPane();
+        image.setPrefSize(100,100);
+
+        //The colored rectangle back of the image
+        Rectangle baseImage = new Rectangle(100,100,Color.MEDIUMTURQUOISE);
+        baseImage.setStroke(Color.DARKGREEN);
+        baseImage.setStrokeWidth(2);
+        baseImage.setArcHeight(15);
+        baseImage.setArcWidth(15);
+
+        //The token image
+        ImageView tokenImage = new ImageView(new Image(Display.class.getResourceAsStream("Images/clickMe.png")));
+        tokenImage.setPreserveRatio(true);
+        tokenImage.setFitHeight(80);
+        tokenImage.setMouseTransparent(true);
+
+        image.getChildren().addAll(baseImage,tokenImage);
+
+        //Highlights token image
+        baseImage.setOnMouseEntered(event -> {
+            baseImage.setStroke(Color.PALEGREEN);
+            baseImage.setFill(Color.PALETURQUOISE);
+        });
+
+        //De-highlights token image
+        baseImage.setOnMouseExited(event -> {
+            baseImage.setStroke(Color.DARKGREEN);
+            baseImage.setFill(Color.MEDIUMTURQUOISE);
+        });
+
+        //Opens token picker when clicked
+        baseImage.setOnMouseClicked(event -> {
+            tokenPicker();
+
+            //If the user had previously chosen a token and wants to replace it, put that one back in options
+            if(!playerCreatorPane.token.isEmpty()) {
+                tokens.add(playerCreatorPane.token);
+            }
+            //Sets the new token image
+            playerCreatorPane.token = outString;
+            tokenImage.setImage(new Image(Display.class.getResourceAsStream("Images/"+playerCreatorPane.token+".png")));
+
+            //Removes the token from the options
+            tokens.remove(playerCreatorPane.token);
+
+            outString = "";
+        });
+        vBox.getChildren().addAll(playerType, userName,image);
+
+        //If the player is 3-5 it can be removed
+        if(showRemove){
+            Button removePlayer = new Button("REMOVE PLAYER");
+            removePlayer.setDefaultButton(true);
+            removePlayer.setOnAction(event -> {
+                if(!playerCreatorPane.token.isEmpty()){
+                    tokens.add(playerCreatorPane.name);
+                }
+
+                if(playerCreatorPane.getParent() instanceof HBox){
+                    ((HBox)playerCreatorPane.getParent()).getChildren().remove(playerCreatorPane);
+                    game.numPlayers--;
+                }
+
+            });
+
+            vBox.getChildren().add(removePlayer);
+        }
+
+        playerCreatorPane.getChildren().addAll(back,vBox);
+
+        return playerCreatorPane;
+    }
+
+    public void tokenPicker(){
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.initModality(Modality.APPLICATION_MODAL);//Can't access below windows
+        stage.setOnCloseRequest(Event::consume);
+
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setBackground(new Background(new BackgroundFill(Color.DARKTURQUOISE,CornerRadii.EMPTY,Insets.EMPTY)));
+
+        Text text = new Text("Pick a token");
+
+        //Displays all the available tokens
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER);
+
+        for (String s:tokens) {
+            StackPane image = new StackPane();
+            image.setPrefSize(100,100);
+
+            Rectangle baseImage = new Rectangle(100,100,Color.MEDIUMTURQUOISE);
+            baseImage.setStroke(Color.DARKGREEN);
+            baseImage.setStrokeWidth(2);
+            baseImage.setArcHeight(15);
+            baseImage.setArcWidth(15);
+
+            ImageView tokenImage = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+s+".png")));
+            tokenImage.setPreserveRatio(true);
+            tokenImage.setFitHeight(80);
+            tokenImage.setMouseTransparent(true);
+
+            image.getChildren().addAll(baseImage,tokenImage);
+
+            baseImage.setOnMouseEntered(event -> {
+                baseImage.setStroke(Color.PALEGREEN);
+                baseImage.setFill(Color.PALETURQUOISE);
+            });
+
+            baseImage.setOnMouseExited(event -> {
+                baseImage.setStroke(Color.DARKGREEN);
+                baseImage.setFill(Color.MEDIUMTURQUOISE);
+            });
+
+            baseImage.setOnMouseClicked(event -> {
+                outString = s;
+                stage.close();
+            });
+
+            hBox.getChildren().add(image);
+        }
+
+        vBox.getChildren().addAll(text,hBox);
+
+
+        Scene scene = new Scene(vBox, 700,150);
+        stage.setScene(scene);
+        stage.showAndWait();
+    }
 
     private void startGame(){
         //The border pane covering the entire 'screen'
