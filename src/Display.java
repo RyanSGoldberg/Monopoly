@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -66,7 +67,6 @@ public class Display extends Application implements GameDisplay{
     private void initializeSizes(){
         //Gets the current screen size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        //TODO Scaling stuff
 
         //Calculates the board size based on the screen size
         if(screenSize.width < screenSize.height){
@@ -311,9 +311,16 @@ public class Display extends Application implements GameDisplay{
             startMainMenu();
         });
 
+        Button dev = new Button("Dev Players");
+        dev.setOnAction(event -> {
+            game.players.add(new Player("DevA",game,"hat",40));
+            game.players.add(new Player("DevB",game,"trolly",40));
+            startGame();
+        });
 
 
-        buttons.getChildren().addAll(back,addPlayer,play);
+
+        buttons.getChildren().addAll(dev,back,addPlayer,play);
 
 
         VBox vBox = new VBox(10);
@@ -644,27 +651,68 @@ public class Display extends Application implements GameDisplay{
             base.getChildren().addAll(baseRec,image);
 
         }else {
+            Property p = (Property) game.tiles[i];
+
+            int houseSize = TILE_WIDTH/12;
+            int hotelSize = TILE_WIDTH/2;
+
+            StackPane coloredStack = new StackPane();
+            //The houses
+            HBox HHouses = new HBox(3);
+            VBox VHouses = new VBox(3);
+
+            if(p.getNumberHouses() == 5){
+                HHouses.getChildren().add(new Rectangle(hotelSize,hotelSize/1.5,Color.PURPLE));
+                VHouses.getChildren().add(new Rectangle(hotelSize/1.5,hotelSize,Color.PURPLE));
+            }else {
+                for (int j = 0; j < p.getNumberHouses(); j++) {
+                    HHouses.getChildren().add(new Circle(houseSize,Color.DARKSALMON));
+                    VHouses.getChildren().add(new Circle(houseSize,Color.DARKSALMON));
+                }
+            }
+
+
             //The colored rectangle
-            Rectangle coloredRec = null;
+            Rectangle coloredRec;
             switch (orientation){
                 case UP:
                     coloredRec = new Rectangle(wid-1,height/3,c);
                     base.setAlignment(Pos.TOP_CENTER);
+
+                    HHouses.setAlignment(Pos.TOP_CENTER);
+
+                    coloredStack.getChildren().addAll(coloredRec,HHouses);
+                    coloredStack.setAlignment(Pos.TOP_CENTER);
                     break;
                 case LEFT:
                     coloredRec = new Rectangle(wid/3,height-1,c);
                     base.setAlignment(Pos.CENTER_RIGHT);
+
+                    VHouses.setAlignment(Pos.CENTER_RIGHT);
+
+                    coloredStack.getChildren().addAll(coloredRec,VHouses);
+                    coloredStack.setAlignment(Pos.CENTER_RIGHT);
                     break;
                 case DOWN:
                     coloredRec = new Rectangle(wid-1,height/3,c);
                     base.setAlignment(Pos.BOTTOM_CENTER);
+
+                    HHouses.setAlignment(Pos.BOTTOM_CENTER);
+
+                    coloredStack.getChildren().addAll(coloredRec,HHouses);
+                    coloredStack.setAlignment(Pos.BOTTOM_CENTER);
                     break;
                 case RIGHT:
                     coloredRec = new Rectangle(wid/3,height-1,c);
                     base.setAlignment(Pos.CENTER_LEFT);
+
+                    VHouses.setAlignment(Pos.CENTER_LEFT);
+
+                    coloredStack.getChildren().addAll(coloredRec,VHouses);
+                    coloredStack.setAlignment(Pos.CENTER_LEFT);
                     break;
             }
-            base.getChildren().addAll(baseRec,coloredRec);
+            base.getChildren().addAll(baseRec,coloredStack);
         }
 
         //TODO Text rotation
@@ -892,6 +940,7 @@ public class Display extends Application implements GameDisplay{
             }
         }
 
+
         if(buttonsToDisplay.length == 0){
             return "-1:-1";
         }
@@ -998,7 +1047,7 @@ public class Display extends Application implements GameDisplay{
 
         Text name = new Text(prop.name);
 
-        Button buyHouse = new Button("Buy a house for $"+prop.getCost());
+        Button buyHouse = new Button();
         buyHouse.setOnAction(event -> {
             setOutString(parsed[0]+":6");
             parent.getChildren().clear();
@@ -1006,7 +1055,7 @@ public class Display extends Application implements GameDisplay{
 
         });
 
-        Button sellHouse = new Button("Sell a house for $"+prop.houseSalePrice());
+        Button sellHouse = new Button();
         sellHouse.setOnAction(event -> {
             setOutString(parsed[0]+":8");
             parent.getChildren().clear();
@@ -1025,11 +1074,13 @@ public class Display extends Application implements GameDisplay{
 
         //If they can buy a house
         if(parsed[1] != -1){
+            buyHouse.setText("Buy a house for $"+prop.getCost());
             column.getChildren().add(buyHouse);
         }
 
         //If they can sell a house
         if(parsed[3] != -1){
+            sellHouse.setText("Sell a house for $"+prop.houseSalePrice());
             column.getChildren().add(sellHouse);
         }
 

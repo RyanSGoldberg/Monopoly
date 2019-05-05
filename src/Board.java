@@ -102,7 +102,7 @@ public class Board{
 
     public void play(){
         //If needed, enter dev commands here
-        // devMode();
+         //devMode(DevCommands.GOD_MODE,DevCommands.BUY_ALL_PROPERTIES,DevCommands.BUY_ALL_HOUSES);
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -301,31 +301,35 @@ public class Board{
                         for (Property property:p.getInventory()) {
                             String s = property.location+":";
 
-                            //Build house option
-                            try {
-                                if (p.getBalance() >= property.getCost() && property.canBuild() && property.getNumberHouses() < 6 && property.playerHasMonopoly(prop.groupName)) {
-                                    s+="6:";
-                                } else {
+                            if(property.groupName != 002 && property.groupName != 005){
+                                //Build house option
+                                try {
+                                    if (p.getBalance() > property.getCost() && property.canBuild() && property.getNumberHouses() < 5 && property.playerHasMonopoly(property.groupName)) {
+                                        s+="6:";
+                                    } else {
+                                        s+="-1:";
+                                    }
+                                } catch (NullPointerException e) {
                                     s+="-1:";
                                 }
-                            } catch (NullPointerException e) {
-                                s+="-1:";
-                            }
 
-                            //Sell Property (Always an option)
-                            s+="7:";
+                                //Sell Property (Always an option)
+                                s+="7:";
 
-                            //Sell house
-                            try {
-                                if (property.getNumberHouses() > 0) {
-                                    s+="8";
-                                } else {
+                                //Sell house
+                                try {
+                                    if (property.getNumberHouses() > 0) {
+                                        s+="8";
+                                    } else {
+                                        s+="-1";
+                                    }
+                                } catch (NullPointerException e) {
                                     s+="-1";
                                 }
-                            } catch (NullPointerException e) {
-                                s+="-1";
+                            }else {
+                                //Sell Property (Always an option)
+                                s += "-1:7:-1";
                             }
-
                             optionsString[i] = s;
                             i++;
                         }
@@ -515,12 +519,23 @@ public class Board{
                         if(t.type == Tile.Type.PROPERTY){
                             Property property = (Property) t;
                             property.buy(getCurrentPlayer());
+                            }
+                        }
+                    break;
+                case BUY_ALL_HOUSES:
+                    for (Property p:getCurrentPlayer().getInventory()) {
+                        if(p.canBuild()){
+                            for (int i = 0; i < 5; i++) {
+                                p.buildHouse();
+                            }
                         }
                     }
                     break;
             }
         }
+        gameDisplay.updateGameBoard();
+        gameDisplay.updatePlayerPane(getCurrentPlayer());
     }
-    enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE}
+    enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE, BUY_ALL_HOUSES}
 
 }

@@ -106,7 +106,7 @@ public class Property extends Tile {
         }
     }
 
-    public void buy (Player p){
+    public void buy(Player p){
         p.addProperty(this);
         owner = p;
         p.removeMoney(costs[0]);
@@ -117,7 +117,11 @@ public class Property extends Tile {
     }
 
     public int getCost(){ // when number of houses == 0 it returns the cost to buy the property otherwise it returns the cost to buy a house
-        return costs[numberHouses];
+        if(numberHouses != 0){
+            return costs[1];
+        }else {
+            return costs[0];
+        }
     }
 
     public int propertySalePrice(){
@@ -135,12 +139,12 @@ public class Property extends Tile {
     }
 
     public int houseSalePrice(){
-        return (costs[numberHouses]/2);
+        return (costs[1]/2);
     }
 
     public void sellHouse(){
         if(numberHouses != 0){
-            owner.addMoney(costs[numberHouses]/2);
+            owner.addMoney(costs[1]/2);
             numberHouses--;
         }
     }
