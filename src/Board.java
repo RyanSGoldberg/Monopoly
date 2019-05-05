@@ -101,7 +101,8 @@ public class Board{
     }
 
     public void play(){
-        devMode(DevCommands.GOD_MODE);
+        //If needed, enter dev commands here
+        // devMode();
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;

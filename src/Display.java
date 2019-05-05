@@ -168,7 +168,6 @@ public class Display extends Application implements GameDisplay{
     private void startPlayerCreatorPane(){
         //Makes a new instance of game
         game = new Board(true,this);
-        int spriteSize = 40;//TODO
 
         //All the possible tokens
         tokens =  new ArrayList<String>();
@@ -206,20 +205,42 @@ public class Display extends Application implements GameDisplay{
 
                 //Ensure names are not empty
                 if(temp.name.isEmpty()){
-                    messageFX("Invalid Input. Names may not be empty");
+                    messageFX("Invalid Input. Names may not be empty",false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
                     return;
                 }
 
-                //Ensures names do not contain commas(So they can be saved in csv files)
-                if(temp.name.contains(",")){
-                    messageFX("Invalid Input. Names may not include ','");
+                //Ensures the name is not an empty string of spaces
+                boolean isNotSpace = false;
+                for (char c:temp.name.toCharArray()){
+                    if(c != ' '){
+                        isNotSpace = true;
+                    }
+                }
+                if(!isNotSpace){
+                    messageFX("Invalid Input. Names may not be empty",false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
+                    return;
+                }
+
+
+                //Ensures names are alphanum(So they can be saved in csv files)
+                if(!temp.name.matches("[a-zA-Z0-9]+")){
+                    messageFX("Invalid Input. Names must be alphanumeric",false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
                     return;
                 }
 
                 //Ensures no names are duplicated
                 for (Player p:game.players) {
                     if(temp.name.equalsIgnoreCase(p.getName())){
-                        messageFX("Invalid Input. Names may not be repeated");
+                        messageFX("Invalid Input. Names may not be repeated",false);
 
                         //Clears the players so they when 1 is rejected, it must start again
                         game.players.clear();
@@ -229,15 +250,41 @@ public class Display extends Application implements GameDisplay{
 
                 //Ensures a token was selected
                 if(temp.token.isEmpty()){
-                    messageFX("You must pick a token");
+                    messageFX("You must pick a token",false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
                     return;
                 }
 
                 //Ensures a type was selected
                 if(temp.type == null){
-                    messageFX("You must pick a player type");
+                    messageFX("You must pick a player type",false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
                     return;
                 }
+
+                //Ensures at least 1 player is a human
+                boolean PC = false;
+                for (Player p:game.players) {
+                    if (p.type == Player.Type.PC) {
+                        PC = true;
+                    }
+                }
+                if(temp.type == Player.Type.PC){
+                    PC = true;
+                }
+                if(!PC){
+                    messageFX("You must have at least 1 playable character", false);
+
+                    //Clears the players so they when 1 is rejected, it must start again
+                    game.players.clear();
+                    return;
+                }
+
+                int spriteSize = ((TILE_LENGTH-(5*game.numPlayers))/game.numPlayers);
 
                 //Adds the player
                 if(temp.type == Player.Type.PC){
@@ -255,7 +302,7 @@ public class Display extends Application implements GameDisplay{
                 playersHBox.getChildren().add(playerCreationBox(true));
                 game.numPlayers++;
             }else{
-                messageFX("You cannot have more than 5 players");
+                messageFX("You cannot have more than 5 players",false);
             }
         });
 
@@ -358,12 +405,13 @@ public class Display extends Application implements GameDisplay{
 
         //Opens token picker when clicked
         baseImage.setOnMouseClicked(event -> {
-            tokenPicker();
-
             //If the user had previously chosen a token and wants to replace it, put that one back in options
             if(!playerCreatorPane.token.isEmpty()) {
                 tokens.add(playerCreatorPane.token);
             }
+
+            tokenPicker();
+
             //Sets the new token image
             playerCreatorPane.token = outString;
             tokenImage.setImage(new Image(Display.class.getResourceAsStream("Images/"+playerCreatorPane.token+".png")));
@@ -381,7 +429,7 @@ public class Display extends Application implements GameDisplay{
             removePlayer.setDefaultButton(true);
             removePlayer.setOnAction(event -> {
                 if(!playerCreatorPane.token.isEmpty()){
-                    tokens.add(playerCreatorPane.name);
+                    tokens.add(playerCreatorPane.token);
                 }
 
                 if(playerCreatorPane.getParent() instanceof HBox){
@@ -624,15 +672,27 @@ public class Display extends Application implements GameDisplay{
         text.setRotate(0);
 
         //The pane, players are stored on
-        VBox players = new VBox(5);
-        players.setAlignment(Pos.CENTER);
-        for (Player p:game.players) {
-            if(p.getPosition() == i){
-                players.getChildren().add(p.sprite);
+        if(orientation == Orientation.UP || orientation == Orientation.DOWN){
+            VBox players = new VBox(5);
+            players.setAlignment(Pos.CENTER);
+            for (Player p:game.players) {
+                if(p.getPosition() == i){
+                    players.getChildren().add(p.sprite);
+                }
             }
-        }
 
-        tempTile.getChildren().addAll(base,text,players);
+            tempTile.getChildren().addAll(base,text,players);
+        }else {
+            HBox players = new HBox(5);
+            players.setAlignment(Pos.CENTER);
+            for (Player p:game.players) {
+                if(p.getPosition() == i){
+                    players.getChildren().add(p.sprite);
+                }
+            }
+
+            tempTile.getChildren().addAll(base,text,players);
+        }
 
         tempTile.setOnMouseClicked(event -> {
             if(game.tiles[i].type == Tile.Type.PROPERTY){
@@ -1143,7 +1203,7 @@ public class Display extends Application implements GameDisplay{
         }
 
         Platform.runLater(() ->{
-            messageFX(message);
+            messageFX(message,true);
         });
         try {
             semaphore.acquire();
@@ -1152,7 +1212,7 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
-    public void messageFX(String message){
+    public void messageFX(String message, boolean releaseSemaphore){
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
         popup.setAlwaysOnTop(true);
@@ -1171,7 +1231,9 @@ public class Display extends Application implements GameDisplay{
         Button close = new Button("Return to game");
         close.setOnAction(event -> {
             popup.close();
-            semaphore.release(1);
+            if(releaseSemaphore){
+                semaphore.release(1);
+            }
         });
 
         VBox vBox = new VBox();
