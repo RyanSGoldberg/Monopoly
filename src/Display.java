@@ -166,13 +166,18 @@ public class Display extends Application implements GameDisplay{
     private void initializeToolbar(){
         HBox hBox = new HBox(10);
 
-        Button save_game = new Button("Save Game");
-        save_game.setOnAction(event -> {
+        Button saveGame = new Button("Save Game");
+        saveGame.setOnAction(event -> {
             System.out.println("Load Clicked");
             game.saveBoard();
         });
 
-        hBox.getChildren().addAll(save_game);
+        Button returnToMain = new Button("Main Menu");
+        returnToMain.setOnAction(event -> {
+            startMainMenu();
+        });
+
+        hBox.getChildren().addAll(returnToMain,saveGame);
         hBox.setAlignment(Pos.CENTER);
 
         screen.setTop(hBox);
