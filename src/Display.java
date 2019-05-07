@@ -20,12 +20,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -129,9 +131,17 @@ public class Display extends Application implements GameDisplay{
         loadGame.setFont(Font.font("Futura", 30));
         loadGame.setFill(Color.BLACK);
         loadGame.setOnMouseClicked(event -> {
+
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter extension = new FileChooser.ExtensionFilter("GAME files (*.game)", "*.game");
+            fileChooser.getExtensionFilters().add(extension);
+            File file = fileChooser.showOpenDialog(window);
+
             System.out.println("Load Game");
-            //game = new Board(false,this);
-            //startGame();
+            if(file != null){
+                game = new Board(false,this, file);
+            }
+
             System.out.println("TODO");
 
         });
@@ -170,7 +180,7 @@ public class Display extends Application implements GameDisplay{
 
     private void startPlayerCreatorPane(){
         //Makes a new instance of game
-        game = new Board(true,this);
+        game = new Board(true,this, null);
 
         //All the possible tokens
         tokens =  new ArrayList<String>();

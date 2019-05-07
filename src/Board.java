@@ -1,10 +1,14 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +18,7 @@ import java.util.List;
  */
 public class Board{
     public GameDisplay gameDisplay;
-    public String gameName = "customGameName";
+    public String gamePath;
 
     public Tile[] tiles;
     public static ArrayList<Player> players;
@@ -28,7 +32,7 @@ public class Board{
 
     public int[] monopolies;
 
-    public Board(boolean newGame, Display gameDisplay){
+    public Board(boolean newGame, Display gameDisplay, File gameFile){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
         this.gameDisplay = gameDisplay;
@@ -38,8 +42,17 @@ public class Board{
             //TODO Shuffle players array
             currentPlayer = 0;
 
+            //Makes a new game file
+            DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy_HH:mm");
+            Date date = new Date();
+            String gameName = "Monopoly-"+dateFormat.format(date);
+
+            gamePath = gameName + ".game";
+
         }else{
             //TODO Load board
+            gamePath = gameFile.toPath().toString();
+
             loadBoard();
         }
         setNumPlayers();
@@ -468,25 +481,32 @@ public class Board{
 
     public void loadBoard(){
         //TODO
+        try {
+
+            List<String> lines = Files.readAllLines(Paths.get(gamePath));
+            //TODO
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
-    public void saveBoard(){
-
+    public void saveBoard() {
         FileWriter fw;
         PrintWriter pw;
 
-        try{
-            System.out.println("TODO///// Enter the name of your game");
-
-            fw = new FileWriter("SavedGames/"+gameName+".txt");
+        try {
+            fw = new FileWriter("src/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
             //players
-            for(Player p:players){
+            for (Player p : players) {
                 pw.println(p.toString());
             }
             //tiles
-            for(Tile t:tiles){
+            for (Tile t : tiles) {
                 pw.println(t.toString());
             }
 
@@ -500,7 +520,7 @@ public class Board{
             pw.println(numPlayers);
 
             pw.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Error 404");
             e.printStackTrace();
         }
