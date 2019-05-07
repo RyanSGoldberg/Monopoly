@@ -115,7 +115,7 @@ public class Board{
 
     public void play(){
         //If needed, enter dev commands here
-         //devMode(DevCommands.GOD_MODE,DevCommands.BUY_ALL_PROPERTIES,DevCommands.BUY_ALL_HOUSES);
+         devMode(DevCommands.GOD_MODE,DevCommands.BUY_ALL_PROPERTIES);
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -369,8 +369,15 @@ public class Board{
                                 gameDisplay.updateGameBoard();
                                 break;
                             case 7:
+
+                                for(int j = 0 ; j < property.getNumberHouses() ; j++ ){
+
+                                    property.sellHouse();
+
+                                }
+
                                 property.sellProperty();
-                                gameDisplay.message("With today's market, I don't blame you for selling",show);
+                                gameDisplay.message("You sold "+property.getName()+" for "+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;

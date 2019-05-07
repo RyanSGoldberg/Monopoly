@@ -92,7 +92,7 @@ public class Property extends Tile {
     }
 
     public void buildHouse(){
-        owner.removeMoney(this.getCost());
+        owner.removeMoney(costs[1]);
         numberHouses++;
     }
 
@@ -168,6 +168,10 @@ public class Property extends Tile {
             }
         }
         return num;
+    }
+
+    public int getHouseCost(){
+        return costs[1];
     }
 
     public int[] getRents() {

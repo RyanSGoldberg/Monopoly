@@ -46,6 +46,8 @@ public class Display extends Application implements GameDisplay{
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
 
+    private Color houseColour[] = new Color[]{Color.DARKGREEN, Color.DARKRED};
+
     private ArrayList<String> tokens;
 
     private Semaphore semaphore = new Semaphore(0);
@@ -680,12 +682,12 @@ public class Display extends Application implements GameDisplay{
             VBox VHouses = new VBox(3);
 
             if(p.getNumberHouses() == 5){
-                HHouses.getChildren().add(new Rectangle(hotelSize,hotelSize/1.5,Color.PURPLE));
-                VHouses.getChildren().add(new Rectangle(hotelSize/1.5,hotelSize,Color.PURPLE));
+                HHouses.getChildren().add(new Rectangle(hotelSize,hotelSize/1.5,houseColour[1]));
+                VHouses.getChildren().add(new Rectangle(hotelSize/1.5,hotelSize,houseColour[1]));
             }else {
                 for (int j = 0; j < p.getNumberHouses(); j++) {
-                    HHouses.getChildren().add(new Circle(houseSize,Color.DARKSALMON));
-                    VHouses.getChildren().add(new Circle(houseSize,Color.DARKSALMON));
+                    HHouses.getChildren().add(new Circle(houseSize,houseColour[0]));
+                    VHouses.getChildren().add(new Circle(houseSize,houseColour[0]));
                 }
             }
 
@@ -1173,7 +1175,7 @@ public class Display extends Application implements GameDisplay{
 
         //If they can buy a house
         if(parsed[1] != -1){
-            buyHouse.setText("Buy a house for $"+prop.getCost());
+            buyHouse.setText("Buy a house for $"+prop.getHouseCost());
             column.getChildren().add(buyHouse);
         }
 
