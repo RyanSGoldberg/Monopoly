@@ -45,7 +45,6 @@ public class Display extends Application implements GameDisplay{
 
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
-
     private Color houseColour[] = new Color[]{Color.DARKGREEN, Color.DARKRED};
 
     private ArrayList<String> tokens;
@@ -302,7 +301,7 @@ public class Display extends Application implements GameDisplay{
 
                     //Clears the players so they when 1 is rejected, it must start again
                     game.players.clear();
-                    return;
+                    break;
                 }
 
                 int spriteSize = ((TILE_LENGTH-(5*game.numPlayers))/game.numPlayers);
@@ -314,6 +313,11 @@ public class Display extends Application implements GameDisplay{
                     game.players.add(new NPC(temp.name,game,temp.token,spriteSize));
                 }
             }
+
+            if(game.players.size() == 0){
+                return;
+            }
+
             startGame();
         });
 
@@ -674,7 +678,7 @@ public class Display extends Application implements GameDisplay{
         }else {
             Property p = (Property) game.tiles[i];
 
-            int houseSize = TILE_WIDTH/12;
+            int houseSize = TILE_WIDTH/10;
             int hotelSize = TILE_WIDTH/2;
 
             StackPane coloredStack = new StackPane();
@@ -1480,6 +1484,54 @@ public class Display extends Application implements GameDisplay{
 
     private int getFontWidth(String s, Font f){
         return (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(s,f);
+    }
+
+    public void winScreen(Player p){
+        Platform.runLater(() ->{
+            winScreenFX(p);
+        });
+    }
+
+
+    public void winScreenFX(Player p){
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.UNDECORATED);
+        popup.setAlwaysOnTop(true);
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        Text text = new Text(p.getName()+" Wins!");
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.setFont(Font.font("Futura",25));
+
+        ImageView token = p.getSprite();
+
+        //Sets the width to that of the text
+        int wid =  300;
+        int height = 150;
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+        Button close = new Button("Return to main menu");
+        close.setOnAction(event -> {
+            popup.close();
+            startMainMenu();
+        });
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(text,token,close);
+        vBox.setAlignment(Pos.CENTER);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(card,vBox);
+
+        Scene scene = new Scene(stackPane,wid,height);
+
+        scene.setOnKeyPressed(event -> {
+            popup.close();
+        });
+
+        popup.setScene(scene);
+        popup.showAndWait();
     }
 
     private enum Orientation {UP,DOWN,LEFT,RIGHT}

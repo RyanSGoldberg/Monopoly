@@ -16,7 +16,7 @@ public class Tile{
     public void landedOn(Player p, int rollSum, boolean show){
     }
 
-    public String toString(int rollSum) {
+    public String toString() {
         return super.toString();
     }
 

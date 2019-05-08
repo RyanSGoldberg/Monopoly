@@ -115,7 +115,7 @@ public class Board{
 
     public void play(){
         //If needed, enter dev commands here
-         //devMode(DevCommands.GOD_MODE,DevCommands.BUY_ALL_PROPERTIES);
+         //devMode();
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -132,12 +132,14 @@ public class Board{
                 currentPlayer = 0;
             }
         }
-        gameDisplay.message(getCurrentPlayer().getName()+" won the game",true);
+        //TODO WIN WINDOW
+        System.out.println("Here");
+
+        gameDisplay.winScreen(getCurrentPlayer());
     }
 
     public void handleTurn(Player p, boolean show){
         boolean doubleRoll;
-
         do {
             gameDisplay.updatePlayerPane(p);
 
@@ -288,8 +290,8 @@ public class Board{
                 if(p.isInDebt()){
                     //If the players net worth is less than their debt, they are out
                     if(p.isBroke()){
-                        removePlayer(p);
-                    }{
+                        choice = 99;
+                    }else {
                         gameDisplay.message("You are in debt for $"+p.getDebt()+". You must sell your inventory",show);
                         choice = 11;
                     }
@@ -377,7 +379,7 @@ public class Board{
                                 }
 
                                 property.sellProperty();
-                                gameDisplay.message("You sold "+property.getName()+" for "+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
+                                gameDisplay.message("You sold "+property.getName()+" for $"+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;
@@ -388,7 +390,10 @@ public class Board{
                                 gameDisplay.updateGameBoard();
                                 break;
                         }
-
+                        break;
+                    case 99:
+                        removePlayer(p, tile);
+                        return;
 
                 }
             }
@@ -472,10 +477,30 @@ public class Board{
         return cashPot;
     }
 
-    public void removePlayer(Player p){
-        gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
+    public void removePlayer(Player p, Tile playerLocation){
+        if(playerLocation instanceof Property){
+            if(((Property) playerLocation).hasOwner()){
+                for (Property property:p.getInventory()) {
+                    property.sellProperty();
+
+                    Player newOwner = ((Property) playerLocation).getOwner();
+                    newOwner.addMoney(property.propertySalePrice());
+                    property.buy(newOwner);
+
+                }
+            }else {
+                for (Property property:p.getInventory()) {
+                    property.sellProperty();
+                }
+            }
+        }else {
+            for (Property property : p.getInventory()) {
+                property.sellProperty();
+            }
+        }
+
         players.remove(p);
-        //TODO what to do with their stuff
+        gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
     }
 
     public Player getCurrentPlayer(){
@@ -492,6 +517,31 @@ public class Board{
 
             List<String> lines = Files.readAllLines(Paths.get(gamePath));
             //TODO
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+
+                if(i == 1){
+                    currentPlayer = Integer.parseInt(line);
+                }
+                if(i == 2){
+                    cashPot = Integer.parseInt(line);
+                }
+                if(i == 3){
+                    numDoubleRollsOnTurn = Integer.parseInt(line);
+                }
+                if(i == 4){
+                    numPlayers = Integer.parseInt(line);
+                }
+/*
+String[] lineParsed = line.split(",");
+ */
+
+
+                else {
+                    //TODO  Player stuff
+                }
+
+            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -508,15 +558,6 @@ public class Board{
             fw = new FileWriter("src/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
-            //players
-            for (Player p : players) {
-                pw.println(p.toString());
-            }
-            //tiles
-            for (Tile t : tiles) {
-                pw.println(t.toString());
-            }
-
             //current player
             pw.println(currentPlayer);
             //cashPot
@@ -525,6 +566,15 @@ public class Board{
             pw.println(numDoubleRollsOnTurn);
             //numPlayers
             pw.println(numPlayers);
+
+            //tiles
+            for (Tile t : tiles) {
+                pw.println(t.toString());
+            }
+            //players
+            for (Player p : players) {
+                pw.println(p.toString());
+            }
 
             pw.close();
         } catch (Exception e) {
@@ -558,11 +608,24 @@ public class Board{
                         }
                     }
                     break;
+                case WIN_MODE:
+                    currentPlayer = 0;
+                    getCurrentPlayer().addMoney(999999999);
+
+                    for (int i = 0; i < 40; i++) {
+                        if(tiles[i] instanceof Property){
+                            ((Property) tiles[i]).buy(getCurrentPlayer());
+                        }
+                    }
+
+                    currentPlayer++;
+                    getCurrentPlayer().removeMoney(1499);
+                    break;
             }
         }
         gameDisplay.updateGameBoard();
         gameDisplay.updatePlayerPane(getCurrentPlayer());
     }
-    enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE, BUY_ALL_HOUSES}
+    enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE, BUY_ALL_HOUSES, WIN_MODE}
 
 }
