@@ -816,11 +816,14 @@ public class Display extends Application implements GameDisplay{
 
         //Name
         Text name = new Text(p.getName());
+        name.setFont(defaultFont);
 
         //Balance
         Text balance = new Text("Balance: $"+p.getBalance());
+        balance.setFont(defaultFont);
 
         Text inventory = new Text("Inventory: ");
+        inventory.setFont(defaultFont);
 
         temp.getChildren().addAll(name,balance,inventory);
 
