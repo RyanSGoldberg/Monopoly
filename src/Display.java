@@ -187,6 +187,7 @@ public class Display extends Application implements GameDisplay{
 
     private void startPlayerCreatorPane(){
         //Makes a new instance of game
+        semaphore = new Semaphore(0);
         game = new Board(true,this, null);
 
         //All the possible tokens
