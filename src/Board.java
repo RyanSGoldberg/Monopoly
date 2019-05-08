@@ -517,6 +517,31 @@ public class Board{
 
             List<String> lines = Files.readAllLines(Paths.get(gamePath));
             //TODO
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+
+                if(i == 1){
+                    currentPlayer = Integer.parseInt(line);
+                }
+                if(i == 2){
+                    cashPot = Integer.parseInt(line);
+                }
+                if(i == 3){
+                    numDoubleRollsOnTurn = Integer.parseInt(line);
+                }
+                if(i == 4){
+                    numPlayers = Integer.parseInt(line);
+                }
+/*
+String[] lineParsed = line.split(",");
+ */
+
+
+                else {
+                    //TODO  Player stuff
+                }
+
+            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -533,15 +558,6 @@ public class Board{
             fw = new FileWriter("src/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
-            //players
-            for (Player p : players) {
-                pw.println(p.toString());
-            }
-            //tiles
-            for (Tile t : tiles) {
-                pw.println(t.toString());
-            }
-
             //current player
             pw.println(currentPlayer);
             //cashPot
@@ -550,6 +566,15 @@ public class Board{
             pw.println(numDoubleRollsOnTurn);
             //numPlayers
             pw.println(numPlayers);
+
+            //tiles
+            for (Tile t : tiles) {
+                pw.println(t.toString());
+            }
+            //players
+            for (Player p : players) {
+                pw.println(p.toString());
+            }
 
             pw.close();
         } catch (Exception e) {

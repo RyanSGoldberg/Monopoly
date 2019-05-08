@@ -24,6 +24,7 @@ public class Player {
     protected Type type;
 
     public ImageView sprite;
+    public String tokenName;
 
     private boolean inDebt;
     private int debt;
@@ -40,6 +41,7 @@ public class Player {
 
         this.type = Type.PC;
 
+        this.tokenName = token;
         initializeSprite(token,tokenSize);
     }
 
@@ -168,12 +170,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return  "name='" + name + '\'' +
-                ", wallet=" + wallet +
-                ", position=" + position +
-                ", numberOfJailCards=" + numberOfJailCards +
-                ", inJail=" + inJail +
-                ", turnsLeftInJail=" + turnsLeftInJail;
+        return  name+","+wallet+","+position+","+numberOfJailCards+","+inJail+","+turnsLeftInJail+","+inDebt+","+debt+","+tokenName;
     }
 
     enum Type {PC,NPC}

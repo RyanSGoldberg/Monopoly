@@ -300,7 +300,7 @@ public class Display extends Application implements GameDisplay{
 
                     //Clears the players so they when 1 is rejected, it must start again
                     game.players.clear();
-                    return;
+                    break;
                 }
 
                 int spriteSize = ((TILE_LENGTH-(5*game.numPlayers))/game.numPlayers);
@@ -312,6 +312,11 @@ public class Display extends Application implements GameDisplay{
                     game.players.add(new NPC(temp.name,game,temp.token,spriteSize));
                 }
             }
+
+            if(game.players.size() == 0){
+                return;
+            }
+
             startGame();
         });
 
