@@ -45,7 +45,6 @@ public class Display extends Application implements GameDisplay{
 
     private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
     private Color tileBaseColor = Color.PALEGREEN;
-
     private Color houseColour[] = new Color[]{Color.DARKGREEN, Color.DARKRED};
 
     private ArrayList<String> tokens;
@@ -673,7 +672,7 @@ public class Display extends Application implements GameDisplay{
         }else {
             Property p = (Property) game.tiles[i];
 
-            int houseSize = TILE_WIDTH/12;
+            int houseSize = TILE_WIDTH/10;
             int hotelSize = TILE_WIDTH/2;
 
             StackPane coloredStack = new StackPane();

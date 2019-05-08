@@ -58,6 +58,8 @@ public class Player {
             debt = debt-amount;
         }else if(inDebt && amount > debt){
             wallet+=amount-debt;
+            inDebt = false;
+            debt = 0;
         }else {
             wallet+=amount;
         }
