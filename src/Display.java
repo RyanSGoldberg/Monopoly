@@ -1480,5 +1480,53 @@ public class Display extends Application implements GameDisplay{
         return (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(s,f);
     }
 
+    public void winScreen(Player p){
+        Platform.runLater(() ->{
+            winScreenFX(p);
+        });
+    }
+
+
+    public void winScreenFX(Player p){
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.UNDECORATED);
+        popup.setAlwaysOnTop(true);
+        popup.initModality(Modality.APPLICATION_MODAL);
+
+        Text text = new Text(p.getName()+" Wins!");
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.setFont(Font.font("Futura",25));
+
+        ImageView token = p.getSprite();
+
+        //Sets the width to that of the text
+        int wid =  300;
+        int height = 150;
+
+        Rectangle card = new Rectangle(wid,height,Color.WHITE);
+
+        Button close = new Button("Return to main menu");
+        close.setOnAction(event -> {
+            popup.close();
+            startMainMenu();
+        });
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(text,token,close);
+        vBox.setAlignment(Pos.CENTER);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(card,vBox);
+
+        Scene scene = new Scene(stackPane,wid,height);
+
+        scene.setOnKeyPressed(event -> {
+            popup.close();
+        });
+
+        popup.setScene(scene);
+        popup.showAndWait();
+    }
+
     private enum Orientation {UP,DOWN,LEFT,RIGHT}
 }

@@ -115,7 +115,7 @@ public class Board{
 
     public void play(){
         //If needed, enter dev commands here
-         devMode(DevCommands.WIN_MODE);
+         //devMode();
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -133,7 +133,9 @@ public class Board{
             }
         }
         //TODO WIN WINDOW
-        gameDisplay.message(getCurrentPlayer().getName()+" won the game",true);
+        System.out.println("Here");
+
+        gameDisplay.winScreen(getCurrentPlayer());
     }
 
     public void handleTurn(Player p, boolean show){
@@ -288,8 +290,8 @@ public class Board{
                 if(p.isInDebt()){
                     //If the players net worth is less than their debt, they are out
                     if(p.isBroke()){
-                        removePlayer(p, tile);
-                    }{
+                        choice = 99;
+                    }else {
                         gameDisplay.message("You are in debt for $"+p.getDebt()+". You must sell your inventory",show);
                         choice = 11;
                     }
@@ -377,7 +379,7 @@ public class Board{
                                 }
 
                                 property.sellProperty();
-                                gameDisplay.message("You sold "+property.getName()+" for "+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
+                                gameDisplay.message("You sold "+property.getName()+" for $"+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;
@@ -388,7 +390,10 @@ public class Board{
                                 gameDisplay.updateGameBoard();
                                 break;
                         }
-
+                        break;
+                    case 99:
+                        removePlayer(p, tile);
+                        return;
 
                 }
             }
@@ -473,8 +478,6 @@ public class Board{
     }
 
     public void removePlayer(Player p, Tile playerLocation){
-        gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
-
         if(playerLocation instanceof Property){
             if(((Property) playerLocation).hasOwner()){
                 for (Property property:p.getInventory()) {
@@ -491,12 +494,13 @@ public class Board{
                 }
             }
         }else {
-            for (Property property:p.getInventory()) {
+            for (Property property : p.getInventory()) {
                 property.sellProperty();
             }
         }
+
         players.remove(p);
-        setNumPlayers();
+        gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
     }
 
     public Player getCurrentPlayer(){
@@ -583,21 +587,14 @@ public class Board{
                     currentPlayer = 0;
                     getCurrentPlayer().addMoney(999999999);
 
-                    for (int i = 5; i < 40; i++) {
+                    for (int i = 0; i < 40; i++) {
                         if(tiles[i] instanceof Property){
                             ((Property) tiles[i]).buy(getCurrentPlayer());
                         }
                     }
 
                     currentPlayer++;
-                    getCurrentPlayer().removeMoney(1359);
-                    for (int i = 0; i < 5; i++) {
-                        if(tiles[i] instanceof Property){
-                            ((Property) tiles[i]).buy(getCurrentPlayer());
-                        }
-                    }
-
-                    currentPlayer=0;
+                    getCurrentPlayer().removeMoney(1499);
                     break;
             }
         }

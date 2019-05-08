@@ -16,4 +16,6 @@ public interface GameDisplay {
     void updateGameBoard();
 
     void diceRoll(int die1, int die2, boolean show);
+
+    void winScreen(Player p);
 }

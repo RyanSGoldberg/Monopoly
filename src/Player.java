@@ -162,6 +162,10 @@ public class Player {
         return false;
     }
 
+    public ImageView getSprite() {
+        return sprite;
+    }
+
     @Override
     public String toString() {
         return  "name='" + name + '\'' +
