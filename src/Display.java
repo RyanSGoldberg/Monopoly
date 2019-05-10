@@ -298,24 +298,6 @@ public class Display extends Application implements GameDisplay{
                     return;
                 }
 
-                //Ensures at least 1 player is a human
-                boolean PC = false;
-                for (Player p:game.players) {
-                    if (p.type == Player.Type.PC) {
-                        PC = true;
-                    }
-                }
-                if(temp.type == Player.Type.PC){
-                    PC = true;
-                }
-                if(!PC){
-                    messageFX("You must have at least 1 playable character", false);
-
-                    //Clears the players so they when 1 is rejected, it must start again
-                    game.players.clear();
-                    break;
-                }
-
                 int spriteSize = ((TILE_LENGTH-(5*game.numPlayers))/game.numPlayers);
 
                 //Adds the player
@@ -324,6 +306,34 @@ public class Display extends Application implements GameDisplay{
                 }else {
                     game.players.add(new NPC(temp.name,game,temp.token,spriteSize));
                 }
+            }
+
+            //Ensures at least 1 player is a human
+            boolean PC = false;
+
+            /*for (Player p:game.players) {
+                if (p.type == Player.Type.PC) {
+                    PC = true;
+                }
+            }*/
+
+            int numNPC = 0;
+
+            for(int i = 0 ; i < game.players.size() ; i++){
+
+                if(game.players.get(i).type == Player.Type.NPC){
+
+                    numNPC++;
+
+                }
+
+            }
+
+            if(numNPC == game.players.size()){
+                messageFX("You must have at least 1 playable character", false);
+
+                //Clears the players so they when 1 is rejected, it must start again
+                game.players.clear();
             }
 
             if(game.players.size() == 0){
