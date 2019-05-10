@@ -522,20 +522,26 @@ public class Board{
 
                 if(i == 1){
                     currentPlayer = Integer.parseInt(line);
-                }
-                if(i == 2){
+                }else if(i == 2){
                     cashPot = Integer.parseInt(line);
-                }
-                if(i == 3){
+                }else if(i == 3){
                     numDoubleRollsOnTurn = Integer.parseInt(line);
-                }
-                if(i == 4){
+                }else if(i == 4){
                     numPlayers = Integer.parseInt(line);
+                }else if(i < 4+numPlayers){
+                  /*  //Players
+                    String[] split = line.split(",");
+
+
+
+
+                    this.players.add(new Player(__________________));
+                    */
                 }
 /*
 String[] lineParsed = line.split(",");
  */
-
+            if ()
 
                 else {
                     //TODO  Player stuff
@@ -588,7 +594,7 @@ String[] lineParsed = line.split(",");
             file.setReadOnly();
 
         } catch (Exception e) {
-            System.err.println("Error 404");
+            System.out.println("Error 404");
             e.printStackTrace();
         }
 

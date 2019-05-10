@@ -45,6 +45,8 @@ public class Player {
         initializeSprite(token,tokenSize);
     }
 
+    //public Player(String name, ALL THE STUFF YOU SAVE) //NEED TO MOVE PLAYERS IN SAVED FILE TO LINE 5
+
     public void removeMoney(int amount){
         if(wallet - amount > 0){
             wallet -= amount;
