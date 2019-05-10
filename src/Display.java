@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -37,6 +38,8 @@ public class Display extends Application implements GameDisplay{
     private BorderPane screen;
     private BorderPane gameBoard;
 
+    private ImageCursor imageCursor;
+
     private Board game;
 
     private int BOARD_SIZE;
@@ -53,6 +56,8 @@ public class Display extends Application implements GameDisplay{
     private int outValue;
     private String outString;
 
+    private Font defaultFont=Font.font("Futura",15);
+
     @Override
     public void start(Stage primaryStage){
         //The main window
@@ -61,6 +66,8 @@ public class Display extends Application implements GameDisplay{
         window.setResizable(false);
         window.toFront();
 
+        initializeImages();
+
         //Initializes the scale of the window/components
         initializeSizes();
 
@@ -68,6 +75,11 @@ public class Display extends Application implements GameDisplay{
         startMainMenu();
 
         window.show();
+    }
+
+    private void initializeImages(){
+        Image icon64x64 = new Image(Display.class.getResourceAsStream("Images/Icon.png"));
+        window.getIcons().add(icon64x64);
     }
 
     private void initializeSizes(){
@@ -168,12 +180,14 @@ public class Display extends Application implements GameDisplay{
         HBox hBox = new HBox(10);
 
         Button saveGame = new Button("Save Game");
+        saveGame.setFont(defaultFont);
         saveGame.setOnAction(event -> {
             System.out.println("Load Clicked");
             game.saveBoard();
         });
 
         Button returnToMain = new Button("Main Menu");
+        returnToMain.setFont(defaultFont);
         returnToMain.setOnAction(event -> {
             startMainMenu();
         });
@@ -219,6 +233,7 @@ public class Display extends Application implements GameDisplay{
 
         //Play button (when clicked checks all the inputted data for errors)
         Button play = new Button("PLAY");
+        play.setFont(defaultFont);
         play.setOnAction(event -> {
             for (Object o:playersHBox.getChildren().toArray()) {
                 PlayerCreatorPane temp = (PlayerCreatorPane) o;
@@ -322,6 +337,7 @@ public class Display extends Application implements GameDisplay{
         });
 
         Button addPlayer = new Button("ADD PLAYER");
+        addPlayer.setFont(defaultFont);
         addPlayer.setOnAction(event -> {
             if(game.numPlayers < 5){
                 playersHBox.getChildren().add(playerCreationBox(true));
@@ -332,11 +348,13 @@ public class Display extends Application implements GameDisplay{
         });
 
         Button back = new Button("BACK");
+        back.setFont(defaultFont);
         back.setOnAction(event -> {
             startMainMenu();
         });
 
         Button dev = new Button("Dev Players");
+        dev.setFont(defaultFont);
         dev.setOnAction(event -> {
             game.players.add(new Player("DevA",game,"hat",40));
             game.players.add(new Player("DevB",game,"trolly",40));
@@ -362,7 +380,7 @@ public class Display extends Application implements GameDisplay{
     private PlayerCreatorPane playerCreationBox(boolean showRemove){
         PlayerCreatorPane playerCreatorPane = new PlayerCreatorPane();
 
-        double wid = BOARD_SIZE/4;
+        double wid = BOARD_SIZE/3;
         double height = BOARD_SIZE/2.5;
 
         //Background Colored rectangle
@@ -380,9 +398,11 @@ public class Display extends Application implements GameDisplay{
         playerType.setAlignment(Pos.CENTER);
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioButton radioButton = new RadioButton("HUMAN PLAYER");
+        radioButton.setFont(defaultFont);
         radioButton.setUserData(Player.Type.PC);
         radioButton.setToggleGroup(toggleGroup);
         RadioButton radioButton2 = new RadioButton("COMPUTER PLAYER");
+        radioButton2.setFont(defaultFont);
         radioButton2.setUserData(Player.Type.NPC);
         radioButton2.setToggleGroup(toggleGroup);
         playerType.getChildren().addAll(radioButton,radioButton2);
@@ -396,6 +416,7 @@ public class Display extends Application implements GameDisplay{
 
         //text field for username input
         TextField userName = new TextField();
+        userName.setFont(defaultFont);
         userName.setAlignment(Pos.CENTER);
         userName.setPromptText("Enter A Name");
         userName.setMaxWidth(wid-10);
@@ -458,6 +479,7 @@ public class Display extends Application implements GameDisplay{
         //If the player is 3-5 it can be removed
         if(showRemove){
             Button removePlayer = new Button("REMOVE PLAYER");
+            removePlayer.setFont(defaultFont);
             removePlayer.setDefaultButton(true);
             removePlayer.setOnAction(event -> {
                 if(!playerCreatorPane.token.isEmpty()){
@@ -740,9 +762,39 @@ public class Display extends Application implements GameDisplay{
             base.getChildren().addAll(baseRec,coloredStack);
         }
 
-        //TODO Text rotation
-        Text text = new Text(Integer.toString(game.tiles[i].location));
-        text.setRotate(0);
+        //Separates the components of the property names to different lines
+        String name = "";
+        String[] split = game.tiles[i].name.split(" ");
+        for (String s:split) {
+            name+=s+"\n";
+        }
+
+        //Generates the property name Text
+        Text text = new Text(name);
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.setFont(Font.font("Futura",10));
+        switch (orientation){
+            case UP:
+                text.setRotate(0);
+                break;
+            case DOWN:
+                text.setRotate(180);
+                break;
+            case LEFT:
+                text.setRotate(90);
+                break;
+            case RIGHT:
+                text.setRotate(270);
+                break;
+        }
+
+        if(game.tiles[i].type == Tile.Type.PROPERTY && game.tiles[i].groupName != 002 && game.tiles[i].groupName != 005){
+            tempTile.getChildren().addAll(base,text);
+        }else {
+            tempTile.getChildren().add(base);
+        }
+
+
 
         //The pane, players are stored on
         if(orientation == Orientation.UP || orientation == Orientation.DOWN){
@@ -754,7 +806,7 @@ public class Display extends Application implements GameDisplay{
                 }
             }
 
-            tempTile.getChildren().addAll(base,text,players);
+            tempTile.getChildren().add(players);
         }else {
             HBox players = new HBox(5);
             players.setAlignment(Pos.CENTER);
@@ -764,7 +816,7 @@ public class Display extends Application implements GameDisplay{
                 }
             }
 
-            tempTile.getChildren().addAll(base,text,players);
+            tempTile.getChildren().add(players);
         }
 
         tempTile.setOnMouseClicked(event -> {
@@ -805,11 +857,14 @@ public class Display extends Application implements GameDisplay{
 
         //Name
         Text name = new Text(p.getName());
+        name.setFont(defaultFont);
 
         //Balance
         Text balance = new Text("Balance: $"+p.getBalance());
+        balance.setFont(defaultFont);
 
         Text inventory = new Text("Inventory: ");
+        inventory.setFont(defaultFont);
 
         temp.getChildren().addAll(name,balance,inventory);
 
@@ -899,6 +954,7 @@ public class Display extends Application implements GameDisplay{
 
     public void promptFX(String question, int[] buttonsToDisplay){
         Text text = new Text(question);
+        text.setFont(defaultFont);
 
         VBox pane = new VBox();
         pane.getChildren().add(text);
@@ -1020,6 +1076,7 @@ public class Display extends Application implements GameDisplay{
             dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+die2+".png")));
 
             Button close = new Button("CLOSE");
+            close.setFont(defaultFont);
             close.setOnAction(clicked ->{
                 stage.close();
                 semaphore.release();
@@ -1067,6 +1124,7 @@ public class Display extends Application implements GameDisplay{
 
     private void propertyManagerPromptFX(String[] buttonsToDisplay){
         Text text = new Text("Property Manager");
+        text.setFont(defaultFont);
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -1108,6 +1166,7 @@ public class Display extends Application implements GameDisplay{
         vBox.getChildren().add(hBox);
 
         Button backToGame = new Button("Back To Game");
+        backToGame.setFont(defaultFont);
         backToGame.setOnAction(event -> {
             setOutString("-1:-1");
             vBox.getChildren().clear();
@@ -1122,6 +1181,7 @@ public class Display extends Application implements GameDisplay{
 
     private Button buttonBuilder(String text, int returnValue, Pane parent){
         Button b = new Button(text);
+        b.setFont(defaultFont);
 
         //b.setGraphic(Node); //Adds an image to the right
 
@@ -1152,8 +1212,10 @@ public class Display extends Application implements GameDisplay{
         back.setStroke(Color.BLACK);
 
         Text name = new Text(prop.name);
+        name.setFont(defaultFont);
 
         Button buyHouse = new Button();
+        buyHouse.setFont(defaultFont);
         buyHouse.setOnAction(event -> {
             setOutString(parsed[0]+":6");
             parent.getChildren().clear();
@@ -1162,6 +1224,7 @@ public class Display extends Application implements GameDisplay{
         });
 
         Button sellHouse = new Button();
+        sellHouse.setFont(defaultFont);
         sellHouse.setOnAction(event -> {
             setOutString(parsed[0]+":8");
             parent.getChildren().clear();
@@ -1169,6 +1232,7 @@ public class Display extends Application implements GameDisplay{
         });
 
         Button sellProperty = new Button("Sell Property for $"+prop.propertySalePrice());
+        sellProperty.setFont(defaultFont);
         sellProperty.setOnAction(event -> {
             setOutString(parsed[0]+":7");
             parent.getChildren().clear();
@@ -1257,9 +1321,11 @@ public class Display extends Application implements GameDisplay{
         }
 
         Text owner = new Text(s);
+        owner.setFont(defaultFont);
 
         //A button which closes the card, and returns to the game
         Button close = new Button("Return to game");
+        close.setFont(defaultFont);
         close.setOnAction(event -> {
             popup.close();
 
@@ -1267,7 +1333,6 @@ public class Display extends Application implements GameDisplay{
                 semaphore.release();
             }
         });
-        close.setFont(Font.font("Futura",12));
 
         //A vbox containing the column of nodes
         VBox vBox = new VBox(15);
@@ -1281,12 +1346,14 @@ public class Display extends Application implements GameDisplay{
             image.setFitHeight(wid/2);
 
             Text name = new Text(p.name);
+            name.setFont(defaultFont);
 
             Text text = new Text("Rent $20"+
                     "\nIf 2 Railroads Are Owned: $50"+
                     "\nIf 3 Railroads Are Owned: $100"+
                     "\nIf 4 Railroads Are Owned: $200"+
                     "\nMortgage Value $"+p.propertySalePrice());
+            text.setFont(defaultFont);
 
             vBox.getChildren().addAll(image,name,owner,text,close);
 
@@ -1296,12 +1363,14 @@ public class Display extends Application implements GameDisplay{
             image.setFitHeight(wid/2);
 
             Text name = new Text(p.name);
+            name.setFont(defaultFont);
 
             Text text = new Text("If ONE Utility is owned," +
                     "\nRent is 4x number shown on the dice" +
                     "\nIf BOTH Utilities are owned," +
                     "\nRent is 10x the amount shown on the dice."+
                     "\nMortgage Value $"+p.propertySalePrice());
+            text.setFont(defaultFont);
 
             vBox.getChildren().addAll(image,name,owner,text,close);
         }else{
@@ -1310,11 +1379,11 @@ public class Display extends Application implements GameDisplay{
 
             VBox textColumn = new VBox(10);
             Text header = new Text("TITLE DEED");
+            header.setFont(Font.font("Copperplate",15));
             Text name = new Text(p.name);
+            name.setFont(Font.font("Copperplate",30));
             textColumn.getChildren().addAll(header,name);
             textColumn.setAlignment(Pos.CENTER);
-            header.setFont(Font.font("Copperplate",15));
-            name.setFont(Font.font("Copperplate",30));
 
             coloredStack.getChildren().addAll(coloredRec,textColumn);
 
@@ -1328,7 +1397,7 @@ public class Display extends Application implements GameDisplay{
                             "\nMortgage Value: $"+p.propertySalePrice()
             );
             values.setTextAlignment(TextAlignment.CENTER);
-            values.setFont(Font.font("Futura",15));
+            values.setFont(defaultFont);
 
             vBox.getChildren().addAll(coloredStack,owner,values,close);
         }
@@ -1377,7 +1446,7 @@ public class Display extends Application implements GameDisplay{
 
         Text text = new Text(message);
         text.setTextAlignment(TextAlignment.CENTER);
-        text.setFont(Font.font("Futura",25));
+        text.setFont(defaultFont);
 
         //Sets the width to that of the text
         int wid =  getFontWidth(message,text.getFont())+ 40;
@@ -1386,6 +1455,7 @@ public class Display extends Application implements GameDisplay{
         Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
         Button close = new Button("Return to game");
+        close.setFont(defaultFont);
         close.setOnAction(event -> {
             popup.close();
             if(releaseSemaphore){
@@ -1512,6 +1582,7 @@ public class Display extends Application implements GameDisplay{
         Rectangle card = new Rectangle(wid,height,Color.WHITE);
 
         Button close = new Button("Return to main menu");
+        close.setFont(defaultFont);
         close.setOnAction(event -> {
             popup.close();
             startMainMenu();

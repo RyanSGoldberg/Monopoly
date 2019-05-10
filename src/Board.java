@@ -555,6 +555,14 @@ String[] lineParsed = line.split(",");
         PrintWriter pw;
 
         try {
+            File file = new File("src/SavedGames/"+gamePath);
+            if(file.exists()){
+                file.setWritable(true);
+            }else {
+                file = new File("src/SavedGames/"+gamePath);
+            }
+
+
             fw = new FileWriter("src/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
@@ -577,6 +585,8 @@ String[] lineParsed = line.split(",");
             }
 
             pw.close();
+            file.setReadOnly();
+
         } catch (Exception e) {
             System.err.println("Error 404");
             e.printStackTrace();
