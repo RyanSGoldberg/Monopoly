@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -37,8 +36,6 @@ public class Display extends Application implements GameDisplay{
     private Stage window;
     private BorderPane screen;
     private BorderPane gameBoard;
-
-    private ImageCursor imageCursor;
 
     private Board game;
 

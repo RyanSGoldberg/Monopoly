@@ -555,15 +555,15 @@ String[] lineParsed = line.split(",");
         PrintWriter pw;
 
         try {
-            File file = new File("src/SavedGames/"+gamePath);
+            File file = new File("SavedGames/"+gamePath);
             if(file.exists()){
                 file.setWritable(true);
             }else {
-                file = new File("src/SavedGames/"+gamePath);
+                file = new File("SavedGames/"+gamePath);
             }
 
 
-            fw = new FileWriter("src/SavedGames/"+gamePath);
+            fw = new FileWriter("SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
             //current player
