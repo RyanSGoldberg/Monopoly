@@ -60,7 +60,7 @@ public class Board{
 
     public void loadTiles(){
          //The path to the file containing the tile data
-         Path tileData = Paths.get("src/Data/tiles.csv");
+         Path tileData = Paths.get("Resources/Data/tiles.csv");
 
          //Checks to make sure the file exists
          if(!Files.exists(tileData)){
@@ -555,15 +555,15 @@ String[] lineParsed = line.split(",");
         PrintWriter pw;
 
         try {
-            File file = new File("SavedGames/"+gamePath);
+            File file = new File("Resources/SavedGames/"+gamePath);
             if(file.exists()){
                 file.setWritable(true);
             }else {
-                file = new File("SavedGames/"+gamePath);
+                file = new File("Resources/SavedGames/"+gamePath);
             }
 
 
-            fw = new FileWriter("SavedGames/"+gamePath);
+            fw = new FileWriter("Resources/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
             //current player

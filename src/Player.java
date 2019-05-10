@@ -144,7 +144,7 @@ public class Player {
     }
 
     private void initializeSprite(String token, int size){
-        sprite = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+token+".png")));
+        sprite = new ImageView(new Image(Display.class.getResourceAsStream("Images/" +token+".png")));
         sprite.setPreserveRatio(true);
         sprite.setFitHeight(size);
     }

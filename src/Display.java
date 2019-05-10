@@ -463,7 +463,7 @@ public class Display extends Application implements GameDisplay{
 
             //Sets the new token image
             playerCreatorPane.token = outString;
-            tokenImage.setImage(new Image(Display.class.getResourceAsStream("Images/"+playerCreatorPane.token+".png")));
+            tokenImage.setImage(new Image(Display.class.getResourceAsStream("Images/" +playerCreatorPane.token+".png")));
 
             //Removes the token from the options
             tokens.remove(playerCreatorPane.token);
@@ -523,7 +523,7 @@ public class Display extends Application implements GameDisplay{
             baseImage.setArcHeight(15);
             baseImage.setArcWidth(15);
 
-            ImageView tokenImage = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+s+".png")));
+            ImageView tokenImage = new ImageView(new Image(Display.class.getResourceAsStream("Images/" +s+".png")));
             tokenImage.setPreserveRatio(true);
             tokenImage.setFitHeight(80);
             tokenImage.setMouseTransparent(true);
@@ -636,7 +636,7 @@ public class Display extends Application implements GameDisplay{
         Rectangle baseRec = new Rectangle(len,len,tileBaseColor);
         baseRec.setStroke(Color.BLACK);
 
-        ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+game.tiles[i].name+".png")));
+        ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/" +game.tiles[i].name+".png")));
         image.setPreserveRatio(true);
         image.setFitHeight(len);
 
@@ -670,7 +670,7 @@ public class Display extends Application implements GameDisplay{
                 imageName = game.tiles[i].name;
             }
 
-            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+imageName+".png")));
+            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/" +imageName+".png")));
             image.setPreserveRatio(true);
 
             switch (orientation){
@@ -758,38 +758,11 @@ public class Display extends Application implements GameDisplay{
             base.getChildren().addAll(baseRec,coloredStack);
         }
 
-        //Separates the components of the property names to different lines
-        String name = "";
-        String[] split = game.tiles[i].name.split(" ");
-        for (String s:split) {
-            name+=s+"\n";
-        }
-
-        //Generates the property name Text
-        Text text = new Text(name);
-        text.setTextAlignment(TextAlignment.CENTER);
-        text.setFont(Font.font("Futura",10));
-        switch (orientation){
-            case UP:
-                text.setRotate(0);
-                break;
-            case DOWN:
-                text.setRotate(180);
-                break;
-            case LEFT:
-                text.setRotate(90);
-                break;
-            case RIGHT:
-                text.setRotate(270);
-                break;
-        }
-
         if(game.tiles[i].type == Tile.Type.PROPERTY && game.tiles[i].groupName != 002 && game.tiles[i].groupName != 005){
-            tempTile.getChildren().addAll(base,text);
+            tempTile.getChildren().addAll(base);
         }else {
             tempTile.getChildren().add(base);
         }
-
 
 
         //The pane, players are stored on
@@ -1042,10 +1015,10 @@ public class Display extends Application implements GameDisplay{
         int DIE_SIZE = 150;
 
         //The 2 dice, originally set to random values
-        ImageView dieA = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+        ImageView dieA = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/" +Utilities.roll()+".png")));
         dieA.setPreserveRatio(true);
         dieA.setFitWidth(DIE_SIZE);
-        ImageView dieB = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+        ImageView dieB = new ImageView(new Image(Display.class.getResourceAsStream("Images/Dice/" +Utilities.roll()+".png")));
         dieB.setPreserveRatio(true);
         dieB.setFitWidth(DIE_SIZE);
 
@@ -1060,16 +1033,16 @@ public class Display extends Application implements GameDisplay{
 
         //Animate a random assortment of values while the roll is 'happening'
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
-            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
-            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+Utilities.roll()+".png")));
+            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/" +Utilities.roll()+".png")));
+            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/" +Utilities.roll()+".png")));
         }));
         timeline.setCycleCount(6);
         timeline.play();
 
         //When the roll finishes, set the dice to the correct values
         timeline.setOnFinished(event -> {
-            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+die1+".png")));
-            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/"+die2+".png")));
+            dieA.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/" +die1+".png")));
+            dieB.setImage(new Image(Display.class.getResourceAsStream("Images/Dice/" +die2+".png")));
 
             Button close = new Button("CLOSE");
             close.setFont(defaultFont);
@@ -1354,7 +1327,7 @@ public class Display extends Application implements GameDisplay{
             vBox.getChildren().addAll(image,name,owner,text,close);
 
         }else if(p.groupName == 005){//Utilities
-            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/"+p.name+".png")));
+            ImageView image = new ImageView(new Image(Display.class.getResourceAsStream("Images/" +p.name+".png")));
             image.setPreserveRatio(true);
             image.setFitHeight(wid/2);
 
@@ -1557,7 +1530,6 @@ public class Display extends Application implements GameDisplay{
             winScreenFX(p);
         });
     }
-
 
     public void winScreenFX(Player p){
         Stage popup = new Stage();
