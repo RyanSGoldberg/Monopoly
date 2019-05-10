@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -37,6 +38,8 @@ public class Display extends Application implements GameDisplay{
     private BorderPane screen;
     private BorderPane gameBoard;
 
+    private ImageCursor imageCursor;
+
     private Board game;
 
     private int BOARD_SIZE;
@@ -63,6 +66,8 @@ public class Display extends Application implements GameDisplay{
         window.setResizable(false);
         window.toFront();
 
+        initializeImages();
+
         //Initializes the scale of the window/components
         initializeSizes();
 
@@ -70,6 +75,11 @@ public class Display extends Application implements GameDisplay{
         startMainMenu();
 
         window.show();
+    }
+
+    private void initializeImages(){
+        Image icon64x64 = new Image(Display.class.getResourceAsStream("Images/Icon.png"));
+        window.getIcons().add(icon64x64);
     }
 
     private void initializeSizes(){
@@ -751,9 +761,39 @@ public class Display extends Application implements GameDisplay{
             base.getChildren().addAll(baseRec,coloredStack);
         }
 
-        //TODO Text rotation
-        Text text = new Text(Integer.toString(game.tiles[i].location));
-        text.setRotate(0);
+        //Separates the components of the property names to different lines
+        String name = "";
+        String[] split = game.tiles[i].name.split(" ");
+        for (String s:split) {
+            name+=s+"\n";
+        }
+
+        //Generates the property name Text
+        Text text = new Text(name);
+        text.setTextAlignment(TextAlignment.CENTER);
+        text.setFont(Font.font("Futura",10));
+        switch (orientation){
+            case UP:
+                text.setRotate(0);
+                break;
+            case DOWN:
+                text.setRotate(180);
+                break;
+            case LEFT:
+                text.setRotate(90);
+                break;
+            case RIGHT:
+                text.setRotate(270);
+                break;
+        }
+
+        if(game.tiles[i].type == Tile.Type.PROPERTY && game.tiles[i].groupName != 002 && game.tiles[i].groupName != 005){
+            tempTile.getChildren().addAll(base,text);
+        }else {
+            tempTile.getChildren().add(base);
+        }
+
+
 
         //The pane, players are stored on
         if(orientation == Orientation.UP || orientation == Orientation.DOWN){
@@ -765,7 +805,7 @@ public class Display extends Application implements GameDisplay{
                 }
             }
 
-            tempTile.getChildren().addAll(base,text,players);
+            tempTile.getChildren().add(players);
         }else {
             HBox players = new HBox(5);
             players.setAlignment(Pos.CENTER);
@@ -775,7 +815,7 @@ public class Display extends Application implements GameDisplay{
                 }
             }
 
-            tempTile.getChildren().addAll(base,text,players);
+            tempTile.getChildren().add(players);
         }
 
         tempTile.setOnMouseClicked(event -> {
