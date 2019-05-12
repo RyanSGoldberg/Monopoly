@@ -1,6 +1,11 @@
 public class NPC extends Player{
-    public NPC(String name, Board myBoard, String token, int tokenSize) {
-        super(name, myBoard, token, tokenSize);
+    public NPC(String name, String token, int tokenSize) {
+        super(name, token, tokenSize);
+        this.type = Type.NPC;
+    }
+
+    public NPC(String name, int wallet, int position, int numberOfJailCards, boolean inJail, int turnsLeftInJail, boolean inDebt, int debt, String tokenName, int tokenSize){
+        super(name,wallet,position,numberOfJailCards,inJail,turnsLeftInJail,inDebt,debt,tokenName,tokenSize);
         this.type = Type.NPC;
     }
 
@@ -75,5 +80,10 @@ public class NPC extends Player{
         }
 
         return 10;
+    }
+
+    @Override
+    public String toString() {
+        return  name+","+wallet+","+position+","+numberOfJailCards+","+inJail+","+turnsLeftInJail+","+inDebt+","+debt+","+tokenName+","+"NPC";
     }
 }

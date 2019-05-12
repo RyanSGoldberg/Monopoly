@@ -8,28 +8,26 @@ import java.util.ArrayList;
  */
 
 public class Player {
-    private String name;
-    private int wallet;
+    protected String name;
+    protected int wallet;
 
     public int position;
 
-    private boolean inJail;
-    private int turnsLeftInJail;
+    protected boolean inJail;
+    protected int turnsLeftInJail;
 
-    private ArrayList<Property> inventory;
-    private int numberOfJailCards;
-
-    private Board myBoard;
+    protected ArrayList<Property> inventory;
+    protected int numberOfJailCards;
 
     protected Type type;
 
     public ImageView sprite;
     public String tokenName;
 
-    private boolean inDebt;
-    private int debt;
+    protected boolean inDebt;
+    protected int debt;
 
-    public Player(String name, Board myBoard,String token, int tokenSize) {
+    public Player(String name,String token, int tokenSize) {
         this.name = name;
         this.wallet = 1500;
         this.position = 0;
@@ -37,7 +35,6 @@ public class Player {
         this.inJail = false;
         this.turnsLeftInJail = 0;
         this.inventory = new ArrayList<>();
-        this.myBoard = myBoard;
 
         this.type = Type.PC;
 
@@ -45,7 +42,23 @@ public class Player {
         initializeSprite(token,tokenSize);
     }
 
-    //public Player(String name, ALL THE STUFF YOU SAVE) //NEED TO MOVE PLAYERS IN SAVED FILE TO LINE 5
+    public Player(String name, int wallet, int position, int numberOfJailCards, boolean inJail, int turnsLeftInJail, boolean inDebt, int debt, String tokenName, int tokenSize){
+        this.name = name;
+        this.wallet = wallet;
+        this.position = position;
+        this.numberOfJailCards = numberOfJailCards;
+        this.inJail = inJail;
+        this.turnsLeftInJail = turnsLeftInJail;
+        this.inDebt = inDebt;
+        this.debt = debt;
+
+        this.inventory = new ArrayList<>();
+
+        this.type = Type.PC;
+
+        this.tokenName = tokenName;
+        initializeSprite(tokenName,tokenSize);
+    }
 
     public void removeMoney(int amount){
         if(wallet - amount > 0){
@@ -172,7 +185,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return  name+","+wallet+","+position+","+numberOfJailCards+","+inJail+","+turnsLeftInJail+","+inDebt+","+debt+","+tokenName;
+        return  name+","+wallet+","+position+","+numberOfJailCards+","+inJail+","+turnsLeftInJail+","+inDebt+","+debt+","+tokenName+","+"PC";
     }
 
     enum Type {PC,NPC}

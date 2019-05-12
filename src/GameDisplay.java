@@ -18,4 +18,6 @@ public interface GameDisplay {
     void diceRoll(int die1, int die2, boolean show);
 
     void winScreen(Player p);
+
+    int spriteSize(int numSprites);
 }

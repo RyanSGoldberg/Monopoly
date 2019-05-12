@@ -147,12 +147,11 @@ public class Display extends Application implements GameDisplay{
             fileChooser.getExtensionFilters().add(extension);
             File file = fileChooser.showOpenDialog(window);
 
-            System.out.println("Load Game");
             if(file != null){
                 game = new Board(false,this, file);
             }
 
-            System.out.println("TODO");
+            startGame();
 
         });
 
@@ -298,33 +297,22 @@ public class Display extends Application implements GameDisplay{
                     return;
                 }
 
-                int spriteSize = ((TILE_LENGTH-(5*game.numPlayers))/game.numPlayers);
+
+                int spriteSize = spriteSize(game.numPlayers);
 
                 //Adds the player
                 if(temp.type == Player.Type.PC){
-                    game.players.add(new Player(temp.name,game,temp.token,spriteSize));
+                    game.players.add(new Player(temp.name,temp.token,spriteSize));
                 }else {
-                    game.players.add(new NPC(temp.name,game,temp.token,spriteSize));
+                    game.players.add(new NPC(temp.name,temp.token,spriteSize));
                 }
             }
-
-            //Ensures at least 1 player is a human
-            boolean PC = false;
-
-            /*for (Player p:game.players) {
-                if (p.type == Player.Type.PC) {
-                    PC = true;
-                }
-            }*/
 
             int numNPC = 0;
 
             for(int i = 0 ; i < game.players.size() ; i++){
-
                 if(game.players.get(i).type == Player.Type.NPC){
-
                     numNPC++;
-
                 }
 
             }
@@ -363,8 +351,8 @@ public class Display extends Application implements GameDisplay{
         Button dev = new Button("Dev Players");
         dev.setFont(defaultFont);
         dev.setOnAction(event -> {
-            game.players.add(new Player("DevA",game,"hat",40));
-            game.players.add(new Player("DevB",game,"trolly",40));
+            game.players.add(new Player("DevA","hat",40));
+            game.players.add(new Player("DevB","trolly",40));
             startGame();
         });
 
@@ -565,6 +553,10 @@ public class Display extends Application implements GameDisplay{
         Scene scene = new Scene(vBox, 700,150);
         stage.setScene(scene);
         stage.showAndWait();
+    }
+
+    public int spriteSize(int numSprites){
+        return ((TILE_LENGTH-(5*numSprites))/numSprites);
     }
 
     private void startGame(){

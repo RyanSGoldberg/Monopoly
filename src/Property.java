@@ -25,11 +25,10 @@ public class Property extends Tile {
     public String toString() {
         // returns information about property
         if (owner != null) {
-            return numberHouses+", "+owner.getName();
+            return owner.getName()+","+numberHouses;
         }else{
-            return numberHouses+", NULL";
+            return "NULL";
         }
-
             }
 
     public void landedOn(Player p, int rollSum, boolean show){ // charges money for somebody that lands on a property they do not own
@@ -180,5 +179,10 @@ public class Property extends Tile {
 
     public boolean isBuildable() {
         return canBuild;
+    }
+
+    public void setStatus(Player owner, int numberHouses){
+        this.owner = owner;
+        this.numberHouses = numberHouses;
     }
 }

@@ -55,7 +55,7 @@ public class Board{
 
             loadBoard();
         }
-        setNumPlayers();
+        //setNumPlayers();//TODO do in need this
     }
 
     public void loadTiles(){
@@ -132,9 +132,6 @@ public class Board{
                 currentPlayer = 0;
             }
         }
-        //TODO WIN WINDOW
-        System.out.println("Here");
-
         gameDisplay.winScreen(getCurrentPlayer());
     }
 
@@ -512,45 +509,63 @@ public class Board{
     }
 
     public void loadBoard(){
-        //TODO
         try {
-
             List<String> lines = Files.readAllLines(Paths.get(gamePath));
-            //TODO
-            for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i);
 
-                if(i == 1){
-                    currentPlayer = Integer.parseInt(line);
-                }else if(i == 2){
-                    cashPot = Integer.parseInt(line);
-                }else if(i == 3){
-                    numDoubleRollsOnTurn = Integer.parseInt(line);
-                }else if(i == 4){
-                    numPlayers = Integer.parseInt(line);
-                }else if(i < 4+numPlayers){
-                  /*  //Players
-                    String[] split = line.split(",");
+            //Set game state
+            String[] gameLine = lines.get(0).split(",");
 
+            this.currentPlayer = Integer.parseInt(gameLine[0]);
+            this.cashPot = Integer.parseInt(gameLine[1]);
+            this.numPlayers = Integer.parseInt(gameLine[2]);
 
+            //Sets players data (Excluding properties)
+            for (int i = 1; i <= this.numPlayers; i++) {
+                String[] playerLine = lines.get(i).split(",");
 
+                String playerName = playerLine[0];
+                int playerBalance = Integer.parseInt(playerLine[1]);
+                int playerPos = Integer.parseInt(playerLine[2]);
+                int playerGetOutOfJailCards = Integer.parseInt(playerLine[3]);
+                boolean playerInJail = Boolean.parseBoolean(playerLine[4]);
+                int playerTurnsLeftInJail = Integer.parseInt(playerLine[5]);
+                boolean playerInDebt = Boolean.parseBoolean(playerLine[6]);
+                int playerDebt = Integer.parseInt(playerLine[7]);
+                String token = playerLine[8];
 
-                    this.players.add(new Player(__________________));
-                    */
+                if(playerLine[9].equals("PC")){
+                    players.add(new Player(playerName,playerBalance,playerPos,playerGetOutOfJailCards,playerInJail,playerTurnsLeftInJail,playerInDebt,playerDebt,token, gameDisplay.spriteSize(numPlayers)));
+                }else {
+                    players.add(new NPC(playerName,playerBalance,playerPos,playerGetOutOfJailCards,playerInJail,playerTurnsLeftInJail,playerInDebt,playerDebt,token, gameDisplay.spriteSize(numPlayers)));
                 }
-/*
-String[] lineParsed = line.split(",");
- */
-            if ()
+            }
 
-                else {
-                    //TODO  Player stuff
+            for(int i = this.numPlayers+1; i <= this.numPlayers+40; i++){
+                String[] tileLine = lines.get(i).split(",");
+
+                //The tile is owned
+                if(tileLine.length != 1){
+                    Property property = (Property) tiles[i-numPlayers-1];
+
+                    for (Player player:players) {
+                        if(player.name.equals(tileLine[0])){
+                            property.setStatus(player,Integer.parseInt(tileLine[1]));
+                            player.addProperty(property);
+
+                            break;
+                        }
+                    }
                 }
-
             }
 
         }catch (Exception e){
             e.printStackTrace();
+            gameDisplay.message("Invalid Game File",true);
+            try {//TODO check
+                Files.delete(Paths.get(gamePath));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
 
 
@@ -572,22 +587,17 @@ String[] lineParsed = line.split(",");
             fw = new FileWriter("Resources/SavedGames/"+gamePath);
             pw = new PrintWriter(fw);
 
-            //current player
-            pw.println(currentPlayer);
-            //cashPot
-            pw.println(cashPot);
-            //rollsOnTurn
-            pw.println(numDoubleRollsOnTurn);
-            //numPlayers
-            pw.println(numPlayers);
+            //current game state
+            pw.println(currentPlayer+","+cashPot+","+numPlayers);
+
+            //players
+            for (Player p : players) {
+                pw.println(p.toString());
+            }
 
             //tiles
             for (Tile t : tiles) {
                 pw.println(t.toString());
-            }
-            //players
-            for (Player p : players) {
-                pw.println(p.toString());
             }
 
             pw.close();
