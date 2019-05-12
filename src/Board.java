@@ -520,7 +520,7 @@ public class Board{
             this.numPlayers = Integer.parseInt(gameLine[2]);
 
             //Sets players data (Excluding properties)
-            for (int i = 1; i <= this.numPlayers; i++) {
+            for (int i = 1; i <= this.numPlayers; i++){
                 String[] playerLine = lines.get(i).split(",");
 
                 String playerName = playerLine[0];
@@ -535,7 +535,7 @@ public class Board{
 
                 if(playerLine[9].equals("PC")){
                     players.add(new Player(playerName,playerBalance,playerPos,playerGetOutOfJailCards,playerInJail,playerTurnsLeftInJail,playerInDebt,playerDebt,token, gameDisplay.spriteSize(numPlayers)));
-                }else {
+                }else{
                     players.add(new NPC(playerName,playerBalance,playerPos,playerGetOutOfJailCards,playerInJail,playerTurnsLeftInJail,playerInDebt,playerDebt,token, gameDisplay.spriteSize(numPlayers)));
                 }
             }
@@ -547,7 +547,7 @@ public class Board{
                 if(tileLine.length != 1){
                     Property property = (Property) tiles[i-numPlayers-1];
 
-                    for (Player player:players) {
+                    for (Player player:players){
                         if(player.name.equals(tileLine[0])){
                             property.setStatus(player,Integer.parseInt(tileLine[1]));
                             player.addProperty(property);
