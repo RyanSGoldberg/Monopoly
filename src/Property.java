@@ -128,6 +128,7 @@ public class Property extends Tile {
 
     public void sellProperty(){
         owner.addMoney(costs[0]/2);
+        System.out.println(costs[0]/2);
         owner.removeProperty(this);
         owner = null;
     }

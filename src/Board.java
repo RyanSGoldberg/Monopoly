@@ -375,8 +375,10 @@ public class Board{
 
                                 }
 
+                                int salePrice = property.propertySalePrice()+(property.getNumberHouses()*property.houseSalePrice());
+
                                 property.sellProperty();
-                                gameDisplay.message("You sold "+property.getName()+" for $"+((property.houseSalePrice())+(property.getNumberHouses()*property.houseSalePrice()))+" With today's market, I don't blame you for selling",show);
+                                gameDisplay.message("You sold "+property.getName()+" for $"+salePrice+" With today's market, I don't blame you for selling",show);
                                 gameDisplay.updatePlayerPane(p);
                                 gameDisplay.updateGameBoard();
                                 break;
