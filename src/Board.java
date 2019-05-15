@@ -47,11 +47,12 @@ public class Board{
             Date date = new Date();
             String gameName = "Monopoly-"+dateFormat.format(date);
 
-            gamePath = gameName + ".game";
+            gamePath = "Resources/SavedGames/"+gameName + ".game";
 
         }else{
             //TODO Load board
-            gamePath = gameFile.toPath().toString();
+
+            gamePath = "Resources/SavedGames/"+gameFile.getName();
 
             loadBoard();
         }
@@ -563,11 +564,6 @@ public class Board{
         }catch (Exception e){
             e.printStackTrace();
             gameDisplay.message("Invalid Game File",true);
-            try {//TODO check
-                Files.delete(Paths.get(gamePath));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
         }
 
 
@@ -578,15 +574,15 @@ public class Board{
         PrintWriter pw;
 
         try {
-            File file = new File("Resources/SavedGames/"+gamePath);
+            File file = new File(gamePath);
             if(file.exists()){
                 file.setWritable(true);
             }else {
-                file = new File("Resources/SavedGames/"+gamePath);
+                file = new File(gamePath);
             }
 
 
-            fw = new FileWriter("Resources/SavedGames/"+gamePath);
+            fw = new FileWriter(gamePath);
             pw = new PrintWriter(fw);
 
             //current game state

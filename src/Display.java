@@ -68,10 +68,10 @@ public class Display extends Application implements GameDisplay{
         //Initializes the scale of the window/components
         initializeSizes();
 
+        window.show();
+
         //Start the main menu
         startMainMenu();
-
-        window.show();
     }
 
     private void initializeImages(){
@@ -149,9 +149,11 @@ public class Display extends Application implements GameDisplay{
 
             if(file != null){
                 game = new Board(false,this, file);
-            }
 
-            startGame();
+                semaphore = new Semaphore(0);
+
+                startGame();
+            }
 
         });
 
@@ -178,7 +180,6 @@ public class Display extends Application implements GameDisplay{
         Button saveGame = new Button("Save Game");
         saveGame.setFont(defaultFont);
         saveGame.setOnAction(event -> {
-            System.out.println("Load Clicked");
             game.saveBoard();
         });
 
@@ -206,8 +207,8 @@ public class Display extends Application implements GameDisplay{
 
         //The stack of background and players
         StackPane playerMaker = new StackPane();
-        playerMaker.setMaxSize(BOARD_SIZE*1.5, BOARD_SIZE);
-        playerMaker.setMinSize(BOARD_SIZE*1.5, BOARD_SIZE);
+        playerMaker.setMaxSize(BOARD_SIZE*1.8, BOARD_SIZE);
+        playerMaker.setMinSize(BOARD_SIZE*1.8, BOARD_SIZE);
 
         HBox playersHBox = new HBox(15);
         playersHBox.setAlignment(Pos.CENTER);
@@ -222,7 +223,7 @@ public class Display extends Application implements GameDisplay{
         //Sets the background image
         ImageView background = new ImageView(new Image(Display.class.getResourceAsStream("Images/PlayerMakerBackground.jpg")));
         background.setFitHeight(BOARD_SIZE);
-        background.setFitWidth(BOARD_SIZE*1.5);
+        background.setFitWidth(BOARD_SIZE*1.8);
 
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
