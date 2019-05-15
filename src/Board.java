@@ -116,7 +116,7 @@ public class Board{
 
     public void play(){
         //If needed, enter dev commands here
-         //devMode();
+         devMode(DevCommands.WIN_MODE);
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -129,10 +129,12 @@ public class Board{
             }
             handleTurn(getCurrentPlayer(),show);
             currentPlayer++;
-            if(currentPlayer  == numPlayers){
+            if(currentPlayer  >= numPlayers){
                 currentPlayer = 0;
             }
         }
+
+        System.out.println("Game won");
         gameDisplay.winScreen(getCurrentPlayer());
     }
 
@@ -401,7 +403,6 @@ public class Board{
     }
 
     public void move(Player p, int numberOfSpaces){
-        gameDisplay.movePlayer(p);
         p.position += numberOfSpaces;
         if(p.position > 39){
             p.position = p.position%40;
@@ -434,6 +435,8 @@ public class Board{
         int randomAmount = Utilities.generateNumber(10, 200);
         int randomLocation = Utilities.generateNumber(1, 7);
 
+        boolean moveToken = false;
+
         if(number < 30){
             cardName = "Collect Cash!";
             cardMessage = "You have gained $"+randomAmount;
@@ -449,18 +452,22 @@ public class Board{
             cardName = "Move Token";
             cardMessage = "You now must move "+randomLocation+" tiles forward";
 
+            moveToken = true;
+
             move(p, randomLocation);
-            handleTurn(getCurrentPlayer(),show);
         }else {
             cardName = "Get Out Of Jail Free Card";
 
             p.getJailCard();
         }
-
         gameDisplay.showChance(cardName,cardMessage,show);
         gameDisplay.updatePlayerPane(p);
         gameDisplay.updateGameBoard();
-        gameDisplay.movePlayer(p);
+
+
+        if(moveToken){
+            handleTurn(getCurrentPlayer(),show);
+        }
     }
 
     public void addToCashPot(int amount){
@@ -500,6 +507,8 @@ public class Board{
         }
 
         players.remove(p);
+        numPlayers--;
+
         gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
     }
 
@@ -507,9 +516,6 @@ public class Board{
         return players.get(currentPlayer);
     }
 
-    public void setNumPlayers() {
-        this.numPlayers = players.size();
-    }
 
     public void loadBoard(){
         try {

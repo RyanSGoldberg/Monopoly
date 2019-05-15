@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
-//import java.com.sun;
+
 public class Display extends Application implements GameDisplay{
     private Stage window;
     private BorderPane screen;
@@ -43,17 +43,17 @@ public class Display extends Application implements GameDisplay{
     private int TILE_LENGTH;
     private int TILE_WIDTH;
 
-    private Color tileColors[] = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
-    private Color tileBaseColor = Color.PALEGREEN;
-    private Color houseColour[] = new Color[]{Color.DARKGREEN, Color.DARKRED};
+    private Color tileColors[];
+    private Color tileBaseColor;
+    private Color houseColour[];
 
     private ArrayList<String> tokens;
 
-    private Semaphore semaphore = new Semaphore(0);
+    private Semaphore semaphore;
     private int outValue;
     private String outString;
 
-    private Font defaultFont=Font.font("Futura",15);
+    private Font defaultFont;
 
     @Override
     public void start(Stage primaryStage){
@@ -63,7 +63,17 @@ public class Display extends Application implements GameDisplay{
         window.setResizable(false);
         window.toFront();
 
-        initializeImages();
+        //Sets the Icon
+        Image icon64x64 = new Image(Display.class.getResourceAsStream("Images/Icon.png"));
+        window.getIcons().add(icon64x64);
+
+        //Sets the default font
+        defaultFont = Font.font("Futura",15);
+
+        //Sets the color schemes
+        tileColors = new Color[]{null,Color.SADDLEBROWN,Color.LIGHTGREY,Color.LIGHTBLUE,Color.DEEPPINK,null,Color.ORANGE,Color.RED,Color.YELLOW,Color.GREEN,Color.MEDIUMBLUE};
+        tileBaseColor = Color.PALEGREEN;
+        houseColour = new Color[]{Color.DARKGREEN, Color.DARKRED};
 
         //Initializes the scale of the window/components
         initializeSizes();
@@ -72,11 +82,6 @@ public class Display extends Application implements GameDisplay{
 
         //Start the main menu
         startMainMenu();
-    }
-
-    private void initializeImages(){
-        Image icon64x64 = new Image(Display.class.getResourceAsStream("Images/Icon.png"));
-        window.getIcons().add(icon64x64);
     }
 
     private void initializeSizes(){
@@ -181,6 +186,7 @@ public class Display extends Application implements GameDisplay{
         saveGame.setFont(defaultFont);
         saveGame.setOnAction(event -> {
             game.saveBoard();
+            message("Game Saved",true);
         });
 
         Button returnToMain = new Button("Main Menu");
@@ -935,7 +941,7 @@ public class Display extends Application implements GameDisplay{
 
         Property prop = null;
         //To use if button text requires property values
-        if(game.tiles[game.players.get(game.currentPlayer).position].type == Tile.Type.PROPERTY){
+        if(game.tiles[game.getCurrentPlayer().position].type == Tile.Type.PROPERTY){
             prop = (Property) game.tiles[game.players.get(game.currentPlayer).position];
         }
 
@@ -1181,7 +1187,7 @@ public class Display extends Application implements GameDisplay{
         StackPane stackPane = new StackPane();
 
         //The background rectangle
-        Rectangle back = new Rectangle(160,100,tileColors[prop.groupName]);
+        Rectangle back = new Rectangle(180,100,tileColors[prop.groupName]);
         back.setStroke(Color.BLACK);
 
         Text name = new Text(prop.name);
@@ -1245,8 +1251,6 @@ public class Display extends Application implements GameDisplay{
     }
 
     private void setOutString(String outString){this.outString = outString;}
-
-    public void movePlayer(Player p){}//TODO Player token animation
 
     public void showProperty(Property p, boolean show){
         //Don't show visual for NPC

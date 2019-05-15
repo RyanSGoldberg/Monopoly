@@ -61,7 +61,7 @@ public class Player {
     }
 
     public void removeMoney(int amount){
-        if(wallet - amount > 0){
+        if(wallet  >= amount){
             wallet -= amount;
         }else {
             debt = amount - wallet;

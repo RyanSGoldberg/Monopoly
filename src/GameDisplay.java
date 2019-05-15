@@ -9,8 +9,6 @@ public interface GameDisplay {
 
     void showProperty(Property p, boolean show);
 
-    void movePlayer(Player p);
-
     void showChance(String title, String message,boolean show);
 
     void updateGameBoard();
