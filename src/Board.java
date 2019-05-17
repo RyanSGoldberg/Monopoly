@@ -227,8 +227,6 @@ public class Board{
             //The tile the player is currently on
             Tile tile = tiles[p.position];
 
-            //gameDisplay.movePlayer(p);//FIXME
-
             //Calls the tile's basic function
             tile.landedOn(p, die1 + die2, show);
 
@@ -242,6 +240,7 @@ public class Board{
             Property prop = null;
             if (tile.type == Tile.Type.PROPERTY) {
                 prop = (Property) tile;
+
                 if(!p.equals(prop.getOwner())){
                     gameDisplay.showProperty(prop,show);
                 }
@@ -319,7 +318,7 @@ public class Board{
                             if(property.groupName != 002 && property.groupName != 005){
                                 //Build house option
                                 try {
-                                    if (p.getBalance() > property.getCost() && property.canBuild() && property.getNumberHouses() < 5 && property.playerHasMonopoly(property.groupName)) {
+                                    if (p.getBalance() > property.getCost() && property.canBuild() && property.getNumberHouses() < 5 && property.playerHasMonopoly()) {
                                         s+="6:";
                                     } else {
                                         s+="-1:";
@@ -516,7 +515,6 @@ public class Board{
         return players.get(currentPlayer);
     }
 
-
     public void loadBoard(){
         try {
             List<String> lines = Files.readAllLines(Paths.get(gamePath));
@@ -587,7 +585,6 @@ public class Board{
                 file = new File(gamePath);
             }
 
-
             fw = new FileWriter(gamePath);
             pw = new PrintWriter(fw);
 
@@ -611,7 +608,6 @@ public class Board{
             System.out.println("Error 404");
             e.printStackTrace();
         }
-
     }
 
     private void devMode(DevCommands ... command){

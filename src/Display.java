@@ -32,6 +32,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
+/**
+ * The GUI component of the Application
+ * @author Goldberg
+ * @author Shafran
+ * @author Zaionz
+ */
 public class Display extends Application implements GameDisplay{
     private Stage window;
     private BorderPane screen;
@@ -55,6 +61,10 @@ public class Display extends Application implements GameDisplay{
 
     private Font defaultFont;
 
+    /**
+     * Application's Start Method
+     * @param primaryStage The Main Window
+     */
     @Override
     public void start(Stage primaryStage){
         //The main window
@@ -84,6 +94,9 @@ public class Display extends Application implements GameDisplay{
         startMainMenu();
     }
 
+    /**
+     * Generates the Board Size Constants
+     */
     private void initializeSizes(){
         //Gets the current screen size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -111,6 +124,9 @@ public class Display extends Application implements GameDisplay{
 
     }
 
+    /**
+     * Generates the Main Menu Scene and set it
+     */
     private void startMainMenu(){
         //The border pane covering the entire 'screen'
         BorderPane mainMenu = new BorderPane();
@@ -119,14 +135,21 @@ public class Display extends Application implements GameDisplay{
 
         StackPane stack = new StackPane();
 
-        ImageView background = new ImageView(new Image("Images/Background.jpg"));
-        background.setPreserveRatio(true);
-        background.setFitHeight(BOARD_SIZE);
+        ImageView background = null;
+        try{
+            background = new ImageView(new Image("Images/Background.jpg"));
+            background.setPreserveRatio(true);
+            background.setFitHeight(BOARD_SIZE);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
         stack.getChildren().addAll(background, mainMenu);
 
         VBox centre = new VBox(10);
 
+        //New Game Button
         Text newGame = new Text("New Game");
         newGame.setFont(Font.font("Futura", 30));
         newGame.setFill(Color.BLACK);
@@ -142,6 +165,7 @@ public class Display extends Application implements GameDisplay{
             newGame.setFill(Color.BLACK);
         });
 
+        //Load Game Button
         Text loadGame = new Text("Load Game");
         loadGame.setFont(Font.font("Futura", 30));
         loadGame.setFill(Color.BLACK);
@@ -186,7 +210,7 @@ public class Display extends Application implements GameDisplay{
         saveGame.setFont(defaultFont);
         saveGame.setOnAction(event -> {
             game.saveBoard();
-            message("Game Saved",true);
+            messageFX("Your Game Has Been Saved",false);
         });
 
         Button returnToMain = new Button("Main Menu");
@@ -1020,6 +1044,7 @@ public class Display extends Application implements GameDisplay{
         Stage stage = new Stage();
         stage.toFront();
         stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
 
         //The size of the dice
         int DIE_SIZE = 150;

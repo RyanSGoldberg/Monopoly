@@ -1,6 +1,7 @@
 import javafx.application.Application;
 /**
- * PURPOSE OF CLASS
+ * Starts the Application
+ * @author Goldberg
  */
 
 public class Main {
