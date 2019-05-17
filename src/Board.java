@@ -32,6 +32,13 @@ public class Board{
 
     public int[] monopolies;
 
+    /**
+     *
+     * @param newGame if it is a new game make a new instance of the board with a new date else run a saved game
+     * @param gameDisplay if it is a new game start displaying a new game
+     * @param gameFile if it is not a new game load a previous game file
+     */
+
     public Board(boolean newGame, Display gameDisplay, File gameFile){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
@@ -58,6 +65,10 @@ public class Board{
         }
         //setNumPlayers();//TODO do in need this
     }
+
+    /**
+     * loads all of the tiles and sets them to their proper orientation and loads all the requisite information about each tile i.e rend, cost etc.
+     */
 
     public void loadTiles(){
          //The path to the file containing the tile data
@@ -113,6 +124,10 @@ public class Board{
             }
         }
     }
+
+    /**
+     * while there are more than 1 player remaining loop the turns, otherwise someone has won
+     */
 
     public void play(){
         //If needed, enter dev commands here
@@ -401,6 +416,12 @@ public class Board{
         } while (doubleRoll);
     }
 
+    /**
+     * determines number of spaces plater moves, sets back to 0 if appropriate, gives go money if appropriate
+     * @param p the player being moved
+     * @param numberOfSpaces the number of spaces the player is being moved
+     */
+
     public void move(Player p, int numberOfSpaces){
         p.position += numberOfSpaces;
         if(p.position > 39){
@@ -408,6 +429,12 @@ public class Board{
             passGo(p);
         }
     }
+
+    /** determines where player will land
+     * determines
+     * @param p the player being moved
+     * @param newPos the number of spaces the player is being moved
+     */
 
     public void moveTo(Player p, int newPos){
         if(newPos < p.position){
@@ -418,14 +445,30 @@ public class Board{
         }
     }
 
+    /**
+     * awards player 200$
+     * @param p the player
+     */
+
     public void passGo(Player p){
         p.addMoney(200);
     }
+
+    /**
+     * puts player in jail
+     * @param p the player
+     */
 
     public void sendToJail(Player p){
         p.setJail();
         moveTo(p,10);
     }
+
+    /**
+     * generates random action card
+     * @param p the player
+     * @param show don't show NPC's cards
+     */
 
     public void drawCard(Player p, boolean show) {
         int number = Utilities.generateNumber(1, 100);
@@ -469,9 +512,19 @@ public class Board{
         }
     }
 
+    /**
+     * adds cash to the pot
+     * @param amount the amount being added
+     */
+
     public void addToCashPot(int amount){
         cashPot+=amount;
     }
+
+    /**
+     * takes all the money out the pot
+     * @return amount in the pot
+     */
 
     public int emptyCashPot(){
         int c = cashPot;
@@ -479,9 +532,19 @@ public class Board{
         return c;
     }
 
+    /**
+     * @return amount in cashpot
+     */
+
     public int getCashPot() {
         return cashPot;
     }
+
+    /**
+     * when a player is out of the game it gives all of their stuff to the player that knocked them out and removes them from the game
+     * @param p the player
+     * @param playerLocation the location of the player
+     */
 
     public void removePlayer(Player p, Tile playerLocation){
         if(playerLocation instanceof Property){
@@ -511,9 +574,17 @@ public class Board{
         gameDisplay.message("Sorry pal, looks like your gambling days are over: You're OUT",true);
     }
 
+    /**
+     * @return the current player (who's turn is it)
+     */
+
     public Player getCurrentPlayer(){
         return players.get(currentPlayer);
     }
+
+    /**
+     * loads a new instance of the board
+     */
 
     public void loadBoard(){
         try {
@@ -573,6 +644,10 @@ public class Board{
 
     }
 
+    /**
+     * saves the current game onto a text file to be loaded later
+     */
+
     public void saveBoard() {
         FileWriter fw;
         PrintWriter pw;
@@ -609,6 +684,11 @@ public class Board{
             e.printStackTrace();
         }
     }
+
+    /**
+     *
+     * @param command
+     */
 
     private void devMode(DevCommands ... command){
         for (DevCommands c:command) {
