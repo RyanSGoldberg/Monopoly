@@ -203,6 +203,9 @@ public class Display extends Application implements GameDisplay{
         window.setScene(scene);
     }
 
+    /**
+     * Generates the upper toolbar
+     */
     private void initializeToolbar(){
         HBox hBox = new HBox(10);
 
@@ -225,13 +228,16 @@ public class Display extends Application implements GameDisplay{
         screen.setTop(hBox);
     }
 
+    /**
+     * Starts the Player Creator Pane.
+     */
     private void startPlayerCreatorPane(){
         //Makes a new instance of game
         semaphore = new Semaphore(0);
         game = new Board(true,this, null);
 
         //All the possible tokens
-        tokens =  new ArrayList<String>();
+        tokens =  new ArrayList<>();
         tokens.clear();
         tokens.addAll(Arrays.asList("car","dog","hat","ship","trolly"));
 
@@ -387,10 +393,7 @@ public class Display extends Application implements GameDisplay{
             startGame();
         });
 
-
-
         buttons.getChildren().addAll(dev,back,addPlayer,play);
-
 
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
@@ -400,9 +403,13 @@ public class Display extends Application implements GameDisplay{
 
         Scene scene = new Scene(playerMaker);
         window.setScene(scene);
-        //startGame();
     }
 
+    /**
+     * The individual player creator rectangle
+     * @param showRemove Show a remove button, if it is between 3-5 players (You must have min 2)
+     * @return A PlayerCreatorPane
+     */
     private PlayerCreatorPane playerCreationBox(boolean showRemove){
         PlayerCreatorPane playerCreatorPane = new PlayerCreatorPane();
 
@@ -527,6 +534,9 @@ public class Display extends Application implements GameDisplay{
         return playerCreatorPane;
     }
 
+    /**
+     * Runs the token picker window
+     */
     public void tokenPicker(){
         Stage stage = new Stage();
         stage.setAlwaysOnTop(true);
@@ -586,10 +596,18 @@ public class Display extends Application implements GameDisplay{
         stage.showAndWait();
     }
 
+    /**
+     * Generates the sprite size
+     * @param numSprites The number of sprites in the game
+     * @return
+     */
     public int spriteSize(int numSprites){
         return ((TILE_LENGTH-(5*numSprites))/numSprites);
     }
 
+    /**
+     * Starts the game thread and sets the necessary visual components
+     */
     private void startGame(){
         //The border pane covering the entire 'screen'
         screen = new BorderPane();
@@ -621,6 +639,9 @@ public class Display extends Application implements GameDisplay{
         window.setScene(scene);
     }
 
+    /**
+     * Generates and sets the Board
+     */
     private void generateGameBoard(){
         gameBoard = new BorderPane();
         gameBoard.setMaxSize(BOARD_SIZE, BOARD_SIZE);
@@ -664,6 +685,12 @@ public class Display extends Application implements GameDisplay{
         gameBoard.setTop(top);
     }
 
+    /**
+     * Generates a corner piece of the board
+     * @param len The Length and Width
+     * @param i The Position
+     * @return A StackPane of the corner
+     */
     private StackPane drawCorner(int len,int i){
         StackPane base = new StackPane();
 
@@ -687,6 +714,15 @@ public class Display extends Application implements GameDisplay{
         return base;
     }
 
+    /**
+     * Generates a middle piece of the board
+     * @param wid Tile Width (X)
+     * @param height Tile Height(Y)
+     * @param c Tile Color
+     * @param i Tile Position
+     * @param orientation Tile Orientation
+     * @return A StackPane of the middle
+     */
     private StackPane drawMid(int wid, int height, Color c, int i, Orientation orientation){
         StackPane tempTile = new StackPane();
 
@@ -831,17 +867,26 @@ public class Display extends Application implements GameDisplay{
         return tempTile;
     }
 
+    /**
+     * Adds updating the updateGameBoardFX() to the Application thread queue
+     */
     public void updateGameBoard(){
         Platform.runLater(() -> {
             updateGameBoardFX();
         });
     }
 
+    /**
+     * Updates the gameBoard visual
+     */
     public void updateGameBoardFX(){
         generateGameBoard();
         screen.setCenter(gameBoard);
     }
 
+    /**
+     * Generates the player information pane
+     */
     private ScrollPane generatePlayerPane(Player p){
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setMinWidth(BOARD_SIZE /2.5 + 20);
@@ -896,6 +941,10 @@ public class Display extends Application implements GameDisplay{
         return scrollPane;
     }
 
+    /**
+     * @param prop The Property to be shown in miniature
+     * @return A small property card, to be included in the player pane
+     */
     private StackPane generatePropertyView(Property prop){
         StackPane stackPane = new StackPane();
         stackPane.setAlignment(Pos.CENTER);
@@ -916,6 +965,10 @@ public class Display extends Application implements GameDisplay{
     return stackPane;
     }
 
+    /**
+     * Adds updating the updatePlayerPaneFX() to the Application thread queue
+     * @param p The Player
+     */
     public void updatePlayerPane(Player p){
         //Don't show visual for NPC
         if(p.getType() == Player.Type.NPC){
@@ -927,10 +980,21 @@ public class Display extends Application implements GameDisplay{
         });
     }
 
+    /**
+     * Updates the player pane
+     * @param p The Player
+     */
     public void updatePlayerPaneFX(Player p){
         screen.setRight(generatePlayerPane(p));
     }
 
+    /**
+     * Handles User-Game interaction.
+     * Waits for a semaphore to return the value
+     * @param question The question text to display
+     * @param buttonsToDisplay The button options to display
+     * @return The value of the button clicked
+     */
     public int prompt(String question, int[] buttonsToDisplay){
         if(semaphore.availablePermits() != 0){
             try{
@@ -955,6 +1019,11 @@ public class Display extends Application implements GameDisplay{
         return t;
     }
 
+    /**
+     * Handles User-Game interaction iterface
+     * @param question The question text to display
+     * @param buttonsToDisplay The button options to display
+     */
     public void promptFX(String question, int[] buttonsToDisplay){
         Text text = new Text(question);
         text.setFont(defaultFont);
@@ -1013,6 +1082,13 @@ public class Display extends Application implements GameDisplay{
         gameBoard.setCenter(pane);
     }
 
+    /**
+     * Adds diceRollFX to Application thread queue
+     * Waits for a semaphore to return the value
+     * @param die1 First die final value
+     * @param die2 Second die final value
+     * @param show Only show for a PC
+     */
     public void diceRoll(int die1, int die2, boolean show){
         if(semaphore.availablePermits() != 0){
             try{
@@ -1040,6 +1116,11 @@ public class Display extends Application implements GameDisplay{
 
     }
 
+    /**
+     * Shows dice animation
+     * @param die1 First die final value
+     * @param die2 Second die final value
+     */
     public void diceRollFX(int die1, int die2){
         Stage stage = new Stage();
         stage.toFront();
@@ -1096,6 +1177,12 @@ public class Display extends Application implements GameDisplay{
 
     }
 
+    /**
+     * Adds propertyManagerPromptFX() to the Application thread queue
+     * Waits for a semaphore to return value
+     * @param buttonsToDisplay Different Buttons to display
+     * @return Commands of what to do to a specific property
+     */
     @Override
     public String propertyManagerPrompt(String[] buttonsToDisplay) {
         if(semaphore.availablePermits() != 0){
@@ -1126,6 +1213,10 @@ public class Display extends Application implements GameDisplay{
         return s;
     }
 
+    /**
+     * Shows the property manager pane
+     * @param buttonsToDisplay Different Buttons to display
+     */
     private void propertyManagerPromptFX(String[] buttonsToDisplay){
         Text text = new Text("Property Manager");
         text.setFont(defaultFont);
@@ -1183,6 +1274,12 @@ public class Display extends Application implements GameDisplay{
         gameBoard.setCenter(scrollPane);
     }
 
+    /**
+     * @param text Text to show on button
+     * @param returnValue Value to return on button click
+     * @param parent The Parent, which holds the button
+     * @return The generated button
+     */
     private Button buttonBuilder(String text, int returnValue, Pane parent){
         Button b = new Button(text);
         b.setFont(defaultFont);
@@ -1198,6 +1295,12 @@ public class Display extends Application implements GameDisplay{
         return b;
     }
 
+    /**
+     * Shows an individual property manager stack. It has all the avaliable options for that property
+     * @param s The property information
+     * @param parent The Parent which holds the StackPane
+     * @return
+     */
     private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME / FIXME (House not functional)
         //The input parsed into 4 ints
         int[] parsed = new int[4];
@@ -1275,8 +1378,18 @@ public class Display extends Application implements GameDisplay{
         this.outValue = outValue;
     }
 
+    /**
+     * Sets the outString value
+     * @param outString value
+     */
     private void setOutString(String outString){this.outString = outString;}
 
+    /**
+     * Adds showPropertyFX() to the Application thread queue
+     * Wait for a semaphore to return
+     * @param p The Property
+     * @param show If not NPC show
+     */
     public void showProperty(Property p, boolean show){
         //Don't show visual for NPC
         if(!show){
@@ -1301,6 +1414,10 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
+    /**
+     * A popup card look-alike with the Property's stats
+     * @param p The Property in question
+     */
     public void showPropertyFX(Property p, boolean releaseSemaphore){
         int wid = 350;
         int height = 500;
@@ -1415,6 +1532,12 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
+    /**
+     * Adds messageFX() to the Application thread queue.
+     * Waits for semaphore to return
+     * @param message Message Text
+     * @param show Only show if not NPC
+     */
     public void message(String message,boolean show){
         //Don't show visual for NPC
         if(!show){
@@ -1440,6 +1563,11 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
+    /**
+     * Displays a message popup
+     * @param message Message text
+     * @param releaseSemaphore If the popup should release a semaphore on its closure
+     */
     public void messageFX(String message, boolean releaseSemaphore){
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
@@ -1483,6 +1611,13 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
+    /**
+     * Adds showChanceFX() to the Application thread queue
+     * Waits for a semaphore to return
+     * @param title Card Title
+     * @param message Card Message
+     * @param show Only show if not NPC
+     */
     public void showChance(String title, String message,boolean show){
         //Don't show visual for NPC
         if(!show){
@@ -1507,6 +1642,11 @@ public class Display extends Application implements GameDisplay{
         }
     }
 
+    /**
+     * Shows a chance card popup
+     * @param title Card Title
+     * @param message Card Message
+     */
     public void showChanceFX(String title, String message){
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
@@ -1554,16 +1694,30 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
+    /**
+     * Determines the width of a string in a specific font
+     * @param s The String
+     * @param f The Font
+     * @return The width
+     */
     private int getFontWidth(String s, Font f){
         return (int)com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(s,f);
     }
 
+    /**
+     * Adds updating the winScreenFX() to the Application thread queue
+     * @param p The winning player
+     */
     public void winScreen(Player p){
         Platform.runLater(() ->{
             winScreenFX(p);
         });
     }
 
+    /**
+     * The win screen pop up
+     * @param p The winning player
+     */
     public void winScreenFX(Player p){
         Stage popup = new Stage();
         popup.initStyle(StageStyle.UNDECORATED);
@@ -1606,5 +1760,8 @@ public class Display extends Application implements GameDisplay{
         popup.showAndWait();
     }
 
+    /**
+     * Different tile orientations
+     */
     private enum Orientation {UP,DOWN,LEFT,RIGHT}
 }
