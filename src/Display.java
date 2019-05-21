@@ -1303,7 +1303,7 @@ public class Display extends Application implements GameDisplay{
      * @param parent The Parent which holds the StackPane
      * @return
      */
-    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME
+    private StackPane propertyManagerGroupBuilder(String s, Pane parent){
         //The input parsed into 4 ints
         int[] parsed = new int[4];
         //The initial input
@@ -1312,6 +1312,7 @@ public class Display extends Application implements GameDisplay{
             parsed[i] = Integer.parseInt(split[i]);
         }
 
+        //Sets the property
         Property prop = (Property)game.tiles[parsed[0]];
 
         StackPane stackPane = new StackPane();
@@ -1323,6 +1324,7 @@ public class Display extends Application implements GameDisplay{
         Text name = new Text(prop.name);
         name.setFont(defaultFont);
 
+        //Buy house button
         Button buyHouse = new Button();
         buyHouse.setFont(defaultFont);
         buyHouse.setOnAction(event -> {
@@ -1332,6 +1334,7 @@ public class Display extends Application implements GameDisplay{
 
         });
 
+        //Sell house button
         Button sellHouse = new Button();
         sellHouse.setFont(defaultFont);
         sellHouse.setOnAction(event -> {
@@ -1340,6 +1343,7 @@ public class Display extends Application implements GameDisplay{
             semaphore.release(1);
         });
 
+        //Sell property button
         Button sellProperty = new Button("Sell Property for $"+prop.propertySalePrice());
         sellProperty.setFont(defaultFont);
         sellProperty.setOnAction(event -> {

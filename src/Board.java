@@ -266,6 +266,7 @@ public class Board{
             boolean boughtProperty = false;
             boolean boughtHouse = false;
 
+            //Until user ends their turn
             while (choice != 4){
                 gameDisplay.updatePlayerPane(p);
                 //If the player landed on a property, they are given option of what to do with it
@@ -308,8 +309,6 @@ public class Board{
                         choice = 11;
                     }
                 }
-
-
 
                 switch (choice) {
                     case 4:
@@ -412,7 +411,7 @@ public class Board{
                 }
             }
         } while (doubleRoll);
-    }//TODO CLEANME
+    }
 
     /**
      * Determines number of spaces player moves, sets back to 0 if appropriate, gives go money if appropriate
@@ -516,7 +515,6 @@ public class Board{
      * Takes all the money out the pot
      * @return amount in the pot
      */
-
     public int emptyCashPot(){
         int c = cashPot;
         cashPot = 0;
