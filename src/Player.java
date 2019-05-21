@@ -253,7 +253,7 @@ public class Player {
     }
 
     /**
-     * Determines is the player is completely broke
+     * @return If the player is completely broke
      */
     public boolean isBroke(){
         if(debt > netWorth()){

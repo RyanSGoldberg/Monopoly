@@ -8,13 +8,15 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
- * PURPOSE OF CLASS
+ * The game logic
  * @author Day
  * @author Goldberg
+ * @author Zaionz
  */
 public class Board{
     public GameDisplay gameDisplay;
@@ -33,12 +35,10 @@ public class Board{
     public int[] monopolies;
 
     /**
-     *
      * @param newGame if it is a new game make a new instance of the board with a new date else run a saved game
      * @param gameDisplay if it is a new game start displaying a new game
      * @param gameFile if it is not a new game load a previous game file
      */
-
     public Board(boolean newGame, Display gameDisplay, File gameFile){
         tiles = new Tile[40];
         monopolies = new int[]{2,4,3,3,2,3,3,3,3,2};
@@ -46,7 +46,6 @@ public class Board{
         loadTiles();
         players = new ArrayList<>();
         if(newGame){
-            //TODO Shuffle players array
             currentPlayer = 0;
 
             //Makes a new game file
@@ -57,19 +56,15 @@ public class Board{
             gamePath = "Resources/SavedGames/"+gameName + ".game";
 
         }else{
-            //TODO Load board
-
             gamePath = "Resources/SavedGames/"+gameFile.getName();
 
             loadBoard();
         }
-        //setNumPlayers();//TODO do in need this
     }
 
     /**
-     * loads all of the tiles and sets them to their proper orientation and loads all the requisite information about each tile i.e rend, cost etc.
+     * Loads all of the tiles and sets them to their proper orientation and loads all the requisite information about each tile i.e rend, cost etc.
      */
-
     public void loadTiles(){
          //The path to the file containing the tile data
          Path tileData = Paths.get("Resources/Data/tiles.csv");
@@ -126,12 +121,14 @@ public class Board{
     }
 
     /**
-     * while there are more than 1 player remaining loop the turns, otherwise someone has won
+     * While there are more than 1 player remaining loop the turns, otherwise someone has won
      */
-
     public void play(){
         //If needed, enter dev commands here
          devMode();
+
+        //Shuffles player order
+        Collections.shuffle(players);
 
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
@@ -149,18 +146,20 @@ public class Board{
             }
         }
 
-        System.out.println("Game won");
         gameDisplay.winScreen(getCurrentPlayer());
     }
 
+    /**
+     * Handles a players turn
+     * @param p The Player
+     * @param show If the display should show these popups
+     */
     public void handleTurn(Player p, boolean show){
         boolean doubleRoll;
         do {
             gameDisplay.updatePlayerPane(p);
 
             gameDisplay.message("It is " + p.getName() + "'s turn",show);
-
-
 
             //If it is a playable character
             if(p.getType() == Player.Type.PC){
@@ -237,7 +236,6 @@ public class Board{
             //Move the player
             move(p, die1 + die2);
             gameDisplay.updateGameBoard();
-
 
             //The tile the player is currently on
             Tile tile = tiles[p.position];
@@ -414,14 +412,13 @@ public class Board{
                 }
             }
         } while (doubleRoll);
-    }
+    }//TODO CLEANME
 
     /**
-     * determines number of spaces plater moves, sets back to 0 if appropriate, gives go money if appropriate
+     * Determines number of spaces player moves, sets back to 0 if appropriate, gives go money if appropriate
      * @param p the player being moved
      * @param numberOfSpaces the number of spaces the player is being moved
      */
-
     public void move(Player p, int numberOfSpaces){
         p.position += numberOfSpaces;
         if(p.position > 39){
@@ -430,12 +427,10 @@ public class Board{
         }
     }
 
-    /** determines where player will land
-     * determines
+    /**Determines where player will land
      * @param p the player being moved
      * @param newPos the number of spaces the player is being moved
      */
-
     public void moveTo(Player p, int newPos){
         if(newPos < p.position){
             move(p,(40-p.position)+newPos);
@@ -446,30 +441,27 @@ public class Board{
     }
 
     /**
-     * awards player 200$
+     * Awards player $200
      * @param p the player
      */
-
     public void passGo(Player p){
         p.addMoney(200);
     }
 
     /**
-     * puts player in jail
+     * Puts player in jail
      * @param p the player
      */
-
     public void sendToJail(Player p){
         p.setJail();
         moveTo(p,10);
     }
 
     /**
-     * generates random action card
+     * Generates random action card
      * @param p the player
      * @param show don't show NPC's cards
      */
-
     public void drawCard(Player p, boolean show) {
         int number = Utilities.generateNumber(1, 100);
         String cardName;
@@ -513,16 +505,15 @@ public class Board{
     }
 
     /**
-     * adds cash to the pot
+     * Adds cash to the pot
      * @param amount the amount being added
      */
-
     public void addToCashPot(int amount){
         cashPot+=amount;
     }
 
     /**
-     * takes all the money out the pot
+     * Takes all the money out the pot
      * @return amount in the pot
      */
 
@@ -535,17 +526,15 @@ public class Board{
     /**
      * @return amount in cashpot
      */
-
     public int getCashPot() {
         return cashPot;
     }
 
     /**
-     * when a player is out of the game it gives all of their stuff to the player that knocked them out and removes them from the game
+     * When a player is out of the game it gives all of their stuff to the player that knocked them out and removes them from the game
      * @param p the player
      * @param playerLocation the location of the player
      */
-
     public void removePlayer(Player p, Tile playerLocation){
         if(playerLocation instanceof Property){
             if(((Property) playerLocation).hasOwner()){
@@ -575,17 +564,15 @@ public class Board{
     }
 
     /**
-     * @return the current player (who's turn is it)
+     * @return The current player (who's turn is it)
      */
-
     public Player getCurrentPlayer(){
         return players.get(currentPlayer);
     }
 
     /**
-     * loads a new instance of the board
+     * Loads a new instance of the board
      */
-
     public void loadBoard(){
         try {
             List<String> lines = Files.readAllLines(Paths.get(gamePath));
@@ -645,9 +632,8 @@ public class Board{
     }
 
     /**
-     * saves the current game onto a text file to be loaded later
+     * Saves the current game onto a text file to be loaded later
      */
-
     public void saveBoard() {
         FileWriter fw;
         PrintWriter pw;
@@ -686,10 +672,9 @@ public class Board{
     }
 
     /**
-     *
-     * @param command
+     *Runs all the entered developer commands
+     * @param command Different possible developer commands
      */
-
     private void devMode(DevCommands ... command){
         for (DevCommands c:command) {
             switch (c){
@@ -732,6 +717,10 @@ public class Board{
         gameDisplay.updateGameBoard();
         gameDisplay.updatePlayerPane(getCurrentPlayer());
     }
+
+    /**
+     * The possible developer commands
+     */
     enum DevCommands{BUY_ALL_PROPERTIES, GOD_MODE, BUY_ALL_HOUSES, WIN_MODE}
 
 }
