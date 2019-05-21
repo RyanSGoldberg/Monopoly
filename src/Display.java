@@ -599,7 +599,7 @@ public class Display extends Application implements GameDisplay{
     /**
      * Generates the sprite size
      * @param numSprites The number of sprites in the game
-     * @return
+     * @return Size of sprites
      */
     public int spriteSize(int numSprites){
         return ((TILE_LENGTH-(5*numSprites))/numSprites);
@@ -1301,7 +1301,7 @@ public class Display extends Application implements GameDisplay{
      * @param parent The Parent which holds the StackPane
      * @return
      */
-    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME / FIXME (House not functional)
+    private StackPane propertyManagerGroupBuilder(String s, Pane parent){//TODO CLEAN ME
         //The input parsed into 4 ints
         int[] parsed = new int[4];
         //The initial input
@@ -1417,6 +1417,7 @@ public class Display extends Application implements GameDisplay{
     /**
      * A popup card look-alike with the Property's stats
      * @param p The Property in question
+     * @param releaseSemaphore If a semaphore should be released on window closure
      */
     public void showPropertyFX(Property p, boolean releaseSemaphore){
         int wid = 350;
@@ -1581,6 +1582,11 @@ public class Display extends Application implements GameDisplay{
         //Sets the width to that of the text
         int wid =  getFontWidth(message,text.getFont())+ 40;
         int height = 150;
+
+        //Sets a minimum width
+        if(wid < 200){
+            wid = 200;
+        }
 
         Rectangle card = new Rectangle(wid,height,Color.WHITE);
 

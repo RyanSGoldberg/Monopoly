@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +46,6 @@ public class Board{
         loadTiles();
         players = new ArrayList<>();
         if(newGame){
-            //TODO Shuffle players array
             currentPlayer = 0;
 
             //Makes a new game file
@@ -127,6 +127,9 @@ public class Board{
         //If needed, enter dev commands here
          devMode();
 
+        //Shuffles player order
+        Collections.shuffle(players);
+
         while (players.size() > 1) {
             numDoubleRollsOnTurn = 0;
 
@@ -143,7 +146,6 @@ public class Board{
             }
         }
 
-        System.out.println("Game won");
         gameDisplay.winScreen(getCurrentPlayer());
     }
 
