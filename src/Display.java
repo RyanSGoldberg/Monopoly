@@ -532,6 +532,7 @@ public class Display extends Application implements GameDisplay{
         stage.setAlwaysOnTop(true);
         stage.initModality(Modality.APPLICATION_MODAL);//Can't access below windows
         stage.setOnCloseRequest(Event::consume);
+        stage.setResizable(false);
 
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
@@ -1045,6 +1046,7 @@ public class Display extends Application implements GameDisplay{
         stage.toFront();
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
 
         //The size of the dice
         int DIE_SIZE = 150;
